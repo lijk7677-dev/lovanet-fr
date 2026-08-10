@@ -449,6 +449,24 @@ export const Navbar = () => {
                 <Badge className="rounded-full border border-white/20 bg-primary/20 px-3 py-1 text-[11px] font-black text-primary animate-pulse">
                   {count} panier
                 </Badge>
+                <button
+                  type="button"
+                  onClick={() => setMobileLayout((v) => (v === "carousel" ? "list" : "carousel"))}
+                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  aria-label={mobileLayout === "carousel" ? "Affichage en liste" : "Affichage en carrousel"}
+                  data-testid="mobile-nav-layout-toggle"
+                >
+                  {mobileLayout === "carousel" ? <Rows3 className="mnav-text h-5 w-5" /> : <GalleryHorizontal className="mnav-text h-5 w-5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={mobileMinimize}
+                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  aria-label="Réduire le menu en fenêtre flottante"
+                  data-testid="mobile-nav-minimize-button"
+                >
+                  <Minimize2 className="mnav-text h-5 w-5" />
+                </button>
                 <SheetClose asChild>
                   <button
                     type="button"
