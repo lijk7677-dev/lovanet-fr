@@ -123,6 +123,8 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
+  const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
 
