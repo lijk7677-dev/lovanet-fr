@@ -423,6 +423,49 @@ export default function RootLandingPage() {
                 })}
               </div>
 
+              {catalogPreviewRows.some((row) => row.length > 0) && (
+                <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
+                  {catalogPreviewRows.map((row, rowIndex) => (
+                    <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
+                      <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
+                        {[...row, ...row].map((item, index) => (
+                          <Link
+                            key={`${item.id}-${rowIndex}-${index}`}
+                            to={item.href}
+                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[176px] lg:min-w-[176px] lg:max-w-[176px] xl:w-[196px] xl:min-w-[196px] xl:max-w-[196px]"
+                            data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
+                          >
+                            <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
+                              <HoverPreview
+                                videoId={item.trailerId}
+                                title={item.title}
+                                thumbnail={item.image}
+                                vertical
+                                delay={120}
+                                className="h-full w-full"
+                                onImgError={createImageFallbackHandler(item.id, item.image)}
+                              >
+                                <div className="hero-premium-lower-thumb-overlay" />
+                                <div className="hero-premium-lower-badge">bande-annonce</div>
+                                <div className="absolute inset-x-0 bottom-0 z-10 p-3">
+                                  <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
+                                    <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>
+                                    <p className="line-clamp-2 text-sm font-semibold text-white">{item.title}</p>
+                                  </div>
+                                </div>
+                              </HoverPreview>
+                            </div>
+                            <div className="hero-premium-lower-copy">
+                              <p className="hero-premium-lower-title">{item.title}</p>
+                              <p className="hero-premium-lower-description">{item.genres.join(" • ") || "Catalogue premium"}</p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
