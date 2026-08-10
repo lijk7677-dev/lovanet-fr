@@ -98,12 +98,11 @@ export const MiniPreviewPlayer = ({
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "radial-gradient(circle at 30% 30%, hsl(var(--neon-magenta) / 0.45), transparent 60%), radial-gradient(circle at 70% 70%, hsl(var(--neon-cyan) / 0.45), transparent 60%), linear-gradient(135deg, #0b0b14, #1a1027)",
+          background: "linear-gradient(135deg, hsl(220 20% 12%), hsl(220 18% 18%))",
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-white/80 text-[10px] tracking-[0.3em] uppercase animate-pulse">
+        <span className="text-white/45 text-[10px] tracking-[0.3em] uppercase animate-pulse">
           ● Lecture
         </span>
       </div>
