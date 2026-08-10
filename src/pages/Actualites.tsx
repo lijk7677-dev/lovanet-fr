@@ -649,10 +649,16 @@ function Actualites() {
       setError(null);
       try {
         if (slug) {
-          const detailData: NewsDetailPayload = await fetch(`${API}/news/${slug}`, { signal: controller.signal }).then((res) => {
-            if (!res.ok) throw new Error(`detail-${res.status}`);
-            return res.json();
-          });
+          const detailRes = await fetch(`${API}/news/${slug}`, { signal: controller.signal });
+          if (detailRes.status === 404) {
+            // Article retiré (source supprimée / flux régénéré) : retour à la liste au lieu d'un écran blanc
+            navigate("/actualites", { replace: true });
+            setDetail(null);
+            setError("Cet article n'est plus disponible. Voici les actualités les plus récentes.");
+            return;
+          }
+          if (!detailRes.ok) throw new Error(`detail-${detailRes.status}`);
+          const detailData: NewsDetailPayload = await detailRes.json();
           setDetail(detailData);
           setHome(null);
           setListing(null);
