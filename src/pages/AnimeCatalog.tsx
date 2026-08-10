@@ -12,6 +12,7 @@ import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslationToggleButton } from "@/components/TranslationToggleButton";
 import { StarRating } from "@/components/StarRating";
 import { AudioLanguageSwitcher } from "@/components/AudioLanguageSwitcher";
+import { API_BASE } from "@/lib/apiBase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -504,9 +505,8 @@ export default function AnimeCatalog() {
     
     const fetchMultilingualTrailers = async () => {
       try {
-        const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
         const title = mediaTitle(detailMedia);
-        const res = await fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
+        const res = await fetch(`${API_BASE}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
         if (!res.ok) {
           setDetailTrailers({});
           return;
@@ -798,7 +798,7 @@ export default function AnimeCatalog() {
     // Fetch multilingual trailers for giant player
     const q = mediaTitle(media);
     try {
-      const res = await fetch(`${(import.meta.env.VITE_BACKEND_URL ?? "") || ""}/api/prime/multilingual-trailers?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`${API_BASE}/prime/multilingual-trailers?q=${encodeURIComponent(q)}`);
       if (res.ok) {
         const data = await res.json();
         const trs = data.results || {};

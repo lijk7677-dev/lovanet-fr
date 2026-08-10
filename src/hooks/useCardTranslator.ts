@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL ?? "") || "";
-const API = `${BACKEND_URL}/api`;
+import { API_BASE as API } from "@/lib/apiBase";
 
 const memoryCache: Record<string, Record<string, string>> = {};
 
