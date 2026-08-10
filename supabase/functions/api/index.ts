@@ -720,18 +720,28 @@ query ($page: Int) {
   }
 }`;
 
-async function anilistPage(page: number): Promise<any[]> {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function anilistPage(page: number, attempt = 0): Promise<any[]> {
   try {
     const res = await fetch("https://graphql.anilist.co", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ query: ANILIST_QUERY, variables: { page } }),
     });
+    if (res.status === 429 || res.status >= 500) {
+      if (attempt >= 4) return [];
+      const retryAfter = Number(res.headers.get("retry-after") || 0);
+      await sleep(retryAfter > 0 ? retryAfter * 1000 : 1500 * (attempt + 1));
+      return await anilistPage(page, attempt + 1);
+    }
     if (!res.ok) return [];
     const data = await res.json();
     return data?.data?.Page?.media || [];
   } catch {
-    return [];
+    if (attempt >= 3) return [];
+    await sleep(1000 * (attempt + 1));
+    return await anilistPage(page, attempt + 1);
   }
 }
 
@@ -782,13 +792,14 @@ const PRIME_TTL_MS = 12 * 60 * 60_000;
 async function buildPrimeCatalog() {
   const pages = Array.from({ length: 56 }, (_, index) => index + 1);
   const items: any[] = [];
-  const chunkSize = 6;
+  const chunkSize = 3;
   for (let index = 0; index < pages.length; index += chunkSize) {
-    const batch = await Promise.all(pages.slice(index, index + chunkSize).map(anilistPage));
+    const batch = await Promise.all(pages.slice(index, index + chunkSize).map((page) => anilistPage(page)));
     for (const media of batch.flat()) {
       const mapped = mapPrimeMedia(media);
       if (mapped?.title) items.push(mapped);
     }
+    await sleep(700);
   }
   return items;
 }
