@@ -3,6 +3,7 @@ import { Ban, Play } from "lucide-react";
 import { getVideoStatusSync } from "@/lib/videoAvailability";
 import { siteFallbackImage } from "@/lib/mediaFallback";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
+import { acquireTrailerLock, releaseTrailerLock } from "@/lib/trailerPlaybackLock";
 
 type Props = {
   videoId: string;
@@ -45,6 +46,22 @@ export const HoverPreview = ({
   const [active, setActive] = useState(autoPlay);
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
+  // Lecture declenchee par un tap (mobile) : la rotation auto est gelee
+  // tant que l'utilisateur n'a pas lui-meme arrete la lecture.
+  const heldRef = useRef(false);
+
+  const hold = () => {
+    if (heldRef.current) return;
+    heldRef.current = true;
+    acquireTrailerLock();
+  };
+  const releaseHold = () => {
+    if (!heldRef.current) return;
+    heldRef.current = false;
+    releaseTrailerLock();
+  };
+
+  useEffect(() => releaseHold, []);
 
   useEffect(() => {
     if (knownUnavailable && knownUnavailable !== "ok") {
@@ -60,6 +77,7 @@ export const HoverPreview = ({
     timer.current = window.setTimeout(() => setActive(true), delay);
   };
   const stop = () => {
+    if (heldRef.current) return; // lecture verrouillee par un tap
     if (timer.current) {
       window.clearTimeout(timer.current);
       timer.current = null;
@@ -79,7 +97,12 @@ export const HoverPreview = ({
       onBlur={stop}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
-        setActive((value) => !value);
+        setActive((value) => {
+          const next = !value;
+          if (next) hold();
+          else releaseHold();
+          return next;
+        });
       }}
     >
       <img

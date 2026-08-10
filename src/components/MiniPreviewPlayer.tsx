@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
+import { acquireTrailerLock, releaseTrailerLock } from "@/lib/trailerPlaybackLock";
 
 type Kind = "youtube" | "tiktok" | "mp4";
 
@@ -30,6 +31,9 @@ export const MiniPreviewPlayer = ({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
   const [hovered, setHovered] = useState(false);
+  // Tap mobile = pause totale de la rotation jusqu'a la fin de la video
+  // (ou jusqu'a un nouveau tap).
+  const [touchLocked, setTouchLocked] = useState(false);
   const [tabVisible, setTabVisible] = useState<boolean>(
     typeof document === "undefined" ? true : !document.hidden
   );
@@ -82,20 +86,27 @@ export const MiniPreviewPlayer = ({
   useEffect(() => {
     // Pause auto-advance while the pointer is over the player: the current
     // trailer keeps playing until the user leaves it.
-    if (list.length <= 1 || !inView || !tabVisible || hovered) return;
+    if (list.length <= 1 || !inView || !tabVisible || hovered || touchLocked) return;
     // On touch devices the trailer plays fully; the next one is only shown
     // when the visitor scrolls the player out of view (see effect below).
     if (constrained) return;
     const t = setInterval(() => setI((x) => (x + 1) % list.length), rotateMs);
     return () => clearInterval(t);
-  }, [kind, list.length, rotateMs, inView, tabVisible, hovered, constrained]);
+  }, [kind, list.length, rotateMs, inView, tabVisible, hovered, constrained, touchLocked]);
 
   // Touch devices: advance only when the player leaves the viewport (scroll).
   useEffect(() => {
     if (!constrained || list.length <= 1) return;
+    if (touchLocked) return;
     if (inView) return;
     setI((x) => (x + 1) % list.length);
-  }, [constrained, inView, list.length]);
+  }, [constrained, inView, list.length, touchLocked]);
+
+  useEffect(() => {
+    if (!touchLocked) return;
+    acquireTrailerLock();
+    return () => releaseTrailerLock();
+  }, [touchLocked]);
 
   useEffect(() => {
     setList(sources);
@@ -127,9 +138,7 @@ export const MiniPreviewPlayer = ({
   const hoverProps = {
     onMouseEnter: () => setHovered(true),
     onMouseLeave: () => setHovered(false),
-    onTouchStart: () => setHovered(true),
-    onTouchEnd: () => setHovered(false),
-    onTouchCancel: () => setHovered(false),
+    onTouchStart: () => setTouchLocked((v) => !v),
   };
 
   const onEmbedError = () => {
@@ -203,7 +212,11 @@ export const MiniPreviewPlayer = ({
           loop={list.length === 1}
           playsInline
           preload={constrained ? "metadata" : "auto"}
-          onEnded={() => setI((x) => (x + 1) % list.length)}
+          onEnded={() => {
+            // Fin de video : on libere la pause totale puis on avance.
+            setTouchLocked(false);
+            setI((x) => (x + 1) % list.length);
+          }}
           onError={onEmbedError}
           className="w-full h-full object-cover pointer-events-none"
         />

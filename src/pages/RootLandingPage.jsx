@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { HoverPreview } from "@/components/HoverPreview";
 import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
 import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
+import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -152,6 +153,7 @@ const resolveCatalogImage = (item, index) => {
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const trailerLocked = useTrailerPlaybackLock();
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
   const bannerVideoRef = useRef(null);
@@ -243,11 +245,13 @@ export default function RootLandingPage() {
 
   useEffect(() => {
     if (catalogPreviewPool.length <= catalogBatchSize) return undefined;
+    // Pause totale de la rotation tant qu'un trailer est en lecture (tap mobile).
+    if (trailerLocked) return undefined;
     const id = window.setInterval(() => {
       setCatalogRotationIndex((current) => (current + catalogBatchSize) % catalogPreviewPool.length);
     }, catalogRotationIntervalMs);
     return () => window.clearInterval(id);
-  }, [catalogPreviewPool.length]);
+  }, [catalogPreviewPool.length, trailerLocked]);
 
   useEffect(() => {
     const video = bannerVideoRef.current;
