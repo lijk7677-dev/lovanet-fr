@@ -34,6 +34,11 @@ export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart,
   useEffect(() => {
     try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* noop */ }
   }, [pos]);
+  // Remonte la fenêtre si une position sauvegardée la colle trop bas
+  useEffect(() => {
+    const limit = window.innerHeight - 180;
+    setPos((p) => (p.y > limit ? { ...p, y: Math.max(80, limit) } : p));
+  }, []);
   useEffect(() => {
     localStorage.setItem(RETRACT_KEY, retracted ? "1" : "0");
   }, [retracted]);
