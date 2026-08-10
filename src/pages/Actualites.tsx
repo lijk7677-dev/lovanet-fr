@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { Helmet } from "react-helmet-async";
 import { useGamification } from "@/contexts/GamificationContext";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { usePiP } from "@/contexts/PiPContext";
 import {
   ArrowRight,
