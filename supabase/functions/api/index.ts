@@ -23,6 +23,33 @@ function setCache(key: string, value: any) {
 }
 
 /* -------------------------------- translate ------------------------------- */
+async function aiTranslateBatch(texts: string[], target: string): Promise<string[]> {
+  const key = Deno.env.get("LOVABLE_API_KEY");
+  if (!key) throw new Error("missing-ai-key");
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        {
+          role: "system",
+          content:
+            `Translate each input string into ${target}. Reply ONLY with a JSON array of translated strings, same length and order, no extra text.`,
+        },
+        { role: "user", content: JSON.stringify(texts) },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`ai-${res.status}`);
+  const data = await res.json();
+  const raw = String(data?.choices?.[0]?.message?.content || "");
+  const match = raw.match(/\[[\s\S]*\]/);
+  const parsed = JSON.parse(match ? match[0] : raw);
+  if (!Array.isArray(parsed) || parsed.length !== texts.length) throw new Error("ai-shape");
+  return parsed.map((value: unknown, index: number) => String(value || texts[index]));
+}
+
 async function translateOne(text: string, target: string): Promise<string> {
   const url =
     `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(target)}&dt=t&q=` +
@@ -32,7 +59,8 @@ async function translateOne(text: string, target: string): Promise<string> {
   const data = await res.json();
   const chunks = Array.isArray(data?.[0]) ? data[0] : [];
   const out = chunks.map((c: any) => (Array.isArray(c) ? c[0] : "")).join("");
-  return out || text;
+  if (!out || out.trim() === text.trim()) throw new Error("gtx-noop");
+  return out;
 }
 
 async function handleTranslate(req: Request) {
@@ -45,6 +73,7 @@ async function handleTranslate(req: Request) {
   const translations: Array<{ original_text: string; translated_text: string }> = [];
   for (let i = 0; i < clean.length; i += 8) {
     const slice = clean.slice(i, i + 8);
+    const pending: string[] = [];
     const done = await Promise.all(
       slice.map(async (text) => {
         const key = `tr:${target}:${text}`;
@@ -55,10 +84,24 @@ async function handleTranslate(req: Request) {
           setCache(key, translated);
           return { original_text: text, translated_text: translated };
         } catch {
+          pending.push(text);
           return { original_text: text, translated_text: text };
         }
       }),
     );
+    if (pending.length) {
+      try {
+        const aiOut = await aiTranslateBatch(pending, target);
+        pending.forEach((text, index) => {
+          const translated = aiOut[index] || text;
+          setCache(`tr:${target}:${text}`, translated);
+          const row = done.find((entry) => entry.original_text === text);
+          if (row) row.translated_text = translated;
+        });
+      } catch (error) {
+        console.error("ai translate fallback failed", error);
+      }
+    }
     translations.push(...done);
   }
   return json({ translations, target_lang: target });
@@ -82,7 +125,10 @@ async function ytSearch(query: string, key: string): Promise<TrailerHit[]> {
     `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&videoEmbeddable=true&q=` +
     `${encodeURIComponent(query)}&key=${key}`;
   const res = await fetch(url);
-  if (!res.ok) return [];
+  if (!res.ok) {
+    console.error("youtube search failed", res.status, await res.text().catch(() => ""));
+    return [];
+  }
   const data = await res.json();
   return (data?.items || [])
     .map((item: any) => ({
