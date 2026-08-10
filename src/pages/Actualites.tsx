@@ -23,6 +23,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { NewsTranslationProvider, NewsLanguageBar, useNewsTranslation } from "@/components/news/NewsTranslation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -467,6 +468,9 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
   const theme = categoryTheme(item.categories?.[0]);
   const { playVideo } = usePiP();
   const { incrementQuest, unlockAchievement } = useGamification();
+  const { t } = useNewsTranslation();
+  const cardTitle = t(item.title);
+  const cardDescription = t(stripHtml(item.description || item.excerpt || item.content).slice(0, 220));
 
   return (
     <Link to={`/actualites/${item.slug}`} data-testid={testId} className="group block h-full break-inside-avoid">
@@ -493,12 +497,6 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
               loading={priority ? "eager" : "lazy"}
             />
           )}
-          <img
-            src={displayImage(item.image)}
-            alt={item.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            loading={priority ? "eager" : "lazy"}
-          />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,10,24,0.96)] via-[rgba(5,10,24,0.28)] to-transparent" />
           <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3 z-10 pointer-events-none">
             <ArticleBadge item={item} />
