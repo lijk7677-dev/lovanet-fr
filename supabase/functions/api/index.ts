@@ -875,6 +875,7 @@ Deno.serve(async (req) => {
   try {
     if (route === "translate" && req.method === "POST") return await handleTranslate(req);
     if (route === "prime/multilingual-trailers") return await handleMultilingualTrailers(url);
+    if (route === "prime/catalog") return await handlePrimeCatalog(url);
     if (route === "news/home") return await handleNewsHome();
     if (route === "news/image-proxy") return await handleImageProxy(url);
     if (route === "image-proxy") return await handleImageProxy(url);
