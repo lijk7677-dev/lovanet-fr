@@ -153,7 +153,7 @@ export const CardSkinBubble = () => {
   return (
     <div className="relative flex items-center">
       {open && (
-        <div className="absolute bottom-full left-0 mb-3 z-[10000] rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-3 shadow-2xl animate-scale-in w-[280px] max-h-[60vh] overflow-y-auto">
+        <div className="dock-popup absolute bottom-full left-0 mb-3 z-[10000] rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-3 shadow-2xl animate-scale-in w-[280px] max-h-[60vh] overflow-y-auto">
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Apparence des cartes
           </p>

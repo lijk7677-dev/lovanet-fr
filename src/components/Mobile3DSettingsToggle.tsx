@@ -178,7 +178,7 @@ export function Mobile3DSettingsToggle() {
 
         {/* Panel */}
         {isOpen && (
-          <div style={{
+          <div className="dock-popup" style={{
             background: "rgba(3,7,18,0.92)", border: "1px solid rgba(255,255,255,0.12)",
             borderRadius: 20, padding: "12px 12px 10px", width: 272,
             backdropFilter: "blur(28px)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
