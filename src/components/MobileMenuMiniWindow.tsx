@@ -24,7 +24,8 @@ export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart,
       const raw = localStorage.getItem(POS_KEY);
       if (raw) return JSON.parse(raw);
     } catch { /* noop */ }
-    return { x: 16, y: Math.max(80, window.innerHeight - 200) };
+    // Remonté : la fenêtre d'accès rapide ne colle plus au bas de l'écran
+    return { x: 16, y: Math.max(80, window.innerHeight - 320) };
   });
   const [retracted, setRetracted] = useState<boolean>(() => localStorage.getItem(RETRACT_KEY) === "1");
   const dragRef = useRef<{ dx: number; dy: number } | null>(null);
@@ -33,6 +34,11 @@ export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart,
   useEffect(() => {
     try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* noop */ }
   }, [pos]);
+  // Remonte la fenêtre si une position sauvegardée la colle trop bas
+  useEffect(() => {
+    const limit = window.innerHeight - 180;
+    setPos((p) => (p.y > limit ? { ...p, y: Math.max(80, limit) } : p));
+  }, []);
   useEffect(() => {
     localStorage.setItem(RETRACT_KEY, retracted ? "1" : "0");
   }, [retracted]);
@@ -46,7 +52,7 @@ export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart,
     if (!dragRef.current) return;
     const width = retracted ? 60 : 320;
     const x = Math.min(Math.max(4, e.clientX - dragRef.current.dx), window.innerWidth - width);
-    const y = Math.min(Math.max(4, e.clientY - dragRef.current.dy), window.innerHeight - 80);
+    const y = Math.min(Math.max(4, e.clientY - dragRef.current.dy), window.innerHeight - 180);
     setPos({ x, y });
   }, [retracted]);
 
