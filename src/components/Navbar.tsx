@@ -224,10 +224,7 @@ export const Navbar = () => {
                     cancelClose();
                     setMegaOpen((value) => !value);
                   }}
-                  onMouseEnter={() => {
-                    cancelClose();
-                    setMegaOpen(true);
-                  }}
+                  onMouseEnter={cancelClose}
                   className={cn(
                     "nav-theme-chip hidden h-11 w-11 items-center justify-center rounded-full lg:inline-flex",
                     megaOpen && "nav-theme-chip-active rotate-45",
