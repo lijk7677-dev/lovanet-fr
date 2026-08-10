@@ -580,6 +580,21 @@ export default function AnimeCatalog() {
   const forcedTrailerId = searchParams.get("trailer") || undefined;
   const wantsAutoplay = searchParams.get("autoplay") === "1";
 
+  // REGLE VERROUILLEE — Deep link depuis la page portail :
+  // chaque carte trailer pousse SA propre vidéo (?anime=..&trailer=..).
+  // Le trailer demandé est prioritaire absolu tant que le visiteur n'a pas
+  // changé de version/de titre manuellement.
+  const [deepLinkTrailerId, setDeepLinkTrailerId] = useState<string | undefined>(forcedTrailerId);
+  const deepLinkRef = useRef<string | undefined>(forcedTrailerId);
+  useEffect(() => {
+    setDeepLinkTrailerId(forcedTrailerId);
+    deepLinkRef.current = forcedTrailerId;
+  }, [forcedTrailerId, seoAnimeId]);
+  const releaseDeepLink = () => {
+    deepLinkRef.current = undefined;
+    setDeepLinkTrailerId(undefined);
+  };
+
   useEffect(() => {
     if (!seoAnimeId || !forcedTrailerId) return;
     const animeId = Number(seoAnimeId);
@@ -667,10 +682,10 @@ export default function AnimeCatalog() {
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
     // Deep link: the requested trailer always wins until the user picks another
     // version/candidate manually.
-    if (forcedTrailerId && catalogCandidateIndex === 0) return forcedTrailerId;
+    if (deepLinkTrailerId) return deepLinkTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
-  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
+  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, deepLinkTrailerId]);
 
   const catalogTrailerSources = useMemo<Record<string, string>>(() => {
     const out: Record<string, string> = {};
@@ -684,6 +699,14 @@ export default function AnimeCatalog() {
   }, [detailTrailers, activePlayer]);
 
   const handleCatalogTrailerUnavailable = () => {
+    // Le trailer du deep link est indisponible : on relâche le verrou et on
+    // repart sur les candidats du titre.
+    if (deepLinkRef.current) {
+      releaseDeepLink();
+      setCatalogCandidateIndex(0);
+      setPlayerMode("video");
+      return;
+    }
     if (catalogCandidateIndex + 1 < catalogTrailerCandidates.length) {
       setCatalogCandidateIndex(catalogCandidateIndex + 1);
       return;
@@ -762,10 +785,14 @@ export default function AnimeCatalog() {
   const translatedMediaTitle = (media: Media | null | undefined) => getTranslatedText(mediaTitle(media));
   const translatedMediaDescription = (media: Media | null | undefined) => getTranslatedText(mediaDescription(media));
 
-  const syncSearchParam = (media: Media | null) => {
+  const syncSearchParam = (media: Media | null, options?: { force?: boolean }) => {
+    // Ne jamais écraser le deep link (?anime=..&trailer=..) automatiquement :
+    // sinon la carte cliquée perd sa vidéo au profit d'une suggestion.
+    if (deepLinkRef.current && !options?.force) return;
     const next = new URLSearchParams(searchParams);
     if (media) next.set("anime", String(media.id));
     else next.delete("anime");
+    if (options?.force) next.delete("trailer");
     setSearchParams(next, { replace: true });
   };
 
@@ -792,7 +819,8 @@ export default function AnimeCatalog() {
       setSoundUnlocked(true);
     }
     setActivePlayerId(media.id);
-    syncSearchParam(media);
+    releaseDeepLink();
+    syncSearchParam(media, { force: true });
     
     // Fetch multilingual trailers for giant player
     const q = mediaTitle(media);
@@ -1008,12 +1036,12 @@ export default function AnimeCatalog() {
     if (suggestionPreparedRef.current) return;
     if (loading || gridLoading || !promptPreviewItems.length) return;
     suggestionPreparedRef.current = true;
-    if (!activePlayerId) {
+    if (!activePlayerId && !deepLinkTrailerId && !seoAnimeId) {
       setActivePlayerId(promptPreviewItems[0].id);
       syncSearchParam(promptPreviewItems[0]);
     }
     setShowVideoPrompt(true);
-  }, [activePlayerId, gridLoading, loading, promptPreviewItems]);
+  }, [activePlayerId, deepLinkTrailerId, gridLoading, loading, promptPreviewItems, seoAnimeId]);
 
   useEffect(() => {
     setRenderCount(PAGE_SIZE);
@@ -1228,7 +1256,7 @@ export default function AnimeCatalog() {
                       <span className="text-sm sm:text-base font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
                         <Sparkles className="w-5 h-5" /> Choisir la langue / Sous-titres du Trailer :
                       </span>
-                      <Select value={activeTrailerLang} onValueChange={(val) => { setActiveTrailerLang(val); setIsPlaying(true); }}>
+                      <Select value={activeTrailerLang} onValueChange={(val) => { releaseDeepLink(); setActiveTrailerLang(val); setIsPlaying(true); }}>
                         <SelectTrigger className="w-full sm:w-[220px] h-10 bg-black/80 border-amber-500/50 text-white font-bold text-sm">
                           <SelectValue placeholder="Changer la langue..." />
                         </SelectTrigger>
@@ -1249,7 +1277,7 @@ export default function AnimeCatalog() {
 
                         <div className="relative h-full w-full">
                           <YouTubeEmbed
-                            key={`catalog-player-${activePlayer.id}-${forcedTrailerId || "default"}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
+                            key={`catalog-player-${activePlayer.id}-${deepLinkTrailerId || "default"}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
                             videoId={playerMode === "video" ? catalogActiveTrailerId : undefined}
                             captionLang={activeTrailerLang === "vostfr" ? "fr" : undefined}
                             title={activeTrailerLang && detailTrailers[activeTrailerLang]?.[0]?.title ? detailTrailers[activeTrailerLang][0].title : mediaTitle(activePlayer)}
@@ -1433,6 +1461,7 @@ export default function AnimeCatalog() {
                                 languages={availableCatalogLangs}
                                 sources={catalogTrailerSources}
                                 onLanguageChange={(lang) => {
+                                  releaseDeepLink();
                                   setActiveTrailerLang(lang);
                                   setIsPlaying(true);
                                 }}
@@ -1455,13 +1484,13 @@ export default function AnimeCatalog() {
                     </div>
                   </div>
                 </div>
-              ) : forcedTrailerId ? (
+              ) : deepLinkTrailerId ? (
                 <div className="relative space-y-5" data-testid="catalog-deeplink-player">
                   <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black">
                     <div className="aspect-[16/9] min-h-[280px] sm:min-h-[440px]">
                       <YouTubeEmbed
-                        key={`catalog-deeplink-${forcedTrailerId}`}
-                        videoId={forcedTrailerId}
+                        key={`catalog-deeplink-${deepLinkTrailerId}`}
+                        videoId={deepLinkTrailerId}
                         title="Bande-annonce"
                         autoplay
                         muted={!soundUnlocked}
