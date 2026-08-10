@@ -152,6 +152,7 @@ const resolveCatalogImage = (item, index) => {
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const trailerLocked = useTrailerPlaybackLock();
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
   const bannerVideoRef = useRef(null);
