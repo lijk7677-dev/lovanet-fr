@@ -950,12 +950,13 @@ export default function AnimeCatalog() {
       return;
     }
     const cached = getVideoStatusSync(activePlayer.id);
-    if (cached === "hidden") setPlayerMode("hidden");
+    if (wantsAutoplay) setPlayerMode("video");
+    else if (cached === "hidden") setPlayerMode("hidden");
     else if (cached === "unavailable") setPlayerMode("fallback");
     else setPlayerMode("video");
     setIsPlaying(hasTrailer(activePlayer));
     setIsMuted(!soundUnlocked);
-  }, [activePlayer?.id, availabilityReady, soundUnlocked]);
+  }, [activePlayer?.id, availabilityReady, soundUnlocked, wantsAutoplay]);
 
   useEffect(() => {
     if (suggestionPreparedRef.current) return;
