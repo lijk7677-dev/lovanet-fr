@@ -147,21 +147,14 @@ export const CatalogCardColorBubble = () => {
           </p>
         </div>
       )}
+      {/* Bulle 3D neutre (sans couleur) : verre argenté + animation de flottement */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Couleur des cartes du catalogue"
-        className="relative w-12 h-12 rounded-full shadow-[0_10px_30px_hsl(var(--primary)/0.45)] border border-border bg-card/90 backdrop-blur-xl hover:scale-110 transition-all flex items-center justify-center overflow-hidden"
+        className="catalog-color-orb relative w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
       >
-        <span
-          className="absolute inset-0 opacity-80"
-          style={{
-            background:
-              "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
-            backgroundSize: "300% 300%",
-            animation: "lovanet-bg-shift 6s ease infinite",
-          }}
-        />
-        <span className="relative z-10 text-white drop-shadow">
+        <span className="catalog-color-orb-shine absolute inset-0" aria-hidden />
+        <span className="relative z-10 text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]">
           {open ? <X className="w-5 h-5" /> : <Palette className="w-5 h-5" />}
         </span>
       </button>
