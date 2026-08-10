@@ -256,15 +256,6 @@ export default function RootLandingPage() {
       })),
     [],
   );
-  const activeCatalogCards = useMemo(() => {
-    if (!catalogPreviewPool.length) return [];
-    if (catalogPreviewPool.length <= catalogBatchSize) return catalogPreviewPool;
-    return Array.from({ length: catalogBatchSize }, (_, index) => catalogPreviewPool[(catalogRotationIndex + index) % catalogPreviewPool.length]);
-  }, [catalogPreviewPool, catalogRotationIndex]);
-  const catalogPreviewRows = useMemo(
-    () => Array.from({ length: 2 }, (_, rowIndex) => activeCatalogCards.slice(rowIndex * catalogRowSize, rowIndex * catalogRowSize + catalogRowSize)),
-    [activeCatalogCards],
-  );
 
   return (
     <PageShell>
