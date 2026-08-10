@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  const apiKey = Deno.env.get('YOUTUBE_API_KEY');
+  const apiKey = Deno.env.get('YOUTUBE_API_KEY') || Deno.env.get('GOOGLE_API_KEY');
   // Unauthorized visitors (anon users on the public manga page) still get the
   // full stored catalog. Only the expensive YouTube + vision-AI crawl and the
   // moderation POST are gated behind auth.

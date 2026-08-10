@@ -223,7 +223,7 @@ async function handleMultilingualTrailers(url: URL) {
   const cached = getCache<any>(cacheKey, 6 * 3600_000);
   if (cached) return json({ results: cached, cached: true });
 
-  const key = Deno.env.get("YOUTUBE_API_KEY") || undefined;
+  const key = Deno.env.get("YOUTUBE_API_KEY") || Deno.env.get("GOOGLE_API_KEY") || undefined;
 
   const queries: Array<[string, string]> = [
     ["vostfr", `${q} bande annonce VOSTFR`],
