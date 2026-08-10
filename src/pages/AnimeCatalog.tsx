@@ -1409,6 +1409,21 @@ export default function AnimeCatalog() {
                     </div>
                   </div>
                 </div>
+              ) : forcedTrailerId ? (
+                <div className="relative space-y-5" data-testid="catalog-deeplink-player">
+                  <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black">
+                    <div className="aspect-[16/9] min-h-[280px] sm:min-h-[440px]">
+                      <YouTubeEmbed
+                        key={`catalog-deeplink-${forcedTrailerId}`}
+                        videoId={forcedTrailerId}
+                        title="Bande-annonce"
+                        autoplay
+                        muted={!soundUnlocked}
+                        hideControls={false}
+                      />
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="relative flex min-h-[420px] flex-col items-center justify-center gap-5 rounded-[1.75rem] border border-dashed border-white/12 bg-[rgba(5,10,24,0.42)] px-6 py-12 text-center" data-testid="catalog-player-empty-state">
                   <div className="absolute inset-0 rounded-[1.75rem] bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.12),transparent_24%),radial-gradient(circle_at_bottom,rgba(244,114,182,0.1),transparent_26%)]" />
