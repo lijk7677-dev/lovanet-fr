@@ -489,7 +489,7 @@ export default function TabletTrailerPlayer() {
                     if (anilistId) params.set("anime", anilistId);
                     params.set("trailer", m.ytId);
                     params.set("autoplay", "1");
-                    navigate(`/anime-catalog?${params.toString()}`);
+                    navigate(`/anime-catalog?${params.toString()}#catalog-reader`);
                   }}
                     title={m.title}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
