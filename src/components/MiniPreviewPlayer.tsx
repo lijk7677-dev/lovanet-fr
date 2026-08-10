@@ -29,6 +29,7 @@ export const MiniPreviewPlayer = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [tabVisible, setTabVisible] = useState<boolean>(
     typeof document === "undefined" ? true : !document.hidden
   );
@@ -79,10 +80,12 @@ export const MiniPreviewPlayer = ({
 
   // Auto-rotate for every kind so we cycle reliably even on a single embed.
   useEffect(() => {
-    if (list.length <= 1 || !inView || !tabVisible) return;
+    // Pause auto-advance while the pointer is over the player: the current
+    // trailer keeps playing until the user leaves it.
+    if (list.length <= 1 || !inView || !tabVisible || hovered) return;
     const t = setInterval(() => setI((x) => (x + 1) % list.length), rotateMs);
     return () => clearInterval(t);
-  }, [kind, list.length, rotateMs, inView, tabVisible]);
+  }, [kind, list.length, rotateMs, inView, tabVisible, hovered]);
 
   useEffect(() => {
     setList(sources);
