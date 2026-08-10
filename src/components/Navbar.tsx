@@ -38,7 +38,6 @@ import { UserProfileWidget } from "@/components/UserProfileWidget";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
-import { NavSuggestionsIndicator } from "@/components/NavSuggestionsIndicator";
 import QuickNavCarousel from "@/components/QuickNavCarousel";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
