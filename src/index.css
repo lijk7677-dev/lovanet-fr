@@ -2800,3 +2800,44 @@ body,
   }
 }
 
+
+/* ============ Menu mobile personnalisable (bulle MobileMenuSkinBubble) ============ */
+:root {
+  --mnav-panel: rgba(0, 0, 0, 0);
+  --mnav-section: rgba(255, 255, 255, 0.04);
+  --mnav-text: #ffffff;
+  --mnav-border: rgba(255, 255, 255, 0.14);
+}
+
+.mnav-backdrop {
+  background: transparent;
+  backdrop-filter: blur(6px);
+}
+
+.mnav-shell {
+  background: var(--mnav-panel);
+  border: 1px solid var(--mnav-border);
+  backdrop-filter: blur(14px);
+}
+
+.mnav-section {
+  background: var(--mnav-section);
+  border: 1px solid var(--mnav-border);
+}
+
+.mnav-text {
+  color: var(--mnav-text) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.mnav-item {
+  background: transparent;
+  border: 1px solid var(--mnav-border);
+}
+.mnav-item:hover {
+  background: var(--mnav-section);
+}
+.mnav-item-active {
+  background: var(--mnav-section);
+  box-shadow: 0 0 14px var(--mnav-border);
+}
