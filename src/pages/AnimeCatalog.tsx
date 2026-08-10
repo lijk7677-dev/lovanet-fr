@@ -682,10 +682,10 @@ export default function AnimeCatalog() {
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
     // Deep link: the requested trailer always wins until the user picks another
     // version/candidate manually.
-    if (forcedTrailerId && catalogCandidateIndex === 0) return forcedTrailerId;
+    if (deepLinkTrailerId) return deepLinkTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
-  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
+  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, deepLinkTrailerId]);
 
   const catalogTrailerSources = useMemo<Record<string, string>>(() => {
     const out: Record<string, string> = {};
@@ -699,6 +699,14 @@ export default function AnimeCatalog() {
   }, [detailTrailers, activePlayer]);
 
   const handleCatalogTrailerUnavailable = () => {
+    // Le trailer du deep link est indisponible : on relâche le verrou et on
+    // repart sur les candidats du titre.
+    if (deepLinkRef.current) {
+      releaseDeepLink();
+      setCatalogCandidateIndex(0);
+      setPlayerMode("video");
+      return;
+    }
     if (catalogCandidateIndex + 1 < catalogTrailerCandidates.length) {
       setCatalogCandidateIndex(catalogCandidateIndex + 1);
       return;
