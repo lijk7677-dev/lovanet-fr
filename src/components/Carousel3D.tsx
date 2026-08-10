@@ -3,13 +3,14 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { Play } from "lucide-react";
+import { API_BASE } from "@/lib/apiBase";
 
 // AniList's CDN does not send CORS headers, and WebGL textures require them.
 // Route remote covers through a CORS-friendly image proxy.
 const proxied = (url) => {
   if (!url) return url;
   if (url.startsWith("/") || url.startsWith("data:") || url.startsWith(window.location.origin)) return url;
-  return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ""))}&w=600&output=jpg`;
+  return `${API_BASE}/image-proxy?url=${encodeURIComponent(url)}`;
 };
 
 const SafeImage = ({ url, isActive, isHovered }) => {
