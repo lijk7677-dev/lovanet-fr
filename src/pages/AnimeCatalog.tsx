@@ -6,7 +6,6 @@ import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
 import { Navbar } from "@/components/Navbar";
-import CatalogCardColorBubble from "@/components/CatalogCardColorBubble";
 import BlisterFrame from "@/components/BlisterFrame";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslationToggleButton } from "@/components/TranslationToggleButton";
