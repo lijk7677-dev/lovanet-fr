@@ -523,21 +523,22 @@ export const Navbar = () => {
                                   aria-current={active ? "page" : undefined}
                                   className={cn(
                                     "group relative flex min-h-[50px] items-center justify-between rounded-xl px-4 py-3 text-sm transition-all hover:scale-[1.02] border",
-                                    active ? `bg-white/10 ${group.border} shadow-[0_0_15px_currentColor] ${group.color}` : "border-white/5 hover:bg-white/10 hover:border-white/20 text-white/70 hover:shadow-[0_0_10px_currentColor] " + group.color
+                                    "mnav-item mnav-text",
+                                    active ? "mnav-item-active" : ""
                                   )}
                                   data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
                                 >
                                   <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity rounded-xl bg-gradient-to-r", group.gradient)} />
                                   <span className="inline-flex items-center gap-3 relative z-10">
                                     <motion.div whileHover={{ rotate: 15, scale: 1.2 }}>
-                                        <item.icon className={cn("h-5 w-5", active ? group.color : "opacity-70 group-hover:opacity-100 drop-shadow-md")} />
+                                        <item.icon className={cn("mnav-text h-5 w-5", active ? "" : "opacity-80 group-hover:opacity-100")} />
                                     </motion.div>
-                                    <span className={cn("font-bold", active ? "text-white" : "text-white/90 group-hover:text-white")}>{item.label}</span>
+                                    <span className="mnav-text font-bold">{item.label}</span>
                                   </span>
                                   {active ? (
-                                     <Zap className={cn("h-4 w-4 animate-pulse relative z-10", group.color)} />
+                                     <Zap className="mnav-text h-4 w-4 animate-pulse relative z-10" />
                                   ) : (
-                                     <ChevronRight className={cn("h-4 w-4 opacity-50 group-hover:opacity-100 transition-transform group-hover:translate-x-1 relative z-10", group.color)} />
+                                     <ChevronRight className="mnav-text h-4 w-4 opacity-60 group-hover:opacity-100 transition-transform group-hover:translate-x-1 relative z-10" />
                                   )}
                                 </Link>
                               </motion.div>
