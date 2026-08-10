@@ -318,7 +318,7 @@ export default function TabletTrailerPlayer() {
         </div>
       </div>
 
-      {/* 3D spiral trailer strip BELOW the tablet — drifts slowly to the right */}
+      {/* 3D spiral trailer strip BELOW the tablet — soft neutral backdrop */}
       <div
         data-hologram-block
         className="relative w-full select-none mt-4 rounded-2xl"
@@ -326,7 +326,11 @@ export default function TabletTrailerPlayer() {
           height: 360,
           perspective: "1400px",
           overflow: "hidden",
-          background: bgMode === "color" ? bgColor : "transparent",
+          background:
+            bgMode === "color"
+              ? bgColor
+              : "linear-gradient(180deg, hsl(220 30% 8% / 0.35) 0%, hsl(220 25% 12% / 0.45) 50%, hsl(220 30% 8% / 0.35) 100%)",
+          transition: "background 1.2s ease",
         }}
         onPointerDown={(e) => {
           draggingRef.current = { x: e.clientX, a: phase, moved: false };
