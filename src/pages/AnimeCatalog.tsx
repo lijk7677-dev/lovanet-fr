@@ -785,10 +785,14 @@ export default function AnimeCatalog() {
   const translatedMediaTitle = (media: Media | null | undefined) => getTranslatedText(mediaTitle(media));
   const translatedMediaDescription = (media: Media | null | undefined) => getTranslatedText(mediaDescription(media));
 
-  const syncSearchParam = (media: Media | null) => {
+  const syncSearchParam = (media: Media | null, options?: { force?: boolean }) => {
+    // Ne jamais écraser le deep link (?anime=..&trailer=..) automatiquement :
+    // sinon la carte cliquée perd sa vidéo au profit d'une suggestion.
+    if (deepLinkRef.current && !options?.force) return;
     const next = new URLSearchParams(searchParams);
     if (media) next.set("anime", String(media.id));
     else next.delete("anime");
+    if (options?.force) next.delete("trailer");
     setSearchParams(next, { replace: true });
   };
 
@@ -815,7 +819,8 @@ export default function AnimeCatalog() {
       setSoundUnlocked(true);
     }
     setActivePlayerId(media.id);
-    syncSearchParam(media);
+    releaseDeepLink();
+    syncSearchParam(media, { force: true });
     
     // Fetch multilingual trailers for giant player
     const q = mediaTitle(media);
