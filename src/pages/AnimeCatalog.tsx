@@ -917,6 +917,19 @@ export default function AnimeCatalog() {
     }
   }, [activePlayerId, allMedia, favoriteIds, selectedSeoMedia]);
 
+  // Deep link from the portal trailer strip: /anime-catalog?anime=..&trailer=..&autoplay=1
+  useEffect(() => {
+    if (!wantsAutoplay) return;
+    setSoundUnlocked(true);
+    setPlayerMode("video");
+    const id = window.setTimeout(() => {
+      document
+        .querySelector('[data-testid="catalog-giant-player-shell"]')
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [wantsAutoplay]);
+
   useEffect(() => {
     if (activePlayerId == null) return;
     const stillExists = allMedia.some((media) => media.id === activePlayerId);
