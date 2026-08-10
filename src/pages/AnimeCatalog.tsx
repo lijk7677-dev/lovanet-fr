@@ -172,6 +172,24 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort]) {
   }
 }`;
 
+const QUERY_MEDIA_BY_ID = `
+query ($id: Int) {
+  Media(id: $id, type: ANIME, isAdult: false) {
+    id
+    title { romaji english native }
+    coverImage { extraLarge large color }
+    bannerImage
+    averageScore
+    episodes
+    genres
+    format
+    seasonYear
+    status
+    description(asHtml: false)
+    trailer { id site }
+  }
+}`;
+
 import { Canvas } from "@react-three/fiber";
 import { Carousel3D } from "@/components/Carousel3D";
 import { OrbitControls } from "@react-three/drei";
@@ -563,6 +581,34 @@ export default function AnimeCatalog() {
   const forcedTrailerId = searchParams.get("trailer") || undefined;
   const wantsAutoplay = searchParams.get("autoplay") === "1";
 
+  useEffect(() => {
+    if (!seoAnimeId || !forcedTrailerId) return;
+    const animeId = Number(seoAnimeId);
+    if (!Number.isFinite(animeId)) return;
+
+    const controller = new AbortController();
+    fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query: QUERY_MEDIA_BY_ID, variables: { id: animeId } }),
+      signal: controller.signal,
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        const requested = json?.data?.Media as Media | undefined;
+        if (!requested) return;
+        const normalized = { ...requested, status: normalizeStatus(requested.status) };
+        setItems((current) => current.some((media) => media.id === normalized.id) ? current : [normalized, ...current]);
+        setActivePlayerId(normalized.id);
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        console.error("Selected anime fetch error", error);
+      });
+
+    return () => controller.abort();
+  }, [forcedTrailerId, seoAnimeId]);
+
   const selectedSeoMedia = useMemo(() => {
     if (!seoAnimeId) return null;
     const animeId = Number(seoAnimeId);
@@ -928,19 +974,20 @@ export default function AnimeCatalog() {
       document
         .querySelector('[data-testid="catalog-giant-player-shell"]')
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 400);
+    }, 250);
     return () => window.clearTimeout(id);
-  }, [wantsAutoplay]);
+  }, [activePlayer?.id, forcedTrailerId, wantsAutoplay]);
 
   useEffect(() => {
     if (activePlayerId == null) return;
     const stillExists = allMedia.some((media) => media.id === activePlayerId);
     if (!stillExists) {
+      if (seoAnimeId && forcedTrailerId && activePlayerId === Number(seoAnimeId)) return;
       const nextId = favoriteIds[0] ?? videoSuggestionItems[0]?.id ?? null;
       setActivePlayerId(nextId);
       syncSearchParam(nextId ? allMedia.find((entry) => entry.id === nextId) ?? null : null);
     }
-  }, [activePlayerId, allMedia, favoriteIds, videoSuggestionItems]);
+  }, [activePlayerId, allMedia, favoriteIds, forcedTrailerId, seoAnimeId, videoSuggestionItems]);
 
   useEffect(() => {
     if (!activePlayer) {
@@ -1156,7 +1203,7 @@ export default function AnimeCatalog() {
               </Card>
             )}
 
-            <div className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-4 sm:p-5 lg:p-6" data-testid="catalog-giant-player-shell">
+            <div id="catalog-reader" className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-4 sm:p-5 lg:p-6 scroll-mt-24" data-testid="catalog-giant-player-shell">
               <div
                 className="pointer-events-none absolute inset-0 opacity-80"
                 style={{
@@ -1203,7 +1250,7 @@ export default function AnimeCatalog() {
 
                         <div className="relative h-full w-full">
                           <YouTubeEmbed
-                            key={`catalog-player-${activePlayer.id}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
+                            key={`catalog-player-${activePlayer.id}-${forcedTrailerId || "default"}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
                             videoId={playerMode === "video" ? catalogActiveTrailerId : undefined}
                             captionLang={activeTrailerLang === "vostfr" ? "fr" : undefined}
                             title={activeTrailerLang && detailTrailers[activeTrailerLang]?.[0]?.title ? detailTrailers[activeTrailerLang][0].title : mediaTitle(activePlayer)}
