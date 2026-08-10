@@ -122,6 +122,16 @@ export const Navbar = () => {
   const [menuRotationIndex, setMenuRotationIndex] = useState(0);
   const [floatingMenuOpen, setFloatingMenuOpen] = useState(false);
 
+  useEffect(() => {
+    const onToggle = () => setFloatingMenuOpen((v) => !v);
+    window.addEventListener("lovanet:toggle-suggestions", onToggle);
+    return () => window.removeEventListener("lovanet:toggle-suggestions", onToggle);
+  }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lovanet:suggestions-state", { detail: { open: floatingMenuOpen } }));
+  }, [floatingMenuOpen]);
+
   const mobileMinimize = () => { setOpen(false); setMinimized(true); };
   const mobileExpand = () => { setMinimized(false); setOpen(true); };
   const megaRef = useRef<HTMLDivElement>(null);
@@ -545,9 +555,6 @@ export const Navbar = () => {
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* Suggestions indicator button */}
-      <NavSuggestionsIndicator isActive={floatingMenuOpen} onClick={() => setFloatingMenuOpen(!floatingMenuOpen)} />
 
       {/* Floating menu suggestions overlay */}
       <MobileNavFloater isOpen={floatingMenuOpen} onToggle={() => setFloatingMenuOpen(!floatingMenuOpen)} />
