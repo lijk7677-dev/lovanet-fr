@@ -38,7 +38,6 @@ import { UserProfileWidget } from "@/components/UserProfileWidget";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
-import { NavSuggestionsIndicator } from "@/components/NavSuggestionsIndicator";
 import QuickNavCarousel from "@/components/QuickNavCarousel";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
@@ -121,6 +120,16 @@ export const Navbar = () => {
   const [megaOpen, setMegaOpen] = useState(false);
   const [menuRotationIndex, setMenuRotationIndex] = useState(0);
   const [floatingMenuOpen, setFloatingMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onToggle = () => setFloatingMenuOpen((v) => !v);
+    window.addEventListener("lovanet:toggle-suggestions", onToggle);
+    return () => window.removeEventListener("lovanet:toggle-suggestions", onToggle);
+  }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lovanet:suggestions-state", { detail: { open: floatingMenuOpen } }));
+  }, [floatingMenuOpen]);
 
   const mobileMinimize = () => { setOpen(false); setMinimized(true); };
   const mobileExpand = () => { setMinimized(false); setOpen(true); };
@@ -545,9 +554,6 @@ export const Navbar = () => {
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* Suggestions indicator button */}
-      <NavSuggestionsIndicator isActive={floatingMenuOpen} onClick={() => setFloatingMenuOpen(!floatingMenuOpen)} />
 
       {/* Floating menu suggestions overlay */}
       <MobileNavFloater isOpen={floatingMenuOpen} onToggle={() => setFloatingMenuOpen(!floatingMenuOpen)} />

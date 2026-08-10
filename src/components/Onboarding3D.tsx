@@ -319,9 +319,6 @@ export const Onboarding3D = () => {
             </Float>
           </Canvas>
         </div>
-        <div className="absolute -top-2 -right-2 bg-fuchsia-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">
-          IA
-        </div>
       </motion.div>
     );
   }
@@ -332,7 +329,7 @@ export const Onboarding3D = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="fixed bottom-5 left-4 right-4 z-[60] pointer-events-auto sm:left-5 sm:right-5 md:bottom-6 md:left-auto md:right-6 md:w-[400px]"
+        className="dock-popup fixed bottom-5 left-4 right-4 z-[60] pointer-events-auto sm:left-5 sm:right-5 md:bottom-6 md:left-auto md:right-6 md:w-[400px]"
       >
         <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.05)_inset]">
           
