@@ -114,6 +114,11 @@ export const MiniPreviewPlayer = ({
 
   // Auto-skip to the next item if the current embed errors (blocked / copyright).
   // Only show the poster after we've cycled through everything once.
+  const hoverProps = {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  };
+
   const onEmbedError = () => {
     errCountRef.current += 1;
     if (errCountRef.current >= Math.max(1, list.length)) {
@@ -125,7 +130,7 @@ export const MiniPreviewPlayer = ({
 
   if (!list.length || errored) {
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {poster}
       </div>
     );
@@ -136,7 +141,7 @@ export const MiniPreviewPlayer = ({
     // Single-video loop requires playlist=ID for the YouTube IFrame API.
     const src = buildYouTubeEmbedUrl(current, { autoplay: true, muted: true, controls: false, loop: true, playlist: current, playsInline: true });
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {active ? (
           <iframe
             key={current}
@@ -155,7 +160,7 @@ export const MiniPreviewPlayer = ({
   if (kind === "tiktok") {
     const id = list[i];
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {active ? (
           <iframe
             key={id}
@@ -174,7 +179,7 @@ export const MiniPreviewPlayer = ({
   // mp4
   const src = list[i];
   return (
-    <div ref={wrapRef} className={"w-full h-full " + className}>
+    <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
       {active ? (
         <video
           ref={videoRef}
