@@ -2108,6 +2108,20 @@ body[data-hide-decors] [data-animated-bg] {
     transform: translateZ(22px);
   }
 
+  /* The first portal banner only: constrain the actual desktop landing hero. */
+  @media (min-width: 1024px) {
+    .root-hero-section {
+      width: min(100%, 760px) !important;
+      padding: 3rem 2rem 4rem !important;
+    }
+
+    .root-hero-banner,
+    .root-hero-content {
+      min-height: 0 !important;
+      height: 300px !important;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-banner-video,
     .hero-banner-content,
