@@ -630,6 +630,14 @@ export const Navbar = () => {
 
       {/* Floating menu suggestions overlay */}
       <MobileNavFloater isOpen={floatingMenuOpen} onToggle={() => setFloatingMenuOpen(!floatingMenuOpen)} />
+
+      {minimized && (
+        <MobileMenuMiniWindow
+          items={megaSections.map(({ to, label, icon }) => ({ to, label, icon }))}
+          onExpand={mobileExpand}
+          onClose={() => setMinimized(false)}
+        />
+      )}
     </>
   );
 };
