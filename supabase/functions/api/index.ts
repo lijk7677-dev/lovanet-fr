@@ -347,7 +347,7 @@ async function fetchOgImage(link: string): Promise<string | null> {
   if (cached !== null && cached !== undefined) return cached;
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
+    const timer = setTimeout(() => controller.abort(), 4000);
     const res = await fetch(link, {
       signal: controller.signal,
       headers: { "User-Agent": "Mozilla/5.0 (compatible; LovanetBot/1.0)", "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8" },
@@ -373,7 +373,7 @@ async function fetchOgImage(link: string): Promise<string | null> {
 }
 
 async function enrichImages(items: NewsItem[]) {
-  const missing = items.filter((item) => !item.image && item.source_path).slice(0, 120);
+  const missing = items.filter((item) => !item.image && item.source_path).slice(0, 60);
   const CONCURRENCY = 12;
   for (let i = 0; i < missing.length; i += CONCURRENCY) {
     const slice = missing.slice(i, i + CONCURRENCY);
