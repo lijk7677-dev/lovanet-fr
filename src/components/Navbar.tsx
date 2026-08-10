@@ -420,13 +420,13 @@ export const Navbar = () => {
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="mobile-sheet-panel w-[min(100vw,420px)] border-none bg-transparent p-2 shadow-none sm:p-3 overflow-hidden" data-testid="mobile-nav-sheet">
-          <div className="absolute inset-0 bg-background/40 backdrop-blur-2xl -z-10" />
+          <div className="mnav-backdrop absolute inset-0 -z-10" />
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation mobile Lovanet</SheetTitle>
             <SheetDescription>Navigation principale, accès rapides et liens utiles.</SheetDescription>
           </SheetHeader>
-          <div className="nav-theme-shell flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/20 shadow-2xl relative z-10 bg-gradient-to-b from-black/80 to-background/90 backdrop-blur-3xl">
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-4 bg-white/5">
+          <div className="mnav-shell nav-theme-shell flex h-full flex-col overflow-hidden rounded-[1.75rem] shadow-2xl relative z-10">
+            <div className="mnav-section flex items-center justify-between gap-3 px-4 py-4">
               {renderLogo()}
               <div className="flex items-center gap-2">
                 <Badge className="rounded-full border border-white/20 bg-primary/20 px-3 py-1 text-[11px] font-black text-primary animate-pulse">
@@ -447,7 +447,7 @@ export const Navbar = () => {
 
             <ScrollArea className="flex-1 px-4 py-4">
               <div className="space-y-6 pb-6">
-                <div className="flex items-center justify-between gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
+                <div className="mnav-section flex items-center justify-between gap-3 p-3 rounded-2xl">
                   <div className="flex items-center gap-4 w-full justify-between">
                     <UserProfileWidget />
                     <div className="flex gap-2">
@@ -466,13 +466,13 @@ export const Navbar = () => {
                         key={`mobile-quick-${item.to}`}
                         to={item.to}
                         onClick={() => setOpen(false)}
-                        className="group relative flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 px-2 py-2 transition-all hover:scale-105 hover:border-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] active:scale-95"
+                        className="mnav-section group relative flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all hover:scale-105 active:scale-95"
                         data-testid={`mobile-nav-quick-action-${index + 1}`}
                       >
                         <motion.div whileHover={{ rotate: 360, scale: 1.2 }} transition={{ duration: 0.5 }}>
-                           <Icon className="h-6 w-6 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                           <Icon className="mnav-text h-6 w-6 drop-shadow-[0_0_8px_rgba(0,0,0,0.45)]" />
                         </motion.div>
-                        <span className="text-[11px] font-black uppercase tracking-wider text-white/90 group-hover:text-white text-center line-clamp-1">{item.label}</span>
+                        <span className="mnav-text text-[11px] font-black uppercase tracking-wider text-center line-clamp-1">{item.label}</span>
                       </Link>
                     );
                   })}
@@ -502,8 +502,8 @@ export const Navbar = () => {
 
                 <Accordion type="multiple" defaultValue={["priority", "watch"]} className="space-y-4">
                   {mobileGroups.map((group) => (
-                    <AccordionItem key={group.id} value={group.id} className={cn("overflow-hidden rounded-[1.35rem] border px-4 py-1 bg-black/40 backdrop-blur-md transition-all hover:bg-black/60", group.border)}>
-                      <AccordionTrigger className={cn("py-3 text-sm font-black uppercase tracking-widest hover:no-underline", group.color)}>
+                    <AccordionItem key={group.id} value={group.id} className="mnav-section overflow-hidden rounded-[1.35rem] px-4 py-1 transition-all">
+                      <AccordionTrigger className="mnav-text py-3 text-sm font-black uppercase tracking-widest hover:no-underline">
                         <span className="flex items-center gap-2">
                            {group.id === 'priority' && <Flame className="w-4 h-4 animate-pulse" />}
                            {group.id === 'watch' && <Play className="w-4 h-4" />}
@@ -523,21 +523,22 @@ export const Navbar = () => {
                                   aria-current={active ? "page" : undefined}
                                   className={cn(
                                     "group relative flex min-h-[50px] items-center justify-between rounded-xl px-4 py-3 text-sm transition-all hover:scale-[1.02] border",
-                                    active ? `bg-white/10 ${group.border} shadow-[0_0_15px_currentColor] ${group.color}` : "border-white/5 hover:bg-white/10 hover:border-white/20 text-white/70 hover:shadow-[0_0_10px_currentColor] " + group.color
+                                    "mnav-item mnav-text",
+                                    active ? "mnav-item-active" : ""
                                   )}
                                   data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
                                 >
                                   <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity rounded-xl bg-gradient-to-r", group.gradient)} />
                                   <span className="inline-flex items-center gap-3 relative z-10">
                                     <motion.div whileHover={{ rotate: 15, scale: 1.2 }}>
-                                        <item.icon className={cn("h-5 w-5", active ? group.color : "opacity-70 group-hover:opacity-100 drop-shadow-md")} />
+                                        <item.icon className={cn("mnav-text h-5 w-5", active ? "" : "opacity-80 group-hover:opacity-100")} />
                                     </motion.div>
-                                    <span className={cn("font-bold", active ? "text-white" : "text-white/90 group-hover:text-white")}>{item.label}</span>
+                                    <span className="mnav-text font-bold">{item.label}</span>
                                   </span>
                                   {active ? (
-                                     <Zap className={cn("h-4 w-4 animate-pulse relative z-10", group.color)} />
+                                     <Zap className="mnav-text h-4 w-4 animate-pulse relative z-10" />
                                   ) : (
-                                     <ChevronRight className={cn("h-4 w-4 opacity-50 group-hover:opacity-100 transition-transform group-hover:translate-x-1 relative z-10", group.color)} />
+                                     <ChevronRight className="mnav-text h-4 w-4 opacity-60 group-hover:opacity-100 transition-transform group-hover:translate-x-1 relative z-10" />
                                   )}
                                 </Link>
                               </motion.div>
