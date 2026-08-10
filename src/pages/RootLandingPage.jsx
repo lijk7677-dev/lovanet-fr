@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
-import { HoverPreview } from "@/components/HoverPreview";
-import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
-import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { usePortalAudio } from "@/hooks/usePortalAudio";
-import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
 import { motion } from "framer-motion";
 
 const rotatingPortalDestinations = [
@@ -57,17 +50,6 @@ const platformCards = [
 ];
 
 
-
-
-const shuffleArray = (list) => {
-  const clone = [...list];
-  for (let index = clone.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [clone[index], clone[swapIndex]] = [clone[swapIndex], clone[index]];
-  }
-  return clone;
-};
-
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   ...item,
   href: item.category === "product" ? "/shop" : item.sourcePath || "/actualites",
@@ -95,9 +77,6 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
-const catalogRotationIntervalMs = 12000;
-const catalogBatchSize = 12;
-const catalogRowSize = 6;
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
   { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
@@ -131,11 +110,8 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
-  const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
-  const portalAudio = usePortalAudio({ storageKey: "lovanet.portal.audio.enabled" });
 
   const [homeBanners, setHomeBanners] = useState(loadHomeBanners);
   const dragIndexRef = useRef(null);
@@ -178,55 +154,6 @@ export default function RootLandingPage() {
     }, portalRotationIntervalMs);
     return () => window.clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch("/catalog-seo.json")
-      .then((response) => response.json())
-      .then((data) => {
-        if (cancelled || !Array.isArray(data)) return;
-        const normalized = shuffleArray(
-          data
-            .filter((item) => item?.cover && item?.title && String(item?.trailerId || "").trim())
-            .map((item, index) => ({
-              id: String(item.id || `catalog-${index}`),
-              title: item.title,
-              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
-              trailerId: String(item.trailerId || "").trim(),
-              genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
-              href: `/anime-catalog?anime=${item.id}`,
-              year: item.seasonYear || item.year || "Catalogue",
-            })),
-        );
-        setCatalogPreviewPool(normalized);
-        console.log("Loaded catalog previews:", normalized.length);
-        
-        // Mock availability check to avoid 404
-        normalized.slice(0, 36).forEach(item => {
-          if (item.trailerId) {
-             import('@/lib/videoAvailability').then(({setVideoStatus}) => {
-                setVideoStatus(item.trailerId, "ok");
-             });
-          }
-        });
-      })
-      .catch(() => {
-        if (!cancelled) setCatalogPreviewPool([]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (catalogPreviewPool.length <= catalogBatchSize) return undefined;
-    const id = window.setInterval(() => {
-      setCatalogRotationIndex((current) => (current + catalogBatchSize) % catalogPreviewPool.length);
-    }, catalogRotationIntervalMs);
-    return () => window.clearInterval(id);
-  }, [catalogPreviewPool.length]);
 
   useEffect(() => {
     const video = bannerVideoRef.current;
@@ -309,15 +236,6 @@ export default function RootLandingPage() {
       })),
     [],
   );
-  const activeCatalogCards = useMemo(() => {
-    if (!catalogPreviewPool.length) return [];
-    if (catalogPreviewPool.length <= catalogBatchSize) return catalogPreviewPool;
-    return Array.from({ length: catalogBatchSize }, (_, index) => catalogPreviewPool[(catalogRotationIndex + index) % catalogPreviewPool.length]);
-  }, [catalogPreviewPool, catalogRotationIndex]);
-  const catalogPreviewRows = useMemo(
-    () => Array.from({ length: 2 }, (_, rowIndex) => activeCatalogCards.slice(rowIndex * catalogRowSize, rowIndex * catalogRowSize + catalogRowSize)),
-    [activeCatalogCards],
-  );
 
   return (
     <PageShell>
@@ -335,7 +253,7 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
             <div
               ref={bannerShellRef}
-              className="hero-banner-3d relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] lg:min-h-0 lg:aspect-video w-full lg:w-[60%] lg:mx-auto"
+              className="hero-banner-3d relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] lg:min-h-0 lg:aspect-video w-full lg:w-full"
               data-testid="root-landing-hero-banner-shell"
             >
               {heroBanner && heroBanner.visible !== false ? (
@@ -441,49 +359,6 @@ export default function RootLandingPage() {
                 })}
               </div>
 
-              {catalogPreviewRows.some((row) => row.length > 0) && (
-                <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
-                  {catalogPreviewRows.map((row, rowIndex) => (
-                    <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
-                      <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
-                        {[...row, ...row].map((item, index) => (
-                          <Link
-                            key={`${item.id}-${rowIndex}-${index}`}
-                            to={item.href}
-                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[176px] lg:min-w-[176px] lg:max-w-[176px] xl:w-[196px] xl:min-w-[196px] xl:max-w-[196px]"
-                            data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
-                          >
-                            <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
-                              <HoverPreview
-                                videoId={item.trailerId}
-                                title={item.title}
-                                thumbnail={item.image}
-                                vertical
-                                delay={120}
-                                className="h-full w-full"
-                                onImgError={createImageFallbackHandler(item.id, item.image)}
-                              >
-                                <div className="hero-premium-lower-thumb-overlay" />
-                                <div className="hero-premium-lower-badge">bande-annonce</div>
-                                <div className="absolute inset-x-0 bottom-0 z-10 p-3">
-                                  <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
-                                    <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>
-                                    <p className="line-clamp-2 text-sm font-semibold text-white">{item.title}</p>
-                                  </div>
-                                </div>
-                              </HoverPreview>
-                            </div>
-                            <div className="hero-premium-lower-copy">
-                              <p className="hero-premium-lower-title">{item.title}</p>
-                              <p className="hero-premium-lower-description">{item.genres.join(" • ") || "Catalogue premium"}</p>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </section>
