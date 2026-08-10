@@ -210,10 +210,13 @@ async function ytApiSearch(query: string, key: string): Promise<TrailerHit[]> {
 }
 
 async function ytSearch(query: string, key?: string): Promise<TrailerHit[]> {
-  const scraped = await ytScrapeSearch(query);
-  if (scraped.length) return scraped;
-  if (!key) return [];
-  return await ytApiSearch(query, key);
+  // Prefer the official YouTube Data API (GOOGLE_API_KEY / YOUTUBE_API_KEY):
+  // more reliable VO/VF/VOSTFR metadata than HTML scraping.
+  if (key) {
+    const api = await ytApiSearch(query, key);
+    if (api.length) return api;
+  }
+  return await ytScrapeSearch(query);
 }
 
 async function handleMultilingualTrailers(url: URL) {
@@ -461,6 +464,42 @@ async function handleImageProxy(url: URL) {
 }
 
 /* ---------------------------------- router -------------------------------- */
+const PREWARM_TITLES = [
+  "One Piece", "Jujutsu Kaisen", "Demon Slayer", "Chainsaw Man",
+  "Solo Leveling", "Attack on Titan", "My Hero Academia", "Spy x Family",
+];
+
+async function handleRefresh(req: Request, url: URL) {
+  const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+  const scope = String(body?.scope || url.searchParams.get("scope") || "all").toLowerCase();
+  const report: Record<string, unknown> = { scope };
+
+  if (scope === "all" || scope === "translations") {
+    let cleared = 0;
+    for (const key of [...cache.keys()]) if (key.startsWith("tr:")) { cache.delete(key); cleared += 1; }
+    report.translations_cleared = cleared;
+  }
+  if (scope === "all" || scope === "trailers") {
+    for (const key of [...cache.keys()]) if (key.startsWith("mt:")) cache.delete(key);
+    const key = Deno.env.get("YOUTUBE_API_KEY") || Deno.env.get("GOOGLE_API_KEY") || undefined;
+    const warmed = await Promise.all(
+      PREWARM_TITLES.map(async (title) => {
+        const target = new URL(url.toString());
+        target.searchParams.set("q", title);
+        try { await handleMultilingualTrailers(target); return title; } catch { return null; }
+      }),
+    );
+    report.trailers_prewarmed = warmed.filter(Boolean).length;
+    report.youtube_api = Boolean(key);
+  }
+  if (scope === "all" || scope === "news") {
+    const items = await loadNews(true);
+    report.news_items = items.length;
+  }
+
+  return json({ ok: true, ...report, updated_at: new Date().toISOString() });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -478,6 +517,7 @@ Deno.serve(async (req) => {
       const items = await loadNews(true);
       return json({ ok: true, count: items.length, updated_at: new Date().toISOString() });
     }
+    if (route === "sync/refresh" || route === "refresh") return await handleRefresh(req, url);
     if (route === "news") return await handleNewsList(url);
     if (route.startsWith("news/")) return await handleNewsDetail(route.slice("news/".length));
     return json({ error: "not-found", route }, 404);
