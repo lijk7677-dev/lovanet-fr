@@ -264,10 +264,6 @@ export default function TabletTrailerPlayer() {
   const helixRadius = 92;
   const slotStep = helixWidth / VISIBLE_SLOTS;
 
-  const onSelect = (m: Media) => {
-    setPreviewItem(m);
-  };
-
   return (
     <div className="container mx-auto px-4 lg:px-8 pt-6 pb-4">
       {/* Resizable tablet frame */}
