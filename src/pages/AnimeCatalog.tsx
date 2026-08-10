@@ -560,6 +560,8 @@ export default function AnimeCatalog() {
     return source.slice(0, 10);
   }, [allMedia, videoSuggestionItems]);
   const seoAnimeId = searchParams.get("anime");
+  const forcedTrailerId = searchParams.get("trailer") || undefined;
+  const wantsAutoplay = searchParams.get("autoplay") === "1";
 
   const selectedSeoMedia = useMemo(() => {
     if (!seoAnimeId) return null;
@@ -618,9 +620,10 @@ export default function AnimeCatalog() {
   };
 
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
+    if (forcedTrailerId && !activePlayer) return forcedTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
-  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer]);
+  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
 
   const catalogTrailerSources = useMemo<Record<string, string>>(() => {
     const out: Record<string, string> = {};
@@ -913,6 +916,19 @@ export default function AnimeCatalog() {
       }
     }
   }, [activePlayerId, allMedia, favoriteIds, selectedSeoMedia]);
+
+  // Deep link from the portal trailer strip: /anime-catalog?anime=..&trailer=..&autoplay=1
+  useEffect(() => {
+    if (!wantsAutoplay) return;
+    setSoundUnlocked(true);
+    setPlayerMode("video");
+    const id = window.setTimeout(() => {
+      document
+        .querySelector('[data-testid="catalog-giant-player-shell"]')
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [wantsAutoplay]);
 
   useEffect(() => {
     if (activePlayerId == null) return;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 
 /**
@@ -51,6 +52,7 @@ const loadYTApi = (): Promise<any> => {
 };
 
 export default function TabletTrailerPlayer() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Media[]>([]);
   const [current, setCurrent] = useState<Media | null>(null);
   const playedRef = useRef<Set<string>>(new Set());
@@ -261,10 +263,6 @@ export default function TabletTrailerPlayer() {
   const helixWidth = 1500;
   const helixRadius = 92;
   const slotStep = helixWidth / VISIBLE_SLOTS;
-
-  const onSelect = (m: Media) => {
-    setPreviewItem(m);
-  };
 
   return (
     <div className="container mx-auto px-4 lg:px-8 pt-6 pb-4">
@@ -486,7 +484,12 @@ export default function TabletTrailerPlayer() {
                     onClick={(e) => {
                     if (draggingRef.current?.moved) return;
                     e.stopPropagation();
-                    onSelect(m);
+                    const anilistId = String(m.id).startsWith("c-") ? String(m.id).slice(2) : "";
+                    const params = new URLSearchParams();
+                    if (anilistId) params.set("anime", anilistId);
+                    params.set("trailer", m.ytId);
+                    params.set("autoplay", "1");
+                    navigate(`/anime-catalog?${params.toString()}`);
                   }}
                     title={m.title}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
