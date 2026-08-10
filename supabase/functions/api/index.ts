@@ -318,14 +318,8 @@ const NEWS_SOURCES = [
   { id: "eurogamer", name: "Eurogamer", url: "https://www.eurogamer.net/feed", categories: ["gaming"], group: "Eurogamer", language: "en", site: "https://www.eurogamer.net" },
   { id: "sora-news-24", name: "SoraNews24", url: "https://soranews24.com/feed/", categories: ["pop-culture", "anime"], group: "SoraNews24", language: "en", site: "https://soranews24.com" },
   { id: "japan-times", name: "The Japan Times", url: "https://www.japantimes.co.jp/feed/", categories: ["pop-culture"], group: "Japan Times", language: "en", site: "https://www.japantimes.co.jp" },
-  { id: "tokyo-weekender", name: "Tokyo Weekender", url: "https://www.tokyoweekender.com/feed/", categories: ["pop-culture"], group: "Tokyo Weekender", language: "en", site: "https://www.tokyoweekender.com" },
-  { id: "japan-forward", name: "Japan Forward", url: "https://japan-forward.com/feed/", categories: ["pop-culture"], group: "Japan Forward", language: "en", site: "https://japan-forward.com" },
-  { id: "unseen-japan", name: "Unseen Japan", url: "https://unseenjapan.com/feed/", categories: ["pop-culture"], group: "Unseen Japan", language: "en", site: "https://unseenjapan.com" },
-  { id: "nippon-com", name: "Nippon.com", url: "https://www.nippon.com/en/feed/", categories: ["pop-culture"], group: "Nippon.com", language: "en", site: "https://www.nippon.com" },
-  { id: "asian-boss-japan", name: "Grape Japan", url: "https://grapee.jp/en/feed", categories: ["pop-culture"], group: "Grape Japan", language: "en", site: "https://grapee.jp/en" },
   { id: "japan-info", name: "Japan Info", url: "https://jpninfo.com/feed", categories: ["pop-culture"], group: "Japan Info", language: "en", site: "https://jpninfo.com" },
   { id: "livedoor-anime", name: "Livedoor Anime News", url: "https://news.livedoor.com/topics/rss/ent.xml", categories: ["anime", "pop-culture"], group: "Livedoor", language: "ja", site: "https://news.livedoor.com" },
-  { id: "anime-recorder", name: "Anime Recorder", url: "https://www.animerecorder.com/feed/", categories: ["anime"], group: "Anime Recorder", language: "en", site: "https://www.animerecorder.com" },
 ];
 
 type NewsItem = Record<string, any>;
