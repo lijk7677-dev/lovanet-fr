@@ -580,6 +580,21 @@ export default function AnimeCatalog() {
   const forcedTrailerId = searchParams.get("trailer") || undefined;
   const wantsAutoplay = searchParams.get("autoplay") === "1";
 
+  // REGLE VERROUILLEE — Deep link depuis la page portail :
+  // chaque carte trailer pousse SA propre vidéo (?anime=..&trailer=..).
+  // Le trailer demandé est prioritaire absolu tant que le visiteur n'a pas
+  // changé de version/de titre manuellement.
+  const [deepLinkTrailerId, setDeepLinkTrailerId] = useState<string | undefined>(forcedTrailerId);
+  const deepLinkRef = useRef<string | undefined>(forcedTrailerId);
+  useEffect(() => {
+    setDeepLinkTrailerId(forcedTrailerId);
+    deepLinkRef.current = forcedTrailerId;
+  }, [forcedTrailerId, seoAnimeId]);
+  const releaseDeepLink = () => {
+    deepLinkRef.current = undefined;
+    setDeepLinkTrailerId(undefined);
+  };
+
   useEffect(() => {
     if (!seoAnimeId || !forcedTrailerId) return;
     const animeId = Number(seoAnimeId);
