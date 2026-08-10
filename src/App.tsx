@@ -36,6 +36,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import AuthCallback from "./pages/AuthCallback";
 import { Onboarding3D } from "./components/Onboarding3D";
+import { InstallAppPrompt } from "./components/InstallAppPrompt";
 import { AiHub } from "./pages/AiHub";
 
 import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
@@ -141,6 +142,7 @@ const AppShell = () => {
       {!isHubPreviewRoute && <Mobile3DSettingsToggle />}
       {!isHubPreviewRoute && <CartDrawer />}
       {!isHubPreviewRoute && <GoogleTranslate />}
+      {!isHubPreviewRoute && <InstallAppPrompt />}
         </CartProvider>
       </GamificationProvider>
     </PiPProvider>
