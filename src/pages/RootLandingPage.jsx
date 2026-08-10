@@ -128,6 +128,27 @@ const loadHomeBanners = () => {
 const getPortalDestination = (slotIndex, rotationIndex) =>
   rotatingPortalDestinations[(slotIndex + rotationIndex) % rotatingPortalDestinations.length];
 
+/* =============================================================================
+ * REGLES VERROUILLEES — NE PAS MODIFIER (etat valide le 10/08/2026)
+ * 1) BANNIERE TRAILERS : rendu OBLIGATOIRE en 2 lignes defilantes (marquee) :
+ *    .hero-premium-lower-marquee > .hero-premium-lower-row >
+ *    .hero-premium-lower-track. Conversion en grille, mur, mosaique,
+ *    carrousel 3D ou autre bannière = INTERDIT.
+ * 2) VISUELS DES CARTES : utiliser EXCLUSIVEMENT item.cover (puis item.banner)
+ *    de /catalog-seo.json, SANS reecriture d'URL (pas de large->extraLarge,
+ *    pas de proxy, pas de CDN tiers). Le fallback boutique sert UNIQUEMENT
+ *    quand aucune image valide n'existe.
+ * 3) Les evolutions visuelles restent purement CSS (taille, nettete, reflets).
+ * ========================================================================== */
+const TRAILER_BANNER_LAYOUT = "marquee-2-rows"; // verrouille
+
+/** Source d'image verrouillee : jamais de reecriture d'URL. */
+const resolveCatalogImage = (item, index) => {
+  const raw = typeof item?.cover === "string" && item.cover.trim() ? item.cover : item?.banner;
+  if (typeof raw === "string" && /^https?:\/\//.test(raw.trim())) return raw.trim();
+  return siteFallbackImage(String(item?.id ?? index), null);
+};
+
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
