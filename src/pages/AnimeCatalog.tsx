@@ -982,11 +982,12 @@ export default function AnimeCatalog() {
     if (activePlayerId == null) return;
     const stillExists = allMedia.some((media) => media.id === activePlayerId);
     if (!stillExists) {
+      if (seoAnimeId && forcedTrailerId && activePlayerId === Number(seoAnimeId)) return;
       const nextId = favoriteIds[0] ?? videoSuggestionItems[0]?.id ?? null;
       setActivePlayerId(nextId);
       syncSearchParam(nextId ? allMedia.find((entry) => entry.id === nextId) ?? null : null);
     }
-  }, [activePlayerId, allMedia, favoriteIds, videoSuggestionItems]);
+  }, [activePlayerId, allMedia, favoriteIds, forcedTrailerId, seoAnimeId, videoSuggestionItems]);
 
   useEffect(() => {
     if (!activePlayer) {
