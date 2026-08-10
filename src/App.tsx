@@ -42,6 +42,7 @@ import { AiHub } from "./pages/AiHub";
 import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
 import { FloatingDock, FloatingDockSlot } from "./components/FloatingDock";
 import { CardSkinBubble } from "./components/CardSkinBubble";
+import CatalogCardColorBubble from "./components/CatalogCardColorBubble";
 import { PiPProvider } from "./contexts/PiPContext";
 import { GamificationProvider } from "./contexts/GamificationContext";
 import { GlobalPiPWidget } from "./components/GlobalPiPWidget";
@@ -145,6 +146,7 @@ const AppShell = () => {
           <FloatingDockSlot><Mobile3DSettingsToggle /></FloatingDockSlot>
           <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
+          <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
         </FloatingDock>
       )}
       {!isHubPreviewRoute && <CartDrawer />}
