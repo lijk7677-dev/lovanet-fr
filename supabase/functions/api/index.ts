@@ -311,7 +311,6 @@ const NEWS_SOURCES = [
   { id: "anime-motivation", name: "Anime Motivation", url: "https://animemotivation.com/feed/", categories: ["anime", "pop-culture"], group: "Anime Motivation", language: "en", site: "https://animemotivation.com" },
   { id: "anime-trending", name: "Anime Trending", url: "https://www.animetrending.net/feed/", categories: ["anime"], group: "Anime Trending", language: "en", site: "https://www.animetrending.net" },
   { id: "netflix-tudum", name: "Netflix Tudum", url: "https://www.netflix.com/tudum/rss", categories: ["streaming", "anime"], group: "Netflix", language: "en", site: "https://www.netflix.com" },
-  { id: "variety-tv", name: "Variety TV", url: "https://variety.com/v/tv/feed/", categories: ["streaming", "pop-culture"], group: "Variety", language: "en", site: "https://variety.com" },
   { id: "millenium-jv", name: "Millenium", url: "https://www.millenium.org/rss/news.xml", categories: ["gaming"], group: "Millenium", language: "fr", site: "https://www.millenium.org" },
   { id: "gameblog", name: "Gameblog", url: "https://www.gameblog.fr/rss/news.xml", categories: ["gaming"], group: "Gameblog", language: "fr", site: "https://www.gameblog.fr" },
   { id: "ign-fr", name: "IGN France", url: "https://fr.ign.com/feed.xml", categories: ["gaming", "streaming"], group: "IGN", language: "fr", site: "https://fr.ign.com" },

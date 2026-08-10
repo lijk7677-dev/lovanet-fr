@@ -1055,19 +1055,9 @@ function Actualites() {
                 <div className="relative grid gap-5 lg:grid-cols-[0.72fr_1fr] xl:grid-cols-[0.72fr_1fr] p-5 sm:p-6">
                   <div className="flex flex-col justify-end rounded-[1.8rem] border border-white/10 bg-[rgba(0,0,0,0.32)] p-4" style={{ minHeight: 460 }} />
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-white/46">Anime · Manga · Gaming · Pop-culture JP</p>
-                    <h1 className="mt-3 max-w-4xl font-display text-3xl font-black leading-[1.02] text-white sm:text-4xl md:text-5xl xl:text-6xl" data-testid="actualites-page-title">
-                      Actualités anime, manga.
+                    <h1 className="sr-only" data-testid="actualites-page-title">
+                      Actualités anime, manga
                     </h1>
-
-                    <div className="flex flex-wrap gap-3 mt-5">
-                      <Button type="button" onClick={handleSync} className="btn-neon-rainbow rounded-full text-white" data-testid="actualites-sync-button">
-                        <RefreshCcw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} /> Actualiser les flux
-                      </Button>
-                      <Button asChild variant="glass" className="rounded-full text-white" data-testid="actualites-scroll-trending-button">
-                        <a href="#actualites-trending">Voir les tendances</a>
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </div>
