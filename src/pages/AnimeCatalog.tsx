@@ -560,6 +560,8 @@ export default function AnimeCatalog() {
     return source.slice(0, 10);
   }, [allMedia, videoSuggestionItems]);
   const seoAnimeId = searchParams.get("anime");
+  const forcedTrailerId = searchParams.get("trailer") || undefined;
+  const wantsAutoplay = searchParams.get("autoplay") === "1";
 
   const selectedSeoMedia = useMemo(() => {
     if (!seoAnimeId) return null;
