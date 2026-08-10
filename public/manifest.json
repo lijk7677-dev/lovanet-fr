@@ -1,13 +1,18 @@
 {
+  "name": "Lovanet",
   "short_name": "Lovanet",
-  "name": "Lovanet — Portail anime, manga, gaming",
-  "icons": [
-    { "src": "favicon.ico", "sizes": "16x16 32x32 48x48", "type": "image/x-icon" },
-    { "src": "lovanet-icon-192.png", "type": "image/png", "sizes": "192x192" },
-    { "src": "lovanet-icon-512.png", "type": "image/png", "sizes": "512x512" }
-  ],
-  "start_url": ".",
+  "description": "Lovanet Portail anime, manga, gaming, pop culture japonaise",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#050914",
-  "background_color": "#050914"
+  "orientation": "portrait",
+  "lang": "fr",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/lovanet-icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/lovanet-icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/lovanet-icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
 }
