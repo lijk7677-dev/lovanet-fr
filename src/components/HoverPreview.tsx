@@ -72,7 +72,7 @@ export const HoverPreview = ({
 
   return (
     <div
-      className={`rgb-frame relative overflow-hidden bg-white/95 ${ratio} ${className}`}
+      className={`soft-frame relative overflow-hidden bg-white/95 ${ratio} ${className}`}
       onMouseEnter={start}
       onMouseLeave={stop}
       onFocus={start}
