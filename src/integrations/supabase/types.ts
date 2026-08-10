@@ -149,6 +149,24 @@ export type Database = {
         }
         Relationships: []
       }
+      news_cache: {
+        Row: {
+          key: string
+          payload: Json
+          updated_at: string
+        }
+        Insert: {
+          key: string
+          payload: Json
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          payload?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pages: {
         Row: {
           content: Json | null
