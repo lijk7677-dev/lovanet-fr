@@ -433,9 +433,46 @@ async function fetchFeed(source: (typeof NEWS_SOURCES)[number]): Promise<NewsIte
   }
 }
 
-async function loadNews(force = false): Promise<NewsItem[]> {
-  const cached = getCache<NewsItem[]>("news:all", force ? 0 : 10 * 60_000);
-  if (cached) return cached;
+/* --------------------------- persistent news cache ------------------------ */
+const DB_URL = Deno.env.get("SUPABASE_URL");
+const DB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const NEWS_TTL_MS = 12 * 60_000;
+
+async function readDbNews(): Promise<{ items: NewsItem[]; updatedAt: number } | null> {
+  if (!DB_URL || !DB_KEY) return null;
+  try {
+    const res = await fetch(`${DB_URL}/rest/v1/news_cache?key=eq.all&select=payload,updated_at`, {
+      headers: { apikey: DB_KEY, Authorization: `Bearer ${DB_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const row = rows?.[0];
+    if (!row?.payload?.items) return null;
+    return { items: row.payload.items as NewsItem[], updatedAt: new Date(row.updated_at).getTime() };
+  } catch {
+    return null;
+  }
+}
+
+async function writeDbNews(items: NewsItem[]) {
+  if (!DB_URL || !DB_KEY) return;
+  try {
+    await fetch(`${DB_URL}/rest/v1/news_cache?on_conflict=key`, {
+      method: "POST",
+      headers: {
+        apikey: DB_KEY,
+        Authorization: `Bearer ${DB_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify([{ key: "all", payload: { items }, updated_at: new Date().toISOString() }]),
+    });
+  } catch (error) {
+    console.error("news cache write failed", error);
+  }
+}
+
+async function buildNews(): Promise<NewsItem[]> {
   const lists = await Promise.all(NEWS_SOURCES.map(fetchFeed));
   const items = lists.flat().sort((a, b) => String(b.published_at).localeCompare(String(a.published_at)));
   await enrichImages(items);
@@ -444,7 +481,34 @@ async function loadNews(force = false): Promise<NewsItem[]> {
     item.is_featured = index < 8;
     item.is_breaking = index < 3;
   });
+  return items;
+}
+
+async function loadNews(force = false): Promise<NewsItem[]> {
+  const cached = getCache<NewsItem[]>("news:all", force ? 0 : NEWS_TTL_MS);
+  if (cached) return cached;
+
+  if (!force) {
+    const db = await readDbNews();
+    if (db && Date.now() - db.updatedAt < NEWS_TTL_MS) {
+      setCache("news:all", db.items);
+      return db.items;
+    }
+    if (db?.items?.length) {
+      // Serve slightly stale content immediately, refresh in the background.
+      setCache("news:all", db.items);
+      (async () => {
+        const fresh = await buildNews();
+        setCache("news:all", fresh);
+        await writeDbNews(fresh);
+      })().catch((error) => console.error("news background refresh failed", error));
+      return db.items;
+    }
+  }
+
+  const items = await buildNews();
   setCache("news:all", items);
+  await writeDbNews(items);
   return items;
 }
 
