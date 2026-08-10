@@ -29,25 +29,25 @@ const LovaBot = ({ isSpeaking }) => {
       {/* Glowing Core */}
       <mesh ref={coreRef} position={[0, 0, 0]}>
         <sphereGeometry args={[0.4, 32, 32]} />
-        <meshBasicMaterial color="#a7f3d0" />
+        <meshBasicMaterial color="#7dd3fc" />
       </mesh>
       {/* Glass Shell */}
       <mesh>
         <sphereGeometry args={[0.5, 32, 32]} />
-        <MeshTransmissionMaterial color="#10b981" transmission={0.9} thickness={0.5} roughness={0.1} />
+        <MeshTransmissionMaterial color="#0ea5e9" transmission={0.9} thickness={0.5} roughness={0.1} />
       </mesh>
       {/* Wings */}
       <group ref={wingsRef}>
         <mesh position={[-0.6, 0.2, 0]} rotation={[0, 0.5, -0.2]}>
           <cylinderGeometry args={[0.01, 0.4, 0.8, 3]} />
-          <meshBasicMaterial color="#34d399" wireframe />
+          <meshBasicMaterial color="#0284c7" wireframe />
         </mesh>
         <mesh position={[0.6, 0.2, 0]} rotation={[0, -0.5, 0.2]}>
           <cylinderGeometry args={[0.01, 0.4, 0.8, 3]} />
-          <meshBasicMaterial color="#34d399" wireframe />
+          <meshBasicMaterial color="#0284c7" wireframe />
         </mesh>
       </group>
-      <Sparkles count={20} scale={2} size={4} speed={0.4} color="#6ee7b7" />
+      <Sparkles count={20} scale={2} size={4} speed={0.4} color="#38bdf8" />
     </group>
   );
 };
@@ -185,7 +185,7 @@ const stepsData = [
   {
     name: "Lova-Bot",
     icon: <Bot className="w-4 h-4" />,
-    color: "from-green-400 to-emerald-500",
+    color: "from-cyan-300 to-blue-600",
     text: "Je suis Lova-Bot ! Je t'accompagne dans tes premiers pas. N'hésite pas à explorer les vidéos et la boutique magique.",
     Component: LovaBot,
   },
