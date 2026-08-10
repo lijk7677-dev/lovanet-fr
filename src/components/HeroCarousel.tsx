@@ -442,8 +442,16 @@ export const HeroCarousel = ({ captureVideo }: { captureVideo?: string } = {}) =
     <div
       ref={containerRef}
       data-hologram-block
-      className={`rgb-neon relative w-full h-[380px] sm:h-[560px] lg:h-[640px] overflow-hidden touch-pan-y select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 rounded-xl ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
-      style={{ perspective: isConstrained ? 900 : 1400, perspectiveOrigin: "50% 50%" }}
+      className={`relative w-full h-[380px] sm:h-[560px] lg:h-[640px] overflow-hidden touch-pan-y select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 rounded-xl ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+      style={{
+        perspective: isConstrained ? 900 : 1400,
+        perspectiveOrigin: "50% 50%",
+        background:
+          "linear-gradient(180deg, hsl(220 30% 8% / 0.45) 0%, hsl(220 25% 12% / 0.55) 50%, hsl(220 30% 8% / 0.45) 100%)",
+        backdropFilter: "blur(20px) saturate(1.1)",
+        WebkitBackdropFilter: "blur(20px) saturate(1.1)",
+        transition: "background 1.2s ease",
+      }}
       role="region"
       aria-roledescription="carrousel"
       aria-label="Carrousel de vidéos anime — glissez ou utilisez les flèches pour naviguer"
