@@ -127,6 +127,9 @@ export const MiniPreviewPlayer = ({
   const hoverProps = {
     onMouseEnter: () => setHovered(true),
     onMouseLeave: () => setHovered(false),
+    onTouchStart: () => setHovered(true),
+    onTouchEnd: () => setHovered(false),
+    onTouchCancel: () => setHovered(false),
   };
 
   const onEmbedError = () => {
