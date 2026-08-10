@@ -79,6 +79,17 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
+const catalogRotationIntervalMs = 12000;
+const catalogBatchSize = 12;
+const catalogRowSize = 6;
+const shuffleArray = (list) => {
+  const clone = [...list];
+  for (let index = clone.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [clone[index], clone[swapIndex]] = [clone[swapIndex], clone[index]];
+  }
+  return clone;
+};
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
   { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
