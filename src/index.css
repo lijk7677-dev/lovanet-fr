@@ -2866,3 +2866,18 @@ body,
   background: var(--mnav-section);
   box-shadow: 0 0 14px var(--mnav-border);
 }
+
+/* Desktop dimensions for the first video banner on the portal page. Kept
+   outside Tailwind layers because the landing page is authored in JSX. */
+@media (min-width: 1024px) {
+  section.root-hero-section {
+    width: min(100%, 760px) !important;
+    padding: 3rem 2rem 4rem !important;
+  }
+
+  .root-hero-section .root-hero-banner,
+  .root-hero-section .root-hero-content {
+    min-height: 0 !important;
+    height: 300px !important;
+  }
+}
