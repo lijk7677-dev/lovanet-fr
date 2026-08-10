@@ -4,6 +4,8 @@ import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star } from "l
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
+import { HoverPreview } from "@/components/HoverPreview";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
