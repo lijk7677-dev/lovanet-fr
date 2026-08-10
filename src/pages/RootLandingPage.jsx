@@ -475,7 +475,7 @@ export default function RootLandingPage() {
                           <Link
                             key={`${item.id}-${rowIndex}-${index}`}
                             to={item.href}
-                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[140px] sm:min-w-[140px] sm:max-w-[140px] lg:w-[124px] lg:min-w-[124px] lg:max-w-[124px] xl:w-[132px] xl:min-w-[132px] xl:max-w-[132px]"
+                            className="hero-premium-lower-card group flex w-[124px] min-w-[124px] max-w-[124px] flex-none flex-col sm:w-[130px] sm:min-w-[130px] sm:max-w-[130px] lg:w-[108px] lg:min-w-[108px] lg:max-w-[108px] xl:w-[116px] xl:min-w-[116px] xl:max-w-[116px]"
                             data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
                           >
                             <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
