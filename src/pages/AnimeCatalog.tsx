@@ -1256,7 +1256,7 @@ export default function AnimeCatalog() {
                       <span className="text-sm sm:text-base font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
                         <Sparkles className="w-5 h-5" /> Choisir la langue / Sous-titres du Trailer :
                       </span>
-                      <Select value={activeTrailerLang} onValueChange={(val) => { setActiveTrailerLang(val); setIsPlaying(true); }}>
+                      <Select value={activeTrailerLang} onValueChange={(val) => { releaseDeepLink(); setActiveTrailerLang(val); setIsPlaying(true); }}>
                         <SelectTrigger className="w-full sm:w-[220px] h-10 bg-black/80 border-amber-500/50 text-white font-bold text-sm">
                           <SelectValue placeholder="Changer la langue..." />
                         </SelectTrigger>
@@ -1277,7 +1277,7 @@ export default function AnimeCatalog() {
 
                         <div className="relative h-full w-full">
                           <YouTubeEmbed
-                            key={`catalog-player-${activePlayer.id}-${forcedTrailerId || "default"}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
+                            key={`catalog-player-${activePlayer.id}-${deepLinkTrailerId || "default"}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
                             videoId={playerMode === "video" ? catalogActiveTrailerId : undefined}
                             captionLang={activeTrailerLang === "vostfr" ? "fr" : undefined}
                             title={activeTrailerLang && detailTrailers[activeTrailerLang]?.[0]?.title ? detailTrailers[activeTrailerLang][0].title : mediaTitle(activePlayer)}
@@ -1483,13 +1483,13 @@ export default function AnimeCatalog() {
                     </div>
                   </div>
                 </div>
-              ) : forcedTrailerId ? (
+              ) : deepLinkTrailerId ? (
                 <div className="relative space-y-5" data-testid="catalog-deeplink-player">
                   <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black">
                     <div className="aspect-[16/9] min-h-[280px] sm:min-h-[440px]">
                       <YouTubeEmbed
-                        key={`catalog-deeplink-${forcedTrailerId}`}
-                        videoId={forcedTrailerId}
+                        key={`catalog-deeplink-${deepLinkTrailerId}`}
+                        videoId={deepLinkTrailerId}
                         title="Bande-annonce"
                         autoplay
                         muted={!soundUnlocked}
