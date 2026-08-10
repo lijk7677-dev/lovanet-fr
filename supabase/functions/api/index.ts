@@ -373,8 +373,8 @@ async function fetchOgImage(link: string): Promise<string | null> {
 }
 
 async function enrichImages(items: NewsItem[]) {
-  const missing = items.filter((item) => !item.image && item.source_path);
-  const CONCURRENCY = 8;
+  const missing = items.filter((item) => !item.image && item.source_path).slice(0, 120);
+  const CONCURRENCY = 12;
   for (let i = 0; i < missing.length; i += CONCURRENCY) {
     const slice = missing.slice(i, i + CONCURRENCY);
     await Promise.all(
