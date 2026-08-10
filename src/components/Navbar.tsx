@@ -333,7 +333,7 @@ export const Navbar = () => {
               <button
                 type="button"
                 onClick={() => setCartOpen(true)}
-                className="nav-theme-chip relative inline-flex h-11 w-11 items-center justify-center rounded-full"
+                className="nav-theme-chip relative hidden h-11 w-11 items-center justify-center rounded-full lg:inline-flex"
                 aria-label={`Ouvrir le panier (${count} article${count > 1 ? "s" : ""})`}
                 data-testid="navbar-cart-button"
               >
@@ -634,6 +634,13 @@ export const Navbar = () => {
       {minimized && (
         <MobileMenuMiniWindow
           items={megaSections.map(({ to, label, icon }) => ({ to, label, icon }))}
+          groups={mobileGroups.map((g) => ({
+            id: g.id,
+            label: g.label,
+            items: g.items.map(({ to, label, icon }) => ({ to, label, icon })),
+          }))}
+          cartCount={count}
+          onOpenCart={() => setCartOpen(true)}
           onExpand={mobileExpand}
           onClose={() => setMinimized(false)}
         />
