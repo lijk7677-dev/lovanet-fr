@@ -22,6 +22,45 @@ function setCache(key: string, value: any) {
   cache.set(key, { at: Date.now(), value });
 }
 
+/* ------------------------- persistent (DB) cache -------------------------- */
+const CACHE_DB_URL = Deno.env.get("SUPABASE_URL");
+const CACHE_DB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+async function readDbCache<T>(key: string): Promise<{ value: T; updatedAt: number } | null> {
+  if (!CACHE_DB_URL || !CACHE_DB_KEY) return null;
+  try {
+    const res = await fetch(
+      `${CACHE_DB_URL}/rest/v1/news_cache?key=eq.${encodeURIComponent(key)}&select=payload,updated_at`,
+      { headers: { apikey: CACHE_DB_KEY, Authorization: `Bearer ${CACHE_DB_KEY}` } },
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const row = rows?.[0];
+    if (!row?.payload) return null;
+    return { value: row.payload.value as T, updatedAt: new Date(row.updated_at).getTime() };
+  } catch {
+    return null;
+  }
+}
+
+async function writeDbCache(key: string, value: unknown) {
+  if (!CACHE_DB_URL || !CACHE_DB_KEY) return;
+  try {
+    await fetch(`${CACHE_DB_URL}/rest/v1/news_cache?on_conflict=key`, {
+      method: "POST",
+      headers: {
+        apikey: CACHE_DB_KEY,
+        Authorization: `Bearer ${CACHE_DB_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify([{ key, payload: { value }, updated_at: new Date().toISOString() }]),
+    });
+  } catch (error) {
+    console.error("db cache write failed", key, error);
+  }
+}
+
 /* -------------------------------- translate ------------------------------- */
 async function aiTranslateBatch(texts: string[], target: string): Promise<string[]> {
   const key = Deno.env.get("LOVABLE_API_KEY");
@@ -629,6 +668,180 @@ async function handleImageProxy(url: URL) {
 }
 
 /* ---------------------------------- router -------------------------------- */
+/* ------------------------------ prime catalog ----------------------------- */
+const PRIME_PROVIDERS: Record<string, { name: string; logo: string; native?: boolean }> = {
+  "amazon prime video": {
+    name: "Amazon Prime Video",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    native: true,
+  },
+  "prime video": {
+    name: "Amazon Prime Video",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    native: true,
+  },
+  amazon: {
+    name: "Amazon Prime Video",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    native: true,
+  },
+  crunchyroll: { name: "Crunchyroll", logo: "https://static.crunchyroll.com/favicons/apple-touch-icon.png" },
+  netflix: { name: "Netflix", logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" },
+  youtube: { name: "YouTube", logo: "https://www.youtube.com/s/desktop/favicon.ico" },
+  bilibili: { name: "Bilibili", logo: "https://www.bilibili.com/favicon.ico" },
+  "bilibili tv": { name: "Bilibili", logo: "https://www.bilibili.com/favicon.ico" },
+  hulu: { name: "Hulu", logo: "https://www.hulu.com/favicon.ico" },
+  hidive: { name: "HIDIVE", logo: "https://www.hidive.com/favicon.ico" },
+  "hbo max": { name: "HBO Max", logo: "https://www.max.com/favicon.ico" },
+  max: { name: "HBO Max", logo: "https://www.max.com/favicon.ico" },
+  "disney plus": { name: "Disney+", logo: "https://www.disneyplus.com/favicon.ico" },
+  "disney+": { name: "Disney+", logo: "https://www.disneyplus.com/favicon.ico" },
+  iqiyi: { name: "iQIYI", logo: "https://www.iq.com/favicon.ico" },
+  "iq.com": { name: "iQIYI", logo: "https://www.iq.com/favicon.ico" },
+};
+
+const ANILIST_QUERY = `
+query ($page: Int) {
+  Page(page: $page, perPage: 50) {
+    media(type: ANIME, sort: POPULARITY_DESC, isAdult: false) {
+      id
+      title { romaji english }
+      coverImage { large color }
+      bannerImage
+      averageScore
+      seasonYear
+      format
+      episodes
+      genres
+      description(asHtml: false)
+      trailer { id site }
+      externalLinks { site url type }
+    }
+  }
+}`;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function anilistPage(page: number, attempt = 0): Promise<any[]> {
+  try {
+    const res = await fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query: ANILIST_QUERY, variables: { page } }),
+    });
+    if (res.status === 429 || res.status >= 500) {
+      if (attempt >= 4) return [];
+      const retryAfter = Number(res.headers.get("retry-after") || 0);
+      await sleep(retryAfter > 0 ? retryAfter * 1000 : 1500 * (attempt + 1));
+      return await anilistPage(page, attempt + 1);
+    }
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data?.data?.Page?.media || [];
+  } catch {
+    if (attempt >= 3) return [];
+    await sleep(1000 * (attempt + 1));
+    return await anilistPage(page, attempt + 1);
+  }
+}
+
+function mapPrimeMedia(media: any) {
+  const links = Array.isArray(media?.externalLinks) ? media.externalLinks : [];
+  const sources: any[] = [];
+  const seen = new Set<string>();
+  for (const link of links) {
+    if (link?.type && link.type !== "STREAMING") continue;
+    const provider = PRIME_PROVIDERS[String(link?.site || "").toLowerCase().trim()];
+    if (!provider || !link?.url) continue;
+    if (seen.has(provider.name)) continue;
+    seen.add(provider.name);
+    sources.push({
+      provider: provider.name,
+      url: link.url,
+      isNative: Boolean(provider.native),
+      isPrimeBundle: true,
+      logo: provider.logo,
+    });
+  }
+  if (!sources.length) return null;
+  const nativeSource = sources.find((source) => source.isNative);
+  // Native Amazon entry should always sort last, like the reference layout.
+  sources.sort((a, b) => Number(a.isNative) - Number(b.isNative));
+  return {
+    id: media.id,
+    title: media?.title?.english || media?.title?.romaji || "",
+    cover: media?.coverImage?.large || "",
+    banner: media?.bannerImage || "",
+    color: media?.coverImage?.color || "#1f6feb",
+    score: media?.averageScore ?? null,
+    year: media?.seasonYear ?? null,
+    format: media?.format || "TV",
+    episodes: media?.episodes ?? null,
+    genres: media?.genres || [],
+    description: String(media?.description || "").replace(/<[^>]+>/g, "").trim(),
+    primeUrl: nativeSource?.url || null,
+    isOnPrime: Boolean(nativeSource),
+    sources,
+    trailerId: media?.trailer?.site === "youtube" ? media?.trailer?.id || null : null,
+  };
+}
+
+const PRIME_CACHE_KEY = "prime_catalog";
+const PRIME_TTL_MS = 12 * 60 * 60_000;
+
+async function buildPrimeCatalog() {
+  const pages = Array.from({ length: 56 }, (_, index) => index + 1);
+  const items: any[] = [];
+  const chunkSize = 3;
+  for (let index = 0; index < pages.length; index += chunkSize) {
+    const batch = await Promise.all(pages.slice(index, index + chunkSize).map((page) => anilistPage(page)));
+    for (const media of batch.flat()) {
+      const mapped = mapPrimeMedia(media);
+      if (mapped?.title) items.push(mapped);
+    }
+    await sleep(700);
+  }
+  return items;
+}
+
+async function loadPrimeCatalog(force = false) {
+  const memory = getCache<any[]>(PRIME_CACHE_KEY, force ? 0 : PRIME_TTL_MS);
+  if (memory) return memory;
+  if (!force) {
+    const db = await readDbCache<any[]>(PRIME_CACHE_KEY);
+    if (db?.value?.length) {
+      setCache(PRIME_CACHE_KEY, db.value);
+      if (Date.now() - db.updatedAt >= PRIME_TTL_MS) {
+        buildPrimeCatalog()
+          .then(async (fresh) => {
+            if (fresh.length) {
+              setCache(PRIME_CACHE_KEY, fresh);
+              await writeDbCache(PRIME_CACHE_KEY, fresh);
+            }
+          })
+          .catch((error) => console.error("prime refresh failed", error));
+      }
+      return db.value;
+    }
+  }
+  const items = await buildPrimeCatalog();
+  const existing = getCache<any[]>(PRIME_CACHE_KEY, Number.MAX_SAFE_INTEGER) || [];
+  if (items.length && items.length >= existing.length * 0.8) {
+    setCache(PRIME_CACHE_KEY, items);
+    await writeDbCache(PRIME_CACHE_KEY, items);
+    return items;
+  }
+  return existing.length ? existing : items;
+}
+
+async function handlePrimeCatalog(url: URL) {
+  const force = url.searchParams.get("refresh") === "1";
+  const limit = Math.min(Number(url.searchParams.get("limit") || 4000) || 4000, 4000);
+  const items = await loadPrimeCatalog(force);
+  const sliced = items.slice(0, limit);
+  return json({ items: sliced, count: sliced.length });
+}
+
 const PREWARM_TITLES = [
   "One Piece", "Jujutsu Kaisen", "Demon Slayer", "Chainsaw Man",
   "Solo Leveling", "Attack on Titan", "My Hero Academia", "Spy x Family",
@@ -675,6 +888,7 @@ Deno.serve(async (req) => {
   try {
     if (route === "translate" && req.method === "POST") return await handleTranslate(req);
     if (route === "prime/multilingual-trailers") return await handleMultilingualTrailers(url);
+    if (route === "prime/catalog") return await handlePrimeCatalog(url);
     if (route === "news/home") return await handleNewsHome();
     if (route === "news/image-proxy") return await handleImageProxy(url);
     if (route === "image-proxy") return await handleImageProxy(url);
