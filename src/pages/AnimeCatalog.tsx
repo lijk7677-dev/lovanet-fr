@@ -6,7 +6,6 @@ import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
 import { Navbar } from "@/components/Navbar";
-import CatalogCardColorBubble from "@/components/CatalogCardColorBubble";
 import BlisterFrame from "@/components/BlisterFrame";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslationToggleButton } from "@/components/TranslationToggleButton";
@@ -1547,8 +1546,6 @@ export default function AnimeCatalog() {
         <div className="px-4 pt-1 md:px-8 xl:px-10">
           <MangaNeonBar height={26} className="rounded-full overflow-hidden" />
         </div>
-        <CatalogCardColorBubble />
-
         <section className="px-4 py-8 md:px-8 xl:px-10" data-testid="catalog-filters-section">
           <div className="mx-auto max-w-[1120px] space-y-5">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
