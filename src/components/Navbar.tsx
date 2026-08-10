@@ -208,7 +208,7 @@ export const Navbar = () => {
         <div className="mx-auto max-w-[1120px]">
           <div className="relative">
             <div className="nav-theme-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
-              <div className="flex items-center gap-2" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="flex items-center gap-2" onMouseEnter={cancelClose}>
                 {renderLogo()}
               </div>
 
@@ -345,7 +345,6 @@ export const Navbar = () => {
                 ref={megaRef}
                 role="menu"
                 onMouseEnter={cancelClose}
-                onMouseLeave={scheduleClose}
                 className="absolute left-0 right-0 top-full z-[70] mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 md:block"
               >
                 <div className="nav-theme-shell relative overflow-hidden rounded-[1.8rem] p-3 sm:p-5 lg:p-6" data-testid="desktop-mega-menu-panel">
