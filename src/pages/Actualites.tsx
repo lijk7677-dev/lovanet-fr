@@ -600,7 +600,15 @@ function LoadingSkeleton() {
   );
 }
 
-export default function Actualites() {
+export default function ActualitesPage() {
+  return (
+    <NewsTranslationProvider>
+      <Actualites />
+    </NewsTranslationProvider>
+  );
+}
+
+function Actualites() {
   const { slug } = useParams();
   const [home, setHome] = useState<NewsHomePayload | null>(null);
   const [listing, setListing] = useState<NewsListingPayload | null>(null);
@@ -1089,6 +1097,8 @@ export default function Actualites() {
         </header>
 
         {autoReaderItems.length > 0 && <AutoArticleViewer items={autoReaderItems} />}
+
+        <NewsLanguageBar />
 
         <section className="theme-panel-surface overflow-hidden rounded-[1.7rem] border border-[var(--theme-border-soft)] bg-transparent px-4 py-4 sm:px-5" data-testid="actualites-live-ticker">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
