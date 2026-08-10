@@ -1414,6 +1414,22 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   /* Animated rainbow price text */
+  /* Neutral soft frame — no rainbow, used for video preview players */
+  .soft-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+    border: 1px solid hsl(0 0% 100% / 0.14);
+    background: linear-gradient(180deg, hsl(220 24% 12% / 0.55), hsl(220 24% 8% / 0.55));
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.08),
+      0 10px 30px -18px hsl(220 40% 4% / 0.8);
+    transition: border-color .35s ease, box-shadow .35s ease;
+  }
+  .soft-frame:hover {
+    border-color: hsl(0 0% 100% / 0.24);
+  }
+
   .rgb-price {
     background: linear-gradient(90deg,
       hsl(330 95% 60%),
