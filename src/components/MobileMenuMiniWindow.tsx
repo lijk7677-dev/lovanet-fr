@@ -1,20 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, GripVertical, Maximize2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, GripVertical, Maximize2, ShoppingCart, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type MiniItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
+export type MiniGroup = { id: string; label: string; items: MiniItem[] };
 
 const POS_KEY = "lovanet.mnav.mini.pos";
 const RETRACT_KEY = "lovanet.mnav.mini.retracted";
 
 type Props = {
   items: MiniItem[];
+  groups?: MiniGroup[];
+  cartCount?: number;
+  onOpenCart?: () => void;
   onExpand: () => void;
   onClose: () => void;
 };
 
-export const MobileMenuMiniWindow = ({ items, onExpand, onClose }: Props) => {
+export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart, onExpand, onClose }: Props) => {
   const [pos, setPos] = useState<{ x: number; y: number }>(() => {
     try {
       const raw = localStorage.getItem(POS_KEY);
