@@ -213,7 +213,7 @@ export default function RootLandingPage() {
             .map((item, index) => ({
               id: String(item.id || `catalog-${index}`),
               title: item.title,
-              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
+              image: resolveCatalogImage(item, index),
               trailerId: String(item.trailerId || "").trim(),
               genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
               href: `/anime-catalog?anime=${item.id}`,
@@ -463,7 +463,11 @@ export default function RootLandingPage() {
               </div>
 
               {catalogPreviewRows.some((row) => row.length > 0) && (
-                <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
+                <div
+                  className="hero-premium-lower-marquee mt-6"
+                  data-locked-layout={TRAILER_BANNER_LAYOUT}
+                  data-testid="home-platforms-dynamic-banner-grid"
+                >
                   {catalogPreviewRows.map((row, rowIndex) => (
                     <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
                       <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
