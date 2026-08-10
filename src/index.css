@@ -2750,3 +2750,53 @@ body,
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* ---- Version mobile / tactile : panneau et bulles plus gros ---- */
+@media (max-width: 768px), (pointer: coarse) {
+  .floating-dock {
+    left: 0;
+    gap: 0.25rem;
+  }
+
+  .floating-dock-panel {
+    gap: 0.45rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 0 1.25rem 1.25rem 0;
+    background: rgba(10, 14, 24, 0.42);
+  }
+
+  .floating-dock-slot {
+    width: 60px;
+    height: 60px;
+  }
+
+  .floating-dock-slot button,
+  .floating-dock-slot [role="button"] {
+    width: 60px !important;
+    height: 60px !important;
+    transform: scale(1) !important;
+  }
+
+  .floating-dock-slot button svg,
+  .floating-dock-slot [role="button"] svg {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .floating-dock-handle {
+    width: 34px;
+    height: 76px;
+    border-radius: 0 1rem 1rem 0;
+  }
+
+  .floating-dock-handle svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .floating-dock-slot .dock-popup {
+    width: min(300px, calc(100vw - 96px)) !important;
+    max-width: calc(100vw - 96px) !important;
+    margin-left: 0.6rem !important;
+  }
+}
+
