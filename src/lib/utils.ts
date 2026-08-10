@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { API_BASE } from "@/lib/apiBase";
 
 const TRANSLATION_CACHE_STORAGE_KEY = "lovanet.translation.cache.v1";
 
