@@ -304,7 +304,7 @@ const NEWS_SOURCES = [
   { id: "anime-uk-news", name: "Anime UK News", url: "https://animeuknews.net/feed/", categories: ["anime", "manga"], group: "Anime UK News", language: "en", site: "https://animeuknews.net" },
   { id: "comic-book-resources-anime", name: "CBR Anime", url: "https://www.cbr.com/feed/category/anime/", categories: ["anime", "manga"], group: "CBR", language: "en", site: "https://www.cbr.com" },
   { id: "otaquest", name: "OTAQUEST", url: "https://www.otaquest.com/feed/", categories: ["anime", "pop-culture"], group: "OTAQUEST", language: "en", site: "https://www.otaquest.com" },
-  { id: "japan-today-arts", name: "Japan Today Arts", url: "https://japantoday.com/feed", categories: ["pop-culture", "anime"], group: "Japan Today", language: "en", site: "https://japantoday.com" },
+  { id: "kotaku-anime", name: "Kotaku", url: "https://kotaku.com/rss", categories: ["gaming", "anime"], group: "Kotaku", language: "en", site: "https://kotaku.com" },
   { id: "kotaku-anime", name: "Kotaku", url: "https://kotaku.com/rss", categories: ["gaming", "anime"], group: "Kotaku", language: "en", site: "https://kotaku.com" },
   { id: "anime-hunch", name: "Anime Hunch", url: "https://animehunch.com/feed/", categories: ["anime"], group: "Anime Hunch", language: "en", site: "https://animehunch.com" },
   { id: "anime-corner", name: "Anime Corner", url: "https://animecorner.me/feed/", categories: ["anime"], group: "Anime Corner", language: "en", site: "https://animecorner.me" },
@@ -320,7 +320,7 @@ const NEWS_SOURCES = [
   { id: "polygon", name: "Polygon", url: "https://www.polygon.com/rss/index.xml", categories: ["gaming", "anime"], group: "Polygon", language: "en", site: "https://www.polygon.com" },
   { id: "eurogamer", name: "Eurogamer", url: "https://www.eurogamer.net/feed", categories: ["gaming"], group: "Eurogamer", language: "en", site: "https://www.eurogamer.net" },
   { id: "sora-news-24", name: "SoraNews24", url: "https://soranews24.com/feed/", categories: ["pop-culture", "anime"], group: "SoraNews24", language: "en", site: "https://soranews24.com" },
-  { id: "japan-times", name: "The Japan Times", url: "https://www.japantimes.co.jp/feed/", categories: ["pop-culture"], group: "Japan Times", language: "en", site: "https://www.japantimes.co.jp" },
+  { id: "japan-info", name: "Japan Info", url: "https://jpninfo.com/feed", categories: ["pop-culture"], group: "Japan Info", language: "en", site: "https://jpninfo.com" },
   { id: "japan-info", name: "Japan Info", url: "https://jpninfo.com/feed", categories: ["pop-culture"], group: "Japan Info", language: "en", site: "https://jpninfo.com" },
   { id: "livedoor-anime", name: "Livedoor Anime News", url: "https://news.livedoor.com/topics/rss/ent.xml", categories: ["anime", "pop-culture"], group: "Livedoor", language: "ja", site: "https://news.livedoor.com" },
 ];
