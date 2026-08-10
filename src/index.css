@@ -2854,6 +2854,52 @@ body,
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* ---- Bulle 3D neutre (couleur des cartes catalogue) ---- */
+.catalog-color-orb {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    radial-gradient(120% 120% at 30% 22%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.05) 46%),
+    linear-gradient(160deg, rgba(70, 76, 90, 0.85), rgba(14, 17, 24, 0.92));
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.55),
+    0 10px 24px -10px rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: catalog-orb-float 5.5s ease-in-out infinite;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.catalog-color-orb:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.5),
+    0 16px 30px -12px rgba(0, 0, 0, 0.9);
+}
+
+.catalog-color-orb-shine {
+  border-radius: 9999px;
+  background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.28) 48%, transparent 62%);
+  opacity: 0.75;
+  animation: catalog-orb-sheen 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes catalog-orb-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(-4deg); }
+}
+
+@keyframes catalog-orb-sheen {
+  0% { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-color-orb,
+  .catalog-color-orb-shine { animation: none; }
+}
 /* ---- Version mobile / tactile : panneau et bulles plus gros ---- */
 @media (max-width: 768px), (pointer: coarse) {
   .floating-dock {
