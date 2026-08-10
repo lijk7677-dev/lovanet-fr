@@ -243,11 +243,13 @@ export default function RootLandingPage() {
 
   useEffect(() => {
     if (catalogPreviewPool.length <= catalogBatchSize) return undefined;
+    // Pause totale de la rotation tant qu'un trailer est en lecture (tap mobile).
+    if (trailerLocked) return undefined;
     const id = window.setInterval(() => {
       setCatalogRotationIndex((current) => (current + catalogBatchSize) % catalogPreviewPool.length);
     }, catalogRotationIntervalMs);
     return () => window.clearInterval(id);
-  }, [catalogPreviewPool.length]);
+  }, [catalogPreviewPool.length, trailerLocked]);
 
   useEffect(() => {
     const video = bannerVideoRef.current;
