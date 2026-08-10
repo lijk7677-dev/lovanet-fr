@@ -2324,11 +2324,8 @@ body[data-hide-decors] [data-animated-bg] {
     border-radius: 1rem;
     border: 1px solid rgba(255,255,255,0.28);
     background: linear-gradient(180deg, rgba(30,45,70,0.85), rgba(15,22,38,0.80));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     box-shadow: 0 12px 28px -22px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.25), 0 0 20px rgba(90,220,255,0.15);
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-    contain: layout paint;
   }
 
   .hero-premium-lower-card:hover,
@@ -2353,15 +2350,14 @@ body[data-hide-decors] [data-animated-bg] {
     z-index: 12;
     border-radius: inherit;
     background:
-      linear-gradient(115deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 18%, rgba(255,255,255,0) 38%),
-      radial-gradient(120% 60% at 50% -18%, rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
+      linear-gradient(118deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 14%, rgba(255,255,255,0) 30%);
     mix-blend-mode: screen;
-    opacity: 0.75;
+    opacity: 0.5;
     transition: opacity 220ms ease;
   }
 
   .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell::after {
-    opacity: 1;
+    opacity: 0.7;
   }
 
   .hero-premium-lower-thumb-shell-vertical {
@@ -2380,19 +2376,21 @@ body[data-hide-decors] [data-animated-bg] {
   /* Couleur maximale + netteté sur les visuels de cartes trailer */
   .hero-premium-lower-thumb-shell img,
   .hero-premium-lower-thumb-shell video {
-    filter: saturate(1.55) contrast(1.16) brightness(1.12);
-    image-rendering: -webkit-optimize-contrast;
+    filter: saturate(1.35) contrast(1.08) brightness(1.06);
+    image-rendering: auto;
+    backface-visibility: hidden;
+    transform: translateZ(0);
     transition: filter 220ms ease, transform 240ms ease;
   }
 
   .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell img,
   .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell video {
-    filter: saturate(1.75) contrast(1.22) brightness(1.2);
+    filter: saturate(1.5) contrast(1.12) brightness(1.12);
   }
 
   .hero-premium-lower-card:hover .hero-premium-lower-thumb,
   .hero-premium-lower-card:focus-visible .hero-premium-lower-thumb {
-    transform: scale(1.04);
+    transform: scale(1.02);
   }
 
   .hero-premium-lower-thumb-overlay {
