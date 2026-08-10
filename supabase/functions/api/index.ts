@@ -22,6 +22,45 @@ function setCache(key: string, value: any) {
   cache.set(key, { at: Date.now(), value });
 }
 
+/* ------------------------- persistent (DB) cache -------------------------- */
+const CACHE_DB_URL = Deno.env.get("SUPABASE_URL");
+const CACHE_DB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+async function readDbCache<T>(key: string): Promise<{ value: T; updatedAt: number } | null> {
+  if (!CACHE_DB_URL || !CACHE_DB_KEY) return null;
+  try {
+    const res = await fetch(
+      `${CACHE_DB_URL}/rest/v1/news_cache?key=eq.${encodeURIComponent(key)}&select=payload,updated_at`,
+      { headers: { apikey: CACHE_DB_KEY, Authorization: `Bearer ${CACHE_DB_KEY}` } },
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const row = rows?.[0];
+    if (!row?.payload) return null;
+    return { value: row.payload.value as T, updatedAt: new Date(row.updated_at).getTime() };
+  } catch {
+    return null;
+  }
+}
+
+async function writeDbCache(key: string, value: unknown) {
+  if (!CACHE_DB_URL || !CACHE_DB_KEY) return;
+  try {
+    await fetch(`${CACHE_DB_URL}/rest/v1/news_cache?on_conflict=key`, {
+      method: "POST",
+      headers: {
+        apikey: CACHE_DB_KEY,
+        Authorization: `Bearer ${CACHE_DB_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify([{ key, payload: { value }, updated_at: new Date().toISOString() }]),
+    });
+  } catch (error) {
+    console.error("db cache write failed", key, error);
+  }
+}
+
 /* -------------------------------- translate ------------------------------- */
 async function aiTranslateBatch(texts: string[], target: string): Promise<string[]> {
   const key = Deno.env.get("LOVABLE_API_KEY");
