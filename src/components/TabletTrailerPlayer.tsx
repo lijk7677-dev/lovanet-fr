@@ -488,7 +488,12 @@ export default function TabletTrailerPlayer() {
                     onClick={(e) => {
                     if (draggingRef.current?.moved) return;
                     e.stopPropagation();
-                    onSelect(m);
+                    const anilistId = String(m.id).startsWith("c-") ? String(m.id).slice(2) : "";
+                    const params = new URLSearchParams();
+                    if (anilistId) params.set("anime", anilistId);
+                    params.set("trailer", m.ytId);
+                    params.set("autoplay", "1");
+                    navigate(`/anime-catalog?${params.toString()}`);
                   }}
                     title={m.title}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
