@@ -620,7 +620,9 @@ export default function AnimeCatalog() {
   };
 
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
-    if (forcedTrailerId && !activePlayer) return forcedTrailerId;
+    // Deep link: the requested trailer always wins until the user picks another
+    // version/candidate manually.
+    if (forcedTrailerId && catalogCandidateIndex === 0) return forcedTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
   }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
