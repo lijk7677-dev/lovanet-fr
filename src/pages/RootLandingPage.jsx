@@ -192,7 +192,10 @@ export default function RootLandingPage() {
             .map((item, index) => ({
               id: String(item.id || `catalog-${index}`),
               title: item.title,
-              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
+              image: String(item.cover || item.banner || siteFallbackImage(String(item.id || index), null) || "").replace(
+                "/cover/large/",
+                "/cover/extraLarge/",
+              ),
               trailerId: String(item.trailerId || "").trim(),
               genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
               href: `/anime-catalog?anime=${item.id}`,
@@ -450,7 +453,7 @@ export default function RootLandingPage() {
                           <Link
                             key={`${item.id}-${rowIndex}-${index}`}
                             to={item.href}
-                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[152px] lg:min-w-[152px] lg:max-w-[152px] xl:w-[164px] xl:min-w-[164px] xl:max-w-[164px]"
+                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[140px] sm:min-w-[140px] sm:max-w-[140px] lg:w-[124px] lg:min-w-[124px] lg:max-w-[124px] xl:w-[132px] xl:min-w-[132px] xl:max-w-[132px]"
                             data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
                           >
                             <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
