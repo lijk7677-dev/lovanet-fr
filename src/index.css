@@ -2390,6 +2390,16 @@ body[data-hide-decors] [data-animated-bg] {
     padding: 0.65rem 0.65rem 0.75rem;
   }
 
+  /* Same translucent bordered frame as the in-card label */
+  .hero-premium-lower-copy > p {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(4, 10, 22, 0.48);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1rem;
+    padding: 0.35rem 0.6rem;
+  }
+
   .hero-premium-lower-title {
     margin: 0;
     display: -webkit-box;
@@ -2406,7 +2416,7 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   .hero-premium-lower-description {
-    margin-top: 0.45rem;
+    margin-top: 0.35rem;
     margin-bottom: 0;
     display: -webkit-box;
     -webkit-line-clamp: 4;
