@@ -93,27 +93,50 @@ export const MobileMenuMiniWindow = ({ items, groups, cartCount = 0, onOpenCart,
               <ChevronLeft className="h-4 w-4" />
             </button>
 
-            <div
-              ref={scrollerRef}
-              className="no-scrollbar flex max-w-[min(60vw,320px)] items-center gap-2 overflow-x-auto px-1"
-              style={{ touchAction: "pan-x" }}
-            >
-              {items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={`mini-${item.to}`}
-                    to={item.to}
-                    className={cn(
-                      "mnav-section mnav-text flex min-w-[64px] flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px] font-bold uppercase tracking-wide",
-                      "transition-transform hover:scale-105 active:scale-95",
-                    )}
+            <div className="flex max-w-[min(72vw,340px)] flex-col gap-1.5">
+              {(groups?.length ? groups : [{ id: "all", label: "Menu", items }]).map((group, gi) => (
+                <div key={`mini-group-${group.id}`} className="flex flex-col gap-1">
+                  {groups?.length ? (
+                    <span className="mnav-text px-1 text-[9px] font-black uppercase tracking-widest opacity-70">
+                      {group.label}
+                    </span>
+                  ) : null}
+                  <div
+                    ref={gi === 0 ? scrollerRef : undefined}
+                    className="no-scrollbar flex items-center gap-2 overflow-x-auto px-1"
+                    style={{ touchAction: "pan-x" }}
                   >
-                    <Icon className="h-4 w-4" />
-                    <span className="line-clamp-1">{item.label}</span>
-                  </Link>
-                );
-              })}
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={`mini-${group.id}-${item.to}`}
+                          to={item.to}
+                          className={cn(
+                            "mnav-section mnav-text flex min-w-[64px] flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px] font-bold uppercase tracking-wide",
+                            "transition-transform hover:scale-105 active:scale-95",
+                          )}
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span className="line-clamp-1">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {onOpenCart && (
+                <button
+                  type="button"
+                  onClick={onOpenCart}
+                  className="mnav-section mnav-text mx-1 flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest"
+                  aria-label="Ouvrir le panier"
+                >
+                  <span className="inline-flex items-center gap-2"><ShoppingCart className="h-4 w-4" /> Panier</span>
+                  <span className="rounded-full bg-amber-400 px-2 text-[10px] font-black text-black">{cartCount}</span>
+                </button>
+              )}
             </div>
 
             <button
