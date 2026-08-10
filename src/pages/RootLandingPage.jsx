@@ -328,7 +328,7 @@ export default function RootLandingPage() {
       <div className="relative overflow-hidden" data-testid="root-landing-page">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_20%)]" />
 
-        <section className="mx-auto w-[95%] md:w-[50%] lg:w-[45%] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-20">
+        <section className="mx-auto w-[95%] md:w-[50%] lg:w-[28%] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-20">
           <div className={`${luxurySection} p-2 sm:p-3 lg:p-4`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
