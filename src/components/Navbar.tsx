@@ -20,6 +20,8 @@ import {
   Flame,
   Zap,
   Bot,
+  Rows3,
+  GalleryHorizontal,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -39,6 +41,7 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
 import QuickNavCarousel from "@/components/QuickNavCarousel";
+import MobileMenuMiniWindow from "@/components/MobileMenuMiniWindow";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
   "/anime-moments": "navbar-anime-moments-link",
@@ -116,7 +119,14 @@ const mobileGroups = [
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("lovanet.mnav.minimized") === "1";
+  });
+  const [mobileLayout, setMobileLayout] = useState<"carousel" | "list">(() => {
+    if (typeof window === "undefined") return "carousel";
+    return localStorage.getItem("lovanet.mnav.layout") === "list" ? "list" : "carousel";
+  });
   const [megaOpen, setMegaOpen] = useState(false);
   const [menuRotationIndex, setMenuRotationIndex] = useState(0);
   const [floatingMenuOpen, setFloatingMenuOpen] = useState(false);
@@ -130,6 +140,13 @@ export const Navbar = () => {
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("lovanet:suggestions-state", { detail: { open: floatingMenuOpen } }));
   }, [floatingMenuOpen]);
+
+  useEffect(() => {
+    localStorage.setItem("lovanet.mnav.minimized", minimized ? "1" : "0");
+  }, [minimized]);
+  useEffect(() => {
+    localStorage.setItem("lovanet.mnav.layout", mobileLayout);
+  }, [mobileLayout]);
 
   const mobileMinimize = () => { setOpen(false); setMinimized(true); };
   const mobileExpand = () => { setMinimized(false); setOpen(true); };
@@ -432,6 +449,24 @@ export const Navbar = () => {
                 <Badge className="rounded-full border border-white/20 bg-primary/20 px-3 py-1 text-[11px] font-black text-primary animate-pulse">
                   {count} panier
                 </Badge>
+                <button
+                  type="button"
+                  onClick={() => setMobileLayout((v) => (v === "carousel" ? "list" : "carousel"))}
+                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  aria-label={mobileLayout === "carousel" ? "Affichage en liste" : "Affichage en carrousel"}
+                  data-testid="mobile-nav-layout-toggle"
+                >
+                  {mobileLayout === "carousel" ? <Rows3 className="mnav-text h-5 w-5" /> : <GalleryHorizontal className="mnav-text h-5 w-5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={mobileMinimize}
+                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  aria-label="Réduire le menu en fenêtre flottante"
+                  data-testid="mobile-nav-minimize-button"
+                >
+                  <Minimize2 className="mnav-text h-5 w-5" />
+                </button>
                 <SheetClose asChild>
                   <button
                     type="button"
@@ -500,6 +535,42 @@ export const Navbar = () => {
 
                 <Separator className="bg-white/10" />
 
+                {mobileLayout === "carousel" && (
+                  <div className="space-y-4" data-testid="mobile-nav-carousel">
+                    {mobileGroups.map((group) => (
+                      <div key={`carousel-${group.id}`} className="mnav-section rounded-[1.35rem] px-3 py-3">
+                        <div className="mnav-text mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+                          {group.id === "priority" && <Flame className="h-4 w-4 animate-pulse" />}
+                          {group.id === "watch" && <Play className="h-4 w-4" />}
+                          {group.id === "explore" && <Compass className="h-4 w-4" />}
+                          {group.label}
+                        </div>
+                        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" style={{ touchAction: "pan-x" }}>
+                          {group.items.map((item) => {
+                            const active = isActivePath(item.to);
+                            return (
+                              <Link
+                                key={`carousel-${group.id}-${item.to}`}
+                                to={item.to}
+                                onClick={() => setOpen(false)}
+                                aria-current={active ? "page" : undefined}
+                                className={cn(
+                                  "mnav-item mnav-text flex min-w-[104px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
+                                  active ? "mnav-item-active" : "",
+                                )}
+                              >
+                                <item.icon className="mnav-text h-5 w-5" />
+                                <span className="mnav-text line-clamp-2 text-[11px] font-bold">{item.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {mobileLayout === "list" && (
                 <Accordion type="multiple" defaultValue={["priority", "watch"]} className="space-y-4">
                   {mobileGroups.map((group) => (
                     <AccordionItem key={group.id} value={group.id} className="mnav-section overflow-hidden rounded-[1.35rem] px-4 py-1 transition-all">
@@ -549,6 +620,7 @@ export const Navbar = () => {
                     </AccordionItem>
                   ))}
                 </Accordion>
+                )}
 
               </div>
             </ScrollArea>
@@ -558,6 +630,14 @@ export const Navbar = () => {
 
       {/* Floating menu suggestions overlay */}
       <MobileNavFloater isOpen={floatingMenuOpen} onToggle={() => setFloatingMenuOpen(!floatingMenuOpen)} />
+
+      {minimized && (
+        <MobileMenuMiniWindow
+          items={megaSections.map(({ to, label, icon }) => ({ to, label, icon }))}
+          onExpand={mobileExpand}
+          onClose={() => setMinimized(false)}
+        />
+      )}
     </>
   );
 };
