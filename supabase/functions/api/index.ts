@@ -71,8 +71,8 @@ async function handleTranslate(req: Request) {
   if (!clean.length) return json({ translations: [] });
 
   const translations: Array<{ original_text: string; translated_text: string }> = [];
-  for (let i = 0; i < clean.length; i += 8) {
-    const slice = clean.slice(i, i + 8);
+  for (let i = 0; i < clean.length; i += 20) {
+    const slice = clean.slice(i, i + 20);
     const pending: string[] = [];
     const done = await Promise.all(
       slice.map(async (text) => {
@@ -90,16 +90,22 @@ async function handleTranslate(req: Request) {
       }),
     );
     if (pending.length) {
-      try {
-        const aiOut = await aiTranslateBatch(pending, target);
-        pending.forEach((text, index) => {
-          const translated = aiOut[index] || text;
-          setCache(`tr:${target}:${text}`, translated);
-          const row = done.find((entry) => entry.original_text === text);
-          if (row) row.translated_text = translated;
-        });
-      } catch (error) {
-        console.error("ai translate fallback failed", error);
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const aiOut = await aiTranslateBatch(pending, target);
+          pending.forEach((text, index) => {
+            const translated = aiOut[index] || text;
+            setCache(`tr:${target}:${text}`, translated);
+            const row = done.find((entry) => entry.original_text === text);
+            if (row) row.translated_text = translated;
+          });
+          break;
+        } catch (error) {
+          const retriable = /ai-(429|5\d\d|shape)/.test(String((error as Error)?.message));
+          console.error("ai translate fallback failed", error);
+          if (!retriable || attempt === 2) break;
+          await new Promise((resolve) => setTimeout(resolve, 900 * (attempt + 1)));
+        }
       }
     }
     translations.push(...done);
