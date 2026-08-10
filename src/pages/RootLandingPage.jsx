@@ -450,7 +450,7 @@ export default function RootLandingPage() {
                           <Link
                             key={`${item.id}-${rowIndex}-${index}`}
                             to={item.href}
-                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[176px] lg:min-w-[176px] lg:max-w-[176px] xl:w-[196px] xl:min-w-[196px] xl:max-w-[196px]"
+                            className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[152px] lg:min-w-[152px] lg:max-w-[152px] xl:w-[164px] xl:min-w-[164px] xl:max-w-[164px]"
                             data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
                           >
                             <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
@@ -464,7 +464,6 @@ export default function RootLandingPage() {
                                 onImgError={createImageFallbackHandler(item.id, item.image)}
                               >
                                 <div className="hero-premium-lower-thumb-overlay" />
-                                <div className="hero-premium-lower-badge">bande-annonce</div>
                                 <div className="absolute inset-x-0 bottom-0 z-10 p-3">
                                   <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
                                     <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>
