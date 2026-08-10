@@ -237,7 +237,7 @@ export const Navbar = () => {
                   aria-controls="mega-menu-panel"
                   onClick={() => {
                     cancelClose();
-                    setMegaOpen((value) => !value);
+                    setMegaOpen(true);
                   }}
                   onMouseEnter={() => {
                     cancelClose();
