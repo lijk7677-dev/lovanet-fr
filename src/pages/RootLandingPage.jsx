@@ -50,17 +50,6 @@ const platformCards = [
 ];
 
 
-
-
-const shuffleArray = (list) => {
-  const clone = [...list];
-  for (let index = clone.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [clone[index], clone[swapIndex]] = [clone[swapIndex], clone[index]];
-  }
-  return clone;
-};
-
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   ...item,
   href: item.category === "product" ? "/shop" : item.sourcePath || "/actualites",
