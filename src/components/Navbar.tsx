@@ -535,6 +535,42 @@ export const Navbar = () => {
 
                 <Separator className="bg-white/10" />
 
+                {mobileLayout === "carousel" && (
+                  <div className="space-y-4" data-testid="mobile-nav-carousel">
+                    {mobileGroups.map((group) => (
+                      <div key={`carousel-${group.id}`} className="mnav-section rounded-[1.35rem] px-3 py-3">
+                        <div className="mnav-text mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+                          {group.id === "priority" && <Flame className="h-4 w-4 animate-pulse" />}
+                          {group.id === "watch" && <Play className="h-4 w-4" />}
+                          {group.id === "explore" && <Compass className="h-4 w-4" />}
+                          {group.label}
+                        </div>
+                        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" style={{ touchAction: "pan-x" }}>
+                          {group.items.map((item) => {
+                            const active = isActivePath(item.to);
+                            return (
+                              <Link
+                                key={`carousel-${group.id}-${item.to}`}
+                                to={item.to}
+                                onClick={() => setOpen(false)}
+                                aria-current={active ? "page" : undefined}
+                                className={cn(
+                                  "mnav-item mnav-text flex min-w-[104px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
+                                  active ? "mnav-item-active" : "",
+                                )}
+                              >
+                                <item.icon className="mnav-text h-5 w-5" />
+                                <span className="mnav-text line-clamp-2 text-[11px] font-bold">{item.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {mobileLayout === "list" && (
                 <Accordion type="multiple" defaultValue={["priority", "watch"]} className="space-y-4">
                   {mobileGroups.map((group) => (
                     <AccordionItem key={group.id} value={group.id} className="mnav-section overflow-hidden rounded-[1.35rem] px-4 py-1 transition-all">
@@ -584,6 +620,7 @@ export const Navbar = () => {
                     </AccordionItem>
                   ))}
                 </Accordion>
+                )}
 
               </div>
             </ScrollArea>
