@@ -249,12 +249,44 @@ async function handleMultilingualTrailers(url: URL) {
 
 /* ----------------------------------- news --------------------------------- */
 const NEWS_SOURCES = [
-  { id: "ann", name: "Anime News Network", url: "https://www.animenewsnetwork.com/all/rss.xml", categories: ["anime"], group: "International", language: "en" },
-  { id: "crunchyroll", name: "Crunchyroll News", url: "https://www.crunchyroll.com/newsrss", categories: ["anime"], group: "Streaming", language: "en" },
-  { id: "manga-news", name: "Manga News", url: "https://www.manga-news.com/index.php/rss/news", categories: ["manga"], group: "France", language: "fr" },
-  { id: "journaldujapon", name: "Journal du Japon", url: "https://www.journaldujapon.com/feed/", categories: ["pop-culture"], group: "France", language: "fr" },
-  { id: "gematsu", name: "Gematsu", url: "https://www.gematsu.com/feed", categories: ["gaming"], group: "Gaming", language: "en" },
-  { id: "siliconera", name: "Siliconera", url: "https://www.siliconera.com/feed/", categories: ["gaming"], group: "Gaming", language: "en" },
+  { id: "anime-news-network-fr", name: "Anime News Network FR", url: "https://www.animenewsnetwork.com/all/rss.xml", categories: ["anime", "manga"], group: "Anime News Network", language: "en", site: "https://www.animenewsnetwork.com" },
+  { id: "manga-news", name: "Manga News", url: "https://www.manga-news.com/index.php/rss/news", categories: ["manga", "anime"], group: "Manga News", language: "fr", site: "https://www.manga-news.com" },
+  { id: "adala-news", name: "Adala News", url: "https://adala-news.fr/feed/", categories: ["anime", "manga"], group: "Adala News", language: "fr", site: "https://adala-news.fr" },
+  { id: "anime-otaku", name: "Anime Otaku", url: "https://www.animeotaku.fr/feed/", categories: ["anime"], group: "Anime Otaku", language: "fr", site: "https://www.animeotaku.fr" },
+  { id: "planete-jeunesse", name: "Planète Jeunesse", url: "https://www.planete-jeunesse.com/rss.xml", categories: ["anime"], group: "Planète Jeunesse", language: "fr", site: "https://www.planete-jeunesse.com" },
+  { id: "nautiljon", name: "Nautiljon", url: "https://www.nautiljon.com/rss/news.xml", categories: ["anime", "manga", "pop-culture"], group: "Nautiljon", language: "fr", site: "https://www.nautiljon.com" },
+  { id: "otakugame", name: "OtakuGame", url: "https://otakugame.fr/feed/", categories: ["anime", "gaming"], group: "OtakuGame", language: "fr", site: "https://otakugame.fr" },
+  { id: "coyote-mag", name: "Coyote Mag", url: "https://www.coyotemag.fr/feed/", categories: ["manga", "anime"], group: "Coyote Mag", language: "fr", site: "https://www.coyotemag.fr" },
+  { id: "mangamag", name: "Manga Mag", url: "https://www.mangamag.fr/feed/", categories: ["manga"], group: "Manga Mag", language: "fr", site: "https://www.mangamag.fr" },
+  { id: "crunchyroll-news", name: "Crunchyroll News", url: "https://feeds.feedburner.com/crunchyroll/rss/anime", categories: ["anime", "streaming"], group: "Crunchyroll", language: "en", site: "https://www.crunchyroll.com" },
+  { id: "anime-uk-news", name: "Anime UK News", url: "https://animeuknews.net/feed/", categories: ["anime", "manga"], group: "Anime UK News", language: "en", site: "https://animeuknews.net" },
+  { id: "comic-book-resources-anime", name: "CBR Anime", url: "https://www.cbr.com/feed/category/anime/", categories: ["anime", "manga"], group: "CBR", language: "en", site: "https://www.cbr.com" },
+  { id: "otaquest", name: "OTAQUEST", url: "https://www.otaquest.com/feed/", categories: ["anime", "pop-culture"], group: "OTAQUEST", language: "en", site: "https://www.otaquest.com" },
+  { id: "japan-today-arts", name: "Japan Today Arts", url: "https://japantoday.com/feed", categories: ["pop-culture", "anime"], group: "Japan Today", language: "en", site: "https://japantoday.com" },
+  { id: "kotaku-anime", name: "Kotaku", url: "https://kotaku.com/rss", categories: ["gaming", "anime"], group: "Kotaku", language: "en", site: "https://kotaku.com" },
+  { id: "anime-hunch", name: "Anime Hunch", url: "https://animehunch.com/feed/", categories: ["anime"], group: "Anime Hunch", language: "en", site: "https://animehunch.com" },
+  { id: "anime-corner", name: "Anime Corner", url: "https://animecorner.me/feed/", categories: ["anime"], group: "Anime Corner", language: "en", site: "https://animecorner.me" },
+  { id: "anime-motivation", name: "Anime Motivation", url: "https://animemotivation.com/feed/", categories: ["anime", "pop-culture"], group: "Anime Motivation", language: "en", site: "https://animemotivation.com" },
+  { id: "anime-trending", name: "Anime Trending", url: "https://www.animetrending.net/feed/", categories: ["anime"], group: "Anime Trending", language: "en", site: "https://www.animetrending.net" },
+  { id: "netflix-tudum", name: "Netflix Tudum", url: "https://www.netflix.com/tudum/rss", categories: ["streaming", "anime"], group: "Netflix", language: "en", site: "https://www.netflix.com" },
+  { id: "variety-tv", name: "Variety TV", url: "https://variety.com/v/tv/feed/", categories: ["streaming", "pop-culture"], group: "Variety", language: "en", site: "https://variety.com" },
+  { id: "millenium-jv", name: "Millenium", url: "https://www.millenium.org/rss/news.xml", categories: ["gaming"], group: "Millenium", language: "fr", site: "https://www.millenium.org" },
+  { id: "gameblog", name: "Gameblog", url: "https://www.gameblog.fr/rss/news.xml", categories: ["gaming"], group: "Gameblog", language: "fr", site: "https://www.gameblog.fr" },
+  { id: "ign-fr", name: "IGN France", url: "https://fr.ign.com/feed.xml", categories: ["gaming", "streaming"], group: "IGN", language: "fr", site: "https://fr.ign.com" },
+  { id: "ign-en", name: "IGN", url: "https://feeds.feedburner.com/ign/all", categories: ["gaming"], group: "IGN", language: "en", site: "https://www.ign.com" },
+  { id: "gamespot", name: "GameSpot", url: "https://www.gamespot.com/feeds/mashup/", categories: ["gaming"], group: "GameSpot", language: "en", site: "https://www.gamespot.com" },
+  { id: "polygon", name: "Polygon", url: "https://www.polygon.com/rss/index.xml", categories: ["gaming", "anime"], group: "Polygon", language: "en", site: "https://www.polygon.com" },
+  { id: "eurogamer", name: "Eurogamer", url: "https://www.eurogamer.net/feed", categories: ["gaming"], group: "Eurogamer", language: "en", site: "https://www.eurogamer.net" },
+  { id: "sora-news-24", name: "SoraNews24", url: "https://soranews24.com/feed/", categories: ["pop-culture", "anime"], group: "SoraNews24", language: "en", site: "https://soranews24.com" },
+  { id: "japan-times", name: "The Japan Times", url: "https://www.japantimes.co.jp/feed/", categories: ["pop-culture"], group: "Japan Times", language: "en", site: "https://www.japantimes.co.jp" },
+  { id: "tokyo-weekender", name: "Tokyo Weekender", url: "https://www.tokyoweekender.com/feed/", categories: ["pop-culture"], group: "Tokyo Weekender", language: "en", site: "https://www.tokyoweekender.com" },
+  { id: "japan-forward", name: "Japan Forward", url: "https://japan-forward.com/feed/", categories: ["pop-culture"], group: "Japan Forward", language: "en", site: "https://japan-forward.com" },
+  { id: "unseen-japan", name: "Unseen Japan", url: "https://unseenjapan.com/feed/", categories: ["pop-culture"], group: "Unseen Japan", language: "en", site: "https://unseenjapan.com" },
+  { id: "nippon-com", name: "Nippon.com", url: "https://www.nippon.com/en/feed/", categories: ["pop-culture"], group: "Nippon.com", language: "en", site: "https://www.nippon.com" },
+  { id: "asian-boss-japan", name: "Grape Japan", url: "https://grapee.jp/en/feed", categories: ["pop-culture"], group: "Grape Japan", language: "en", site: "https://grapee.jp/en" },
+  { id: "japan-info", name: "Japan Info", url: "https://jpninfo.com/feed", categories: ["pop-culture"], group: "Japan Info", language: "en", site: "https://jpninfo.com" },
+  { id: "livedoor-anime", name: "Livedoor Anime News", url: "https://news.livedoor.com/topics/rss/ent.xml", categories: ["anime", "pop-culture"], group: "Livedoor", language: "ja", site: "https://news.livedoor.com" },
+  { id: "anime-recorder", name: "Anime Recorder", url: "https://www.animerecorder.com/feed/", categories: ["anime"], group: "Anime Recorder", language: "en", site: "https://www.animerecorder.com" },
 ];
 
 type NewsItem = Record<string, any>;
@@ -362,7 +394,7 @@ async function fetchFeed(source: (typeof NEWS_SOURCES)[number]): Promise<NewsIte
     if (!res.ok) return [];
     const xml = await res.text();
     const blocks = xml.match(/<(item|entry)[\s\S]*?<\/(item|entry)>/gi) || [];
-    return blocks.slice(0, 30).map((block) => {
+    return blocks.slice(0, 20).map((block) => {
       const title = stripHtml(tag(block, "title"));
       const linkTag = tag(block, "link");
       const link = linkTag || (block.match(/<link[^>]*href="([^"]+)"/i)?.[1] ?? "");
@@ -371,7 +403,7 @@ async function fetchFeed(source: (typeof NEWS_SOURCES)[number]): Promise<NewsIte
       const publishedAt = published ? new Date(published) : new Date();
       return {
         id: `${source.id}-${slugify(title)}`,
-        slug: `${slugify(title)}-${source.id}`,
+        slug: `${source.id}-${slugify(title)}`,
         title,
         description: description.slice(0, 480),
         excerpt: description.slice(0, 220),
@@ -429,7 +461,7 @@ function sourcesPayload(items: NewsItem[]) {
       last_success_at: new Date().toISOString(),
       last_count: count,
       last_error: count ? null : "no-items",
-      site_url: source.url,
+      site_url: source.site || source.url,
       language: source.language,
       region: source.language === "fr" ? "FR" : "INT",
     };
@@ -481,6 +513,7 @@ async function handleNewsList(url: URL) {
       { id: "anime", label: "Anime" },
       { id: "manga", label: "Manga" },
       { id: "gaming", label: "Gaming" },
+      { id: "streaming", label: "Streaming" },
       { id: "pop-culture", label: "Culture pop japonaise" },
     ],
   });
