@@ -113,7 +113,10 @@ async function translateOne(text: string, target: string): Promise<string> {
   const data = await res.json();
   const chunks = Array.isArray(data?.[0]) ? data[0] : [];
   const out = chunks.map((c: any) => (Array.isArray(c) ? c[0] : "")).join("");
-  if (!out || out.trim() === text.trim()) throw new Error("gtx-noop");
+  if (!out) throw new Error("gtx-empty");
+  const detected = String(data?.[2] || "").toLowerCase();
+  // Same text is a legitimate result when the source language already matches the target.
+  if (out.trim() === text.trim() && detected && !detected.startsWith(target)) throw new Error("gtx-noop");
   return out;
 }
 
