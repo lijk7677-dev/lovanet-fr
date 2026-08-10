@@ -300,7 +300,58 @@ function extractImage(block: string) {
     block.match(/<enclosure[^>]*url="([^"]+)"[^>]*type="image/i) ||
     block.match(/<img[^>]*src="([^"]+)"/i) ||
     block.match(/&lt;img[^&]*src=&quot;([^&]+)&quot;/i);
-  return media ? decodeEntities(media[1]) : null;
+  if (media) return decodeEntities(media[1]);
+  const loose = decodeEntities(block).match(/https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp|gif)(?:\?[^\s"'<>]*)?/i);
+  return loose ? loose[0] : null;
+}
+
+/* --------------------------- og:image enrichment -------------------------- */
+const OG_TTL = 7 * 24 * 3600_000;
+
+async function fetchOgImage(link: string): Promise<string | null> {
+  if (!link) return null;
+  const key = `og:${link}`;
+  const cached = getCache<string | null>(key, OG_TTL);
+  if (cached !== null && cached !== undefined) return cached;
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(link, {
+      signal: controller.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; LovanetBot/1.0)", "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8" },
+    });
+    clearTimeout(timer);
+    if (!res.ok) { setCache(key, ""); return null; }
+    const html = (await res.text()).slice(0, 260_000);
+    const found =
+      html.match(/<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i)?.[1] ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)?.[1] ||
+      html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)?.[1] ||
+      html.match(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i)?.[1] ||
+      null;
+    const abs = found
+      ? (() => { try { return new URL(decodeEntities(found), link).toString(); } catch { return null; } })()
+      : null;
+    setCache(key, abs || "");
+    return abs;
+  } catch {
+    setCache(key, "");
+    return null;
+  }
+}
+
+async function enrichImages(items: NewsItem[]) {
+  const missing = items.filter((item) => !item.image && item.source_path);
+  const CONCURRENCY = 8;
+  for (let i = 0; i < missing.length; i += CONCURRENCY) {
+    const slice = missing.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      slice.map(async (item) => {
+        const image = await fetchOgImage(String(item.source_path));
+        if (image) item.image = image;
+      }),
+    );
+  }
 }
 
 async function fetchFeed(source: (typeof NEWS_SOURCES)[number]): Promise<NewsItem[]> {
@@ -355,6 +406,7 @@ async function loadNews(force = false): Promise<NewsItem[]> {
   if (cached) return cached;
   const lists = await Promise.all(NEWS_SOURCES.map(fetchFeed));
   const items = lists.flat().sort((a, b) => String(b.published_at).localeCompare(String(a.published_at)));
+  await enrichImages(items);
   items.forEach((item, index) => {
     item.trending_score = Math.max(1, 100 - index);
     item.is_featured = index < 8;
