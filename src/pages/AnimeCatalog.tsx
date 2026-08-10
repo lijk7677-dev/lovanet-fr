@@ -620,7 +620,9 @@ export default function AnimeCatalog() {
   };
 
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
-    if (forcedTrailerId && !activePlayer) return forcedTrailerId;
+    // Deep link: the requested trailer always wins until the user picks another
+    // version/candidate manually.
+    if (forcedTrailerId && catalogCandidateIndex === 0) return forcedTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
   }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
@@ -948,12 +950,13 @@ export default function AnimeCatalog() {
       return;
     }
     const cached = getVideoStatusSync(activePlayer.id);
-    if (cached === "hidden") setPlayerMode("hidden");
+    if (wantsAutoplay) setPlayerMode("video");
+    else if (cached === "hidden") setPlayerMode("hidden");
     else if (cached === "unavailable") setPlayerMode("fallback");
     else setPlayerMode("video");
     setIsPlaying(hasTrailer(activePlayer));
     setIsMuted(!soundUnlocked);
-  }, [activePlayer?.id, availabilityReady, soundUnlocked]);
+  }, [activePlayer?.id, availabilityReady, soundUnlocked, wantsAutoplay]);
 
   useEffect(() => {
     if (suggestionPreparedRef.current) return;
@@ -1403,6 +1406,21 @@ export default function AnimeCatalog() {
                             : "Ajoutez un titre en favori avec la bulle flottante des cartes pour créer votre file de lecture géante."}
                         </div>
                       </CardContent>
+                    </div>
+                  </div>
+                </div>
+              ) : forcedTrailerId ? (
+                <div className="relative space-y-5" data-testid="catalog-deeplink-player">
+                  <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black">
+                    <div className="aspect-[16/9] min-h-[280px] sm:min-h-[440px]">
+                      <YouTubeEmbed
+                        key={`catalog-deeplink-${forcedTrailerId}`}
+                        videoId={forcedTrailerId}
+                        title="Bande-annonce"
+                        autoplay
+                        muted={!soundUnlocked}
+                        hideControls={false}
+                      />
                     </div>
                   </div>
                 </div>
