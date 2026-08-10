@@ -266,9 +266,9 @@ export default function TabletTrailerPlayer() {
 
   return (
     <div className="container mx-auto px-4 lg:px-8 pt-6 pb-4">
-      {/* Resizable tablet frame */}
+      {/* Resizable tablet frame — soft neutral transition, no rotating RGB */}
       <div
-        className="tablet-frame rgb-neon relative mx-auto"
+        className="tablet-frame relative mx-auto"
         style={{
           width: "min(100%, 980px)",
           height: 520,
@@ -281,12 +281,13 @@ export default function TabletTrailerPlayer() {
           borderRadius: 32,
           padding: 14,
           background:
-            "linear-gradient(145deg, hsl(0 0% 100% / 0.06) 0%, hsl(0 0% 100% / 0.03) 50%, hsl(0 0% 100% / 0.06) 100%)",
+            "linear-gradient(145deg, hsl(220 20% 18% / 0.65) 0%, hsl(220 20% 12% / 0.55) 50%, hsl(220 20% 18% / 0.65) 100%)",
           backdropFilter: "blur(20px) saturate(1.1)",
           WebkitBackdropFilter: "blur(20px) saturate(1.1)",
           border: "1px solid rgba(255,255,255,0.12)",
           boxShadow:
-            "0 30px 80px -20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 40px rgba(217,70,239,0.25)",
+            "0 30px 80px -20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)",
+          transition: "background 1.2s ease, box-shadow 0.5s ease",
         }}
       >
         {/* Speaker slit */}
