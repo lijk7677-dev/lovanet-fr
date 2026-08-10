@@ -516,8 +516,8 @@ export const HeroCarousel = ({ captureVideo }: { captureVideo?: string } = {}) =
         className="absolute inset-0 z-[150] flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
         data-testid="anime-moments-capture-banner"
       >
-        <div className="relative w-[82%] sm:w-[72%] lg:w-[36%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
-          <div className="aspect-video lg:aspect-[4/3]">
+        <div className="relative w-[96%] sm:w-[94%] lg:w-[92%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
+          <div className="aspect-[21/9]">
             <video
               src={captureVideo || "/custom_video_lovanet.mp4"}
               autoPlay
