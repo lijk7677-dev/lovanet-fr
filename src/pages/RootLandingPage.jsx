@@ -192,10 +192,7 @@ export default function RootLandingPage() {
             .map((item, index) => ({
               id: String(item.id || `catalog-${index}`),
               title: item.title,
-              image: String(item.cover || item.banner || siteFallbackImage(String(item.id || index), null) || "").replace(
-                "/cover/large/",
-                "/cover/extraLarge/",
-              ),
+              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
               trailerId: String(item.trailerId || "").trim(),
               genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
               href: `/anime-catalog?anime=${item.id}`,
