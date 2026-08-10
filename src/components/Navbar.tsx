@@ -20,6 +20,8 @@ import {
   Flame,
   Zap,
   Bot,
+  Rows3,
+  GalleryHorizontal,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -39,6 +41,7 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
 import QuickNavCarousel from "@/components/QuickNavCarousel";
+import MobileMenuMiniWindow from "@/components/MobileMenuMiniWindow";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
   "/anime-moments": "navbar-anime-moments-link",
