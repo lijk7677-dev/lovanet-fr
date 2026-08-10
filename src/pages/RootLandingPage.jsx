@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
-import { HoverPreview } from "@/components/HoverPreview";
-import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
-import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { usePortalAudio } from "@/hooks/usePortalAudio";
-import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
 import { motion } from "framer-motion";
 
 const rotatingPortalDestinations = [
