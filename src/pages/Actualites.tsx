@@ -445,13 +445,8 @@ function articleJsonLd(item: NewsItem) {
 }
 
 function ArticleBadge({ item }: { item: NewsItem }) {
-  const primaryCategory = item.categories?.[0] || "anime";
-  const theme = categoryTheme(primaryCategory);
   return (
     <div className="flex flex-wrap gap-2" data-testid={`news-card-badges-${item.slug}`}>
-      <Badge className="rounded-full border border-white/15 bg-white/[0.08] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/90 backdrop-blur-xl">
-        {theme.eyebrow}
-      </Badge>
       <Badge variant="outline" className="rounded-full border-[var(--theme-border-soft)] bg-[rgba(255,255,255,0.04)] px-3 py-1 text-white/80">
         {item.source_group || item.source_name || "Source éditoriale"}
       </Badge>
@@ -558,8 +553,7 @@ function NewsRail({ category, items }: { category: string; items: NewsItem[] }) 
         <div className="absolute inset-y-0 right-0 w-56 opacity-45" style={{ background: `radial-gradient(circle at center, ${theme.glow} 0%, transparent 68%)` }} />
         <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-white/58">{theme.eyebrow}</p>
-            <h2 className="mt-2 font-display text-2xl font-black text-white">{theme.label}</h2>
+            <h2 className="font-display text-2xl font-black text-white">{theme.label}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-white/68">
               Sélection éditoriale mise à jour automatiquement pour cette thématique.
             </p>
@@ -1249,8 +1243,7 @@ function Actualites() {
               <CardContent className="space-y-4 p-5 sm:p-6">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.32em] text-white/50">Widget tendance</p>
-                    <h2 className="mt-2 font-display text-2xl font-black">Top momentum</h2>
+                    <h2 className="font-display text-2xl font-black">Top momentum</h2>
                   </div>
                   <TrendingUp className="h-5 w-5 text-[var(--theme-link-hover)]" />
                 </div>

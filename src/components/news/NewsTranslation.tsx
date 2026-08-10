@@ -31,8 +31,15 @@ export function useNewsTranslation() {
   return useContext(NewsTranslationContext);
 }
 
+function detectDefaultLang() {
+  const stored = typeof window !== "undefined" ? localStorage.getItem("lovanet.news.lang") : null;
+  if (stored) return stored;
+  const nav = typeof navigator !== "undefined" ? (navigator.language || "fr").slice(0, 2).toLowerCase() : "fr";
+  return NEWS_LANGUAGES.some((l) => l.code === nav) ? nav : "fr";
+}
+
 export function NewsTranslationProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<string>(() => localStorage.getItem("lovanet.news.lang") || "fr");
+  const [lang, setLangState] = useState<string>(detectDefaultLang);
   const [dict, setDict] = useState<Record<string, string>>({});
   const [translating, setTranslating] = useState(false);
   const queue = useRef<Set<string>>(new Set());
@@ -51,7 +58,7 @@ export function NewsTranslationProvider({ children }: { children: React.ReactNod
 
   const flush = useCallback(async () => {
     const texts = Array.from(queue.current).slice(0, 60);
-    if (!texts.length || lang === "fr") return;
+    if (!texts.length) return;
     texts.forEach((text) => queue.current.delete(text));
     setTranslating(true);
     try {
@@ -83,7 +90,7 @@ export function NewsTranslationProvider({ children }: { children: React.ReactNod
   const t = useCallback(
     (text?: string) => {
       const value = (text || "").trim();
-      if (!value || lang === "fr") return text || "";
+      if (!value) return text || "";
       const key = `${lang}::${value}`;
       const cached = dict[key];
       if (cached) return cached;
