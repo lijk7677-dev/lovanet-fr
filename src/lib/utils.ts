@@ -80,8 +80,7 @@ export async function translateTexts(texts: Array<string | null | undefined>, ta
 
   if (!missing.length) return result;
 
-  const backendBase = (import.meta.env.VITE_BACKEND_URL ?? "") || "";
-  const endpoint = `${backendBase}/api/translate`;
+  const endpoint = `${API_BASE}/translate`;
 
   try {
     const response = await fetch(endpoint, {
