@@ -23,6 +23,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { NewsTranslationProvider, NewsLanguageBar, useNewsTranslation } from "@/components/news/NewsTranslation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -467,6 +468,9 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
   const theme = categoryTheme(item.categories?.[0]);
   const { playVideo } = usePiP();
   const { incrementQuest, unlockAchievement } = useGamification();
+  const { t } = useNewsTranslation();
+  const cardTitle = t(item.title);
+  const cardDescription = t(stripHtml(item.description || item.excerpt || item.content).slice(0, 220));
 
   return (
     <Link to={`/actualites/${item.slug}`} data-testid={testId} className="group block h-full break-inside-avoid">
@@ -493,12 +497,6 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
               loading={priority ? "eager" : "lazy"}
             />
           )}
-          <img
-            src={displayImage(item.image)}
-            alt={item.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            loading={priority ? "eager" : "lazy"}
-          />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,10,24,0.96)] via-[rgba(5,10,24,0.28)] to-transparent" />
           <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3 z-10 pointer-events-none">
             <ArticleBadge item={item} />
@@ -531,10 +529,10 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
         </div>
         <CardContent className="space-y-3 p-5">
           <h3 className="font-display text-xl font-black leading-tight text-white transition-colors group-hover:text-[var(--theme-link-hover)]">
-            {item.title}
+            {cardTitle}
           </h3>
           <p className="line-clamp-3 text-sm leading-7 text-white/72">
-            {stripHtml(item.description || item.excerpt || item.content).slice(0, 220)}
+            {cardDescription}
           </p>
           <div className="flex items-center justify-between gap-3 text-xs text-white/60">
             <span className="inline-flex items-center gap-1.5 ml-auto">
@@ -602,7 +600,15 @@ function LoadingSkeleton() {
   );
 }
 
-export default function Actualites() {
+export default function ActualitesPage() {
+  return (
+    <NewsTranslationProvider>
+      <Actualites />
+    </NewsTranslationProvider>
+  );
+}
+
+function Actualites() {
   const { slug } = useParams();
   const [home, setHome] = useState<NewsHomePayload | null>(null);
   const [listing, setListing] = useState<NewsListingPayload | null>(null);
@@ -1091,6 +1097,8 @@ export default function Actualites() {
         </header>
 
         {autoReaderItems.length > 0 && <AutoArticleViewer items={autoReaderItems} />}
+
+        <NewsLanguageBar />
 
         <section className="theme-panel-surface overflow-hidden rounded-[1.7rem] border border-[var(--theme-border-soft)] bg-transparent px-4 py-4 sm:px-5" data-testid="actualites-live-ticker">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
