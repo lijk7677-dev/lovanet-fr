@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { HoverPreview } from "@/components/HoverPreview";
 import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
 import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
+import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
