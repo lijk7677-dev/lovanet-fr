@@ -40,6 +40,8 @@ import { InstallAppPrompt } from "./components/InstallAppPrompt";
 import { AiHub } from "./pages/AiHub";
 
 import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
+import { FloatingDock, FloatingDockSlot } from "./components/FloatingDock";
+import { CardSkinBubble } from "./components/CardSkinBubble";
 import { PiPProvider } from "./contexts/PiPContext";
 import { GamificationProvider } from "./contexts/GamificationContext";
 import { GlobalPiPWidget } from "./components/GlobalPiPWidget";
@@ -112,7 +114,6 @@ const AppShell = () => {
           <Toaster />
           <Onboarding3D />
           <Sonner />
-          {!isHubPreviewRoute && <GlobalTranslateWidget />}
           {!isHubPreviewRoute && <GlobalPiPWidget />}
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
@@ -138,8 +139,14 @@ const AppShell = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>
-      {!isHubPreviewRoute && <ThemeBubble />}
-      {!isHubPreviewRoute && <Mobile3DSettingsToggle />}
+      {!isHubPreviewRoute && (
+        <FloatingDock>
+          <FloatingDockSlot><ThemeBubble /></FloatingDockSlot>
+          <FloatingDockSlot><Mobile3DSettingsToggle /></FloatingDockSlot>
+          <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
+          <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
+        </FloatingDock>
+      )}
       {!isHubPreviewRoute && <CartDrawer />}
       {!isHubPreviewRoute && <GoogleTranslate />}
       {!isHubPreviewRoute && <InstallAppPrompt />}
