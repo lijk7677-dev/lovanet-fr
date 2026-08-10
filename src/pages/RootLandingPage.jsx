@@ -112,7 +112,6 @@ export default function RootLandingPage() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
-  const portalAudio = usePortalAudio({ storageKey: "lovanet.portal.audio.enabled" });
 
   const [homeBanners, setHomeBanners] = useState(loadHomeBanners);
   const dragIndexRef = useRef(null);
