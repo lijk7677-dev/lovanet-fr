@@ -780,7 +780,7 @@ const PRIME_CACHE_KEY = "prime_catalog";
 const PRIME_TTL_MS = 12 * 60 * 60_000;
 
 async function buildPrimeCatalog() {
-  const pages = Array.from({ length: 38 }, (_, index) => index + 1);
+  const pages = Array.from({ length: 56 }, (_, index) => index + 1);
   const items: any[] = [];
   const chunkSize = 6;
   for (let index = 0; index < pages.length; index += chunkSize) {
