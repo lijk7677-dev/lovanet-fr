@@ -119,7 +119,14 @@ const mobileGroups = [
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("lovanet.mnav.minimized") === "1";
+  });
+  const [mobileLayout, setMobileLayout] = useState<"carousel" | "list">(() => {
+    if (typeof window === "undefined") return "carousel";
+    return localStorage.getItem("lovanet.mnav.layout") === "list" ? "list" : "carousel";
+  });
   const [megaOpen, setMegaOpen] = useState(false);
   const [menuRotationIndex, setMenuRotationIndex] = useState(0);
   const [floatingMenuOpen, setFloatingMenuOpen] = useState(false);
@@ -133,6 +140,13 @@ export const Navbar = () => {
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("lovanet:suggestions-state", { detail: { open: floatingMenuOpen } }));
   }, [floatingMenuOpen]);
+
+  useEffect(() => {
+    localStorage.setItem("lovanet.mnav.minimized", minimized ? "1" : "0");
+  }, [minimized]);
+  useEffect(() => {
+    localStorage.setItem("lovanet.mnav.layout", mobileLayout);
+  }, [mobileLayout]);
 
   const mobileMinimize = () => { setOpen(false); setMinimized(true); };
   const mobileExpand = () => { setMinimized(false); setOpen(true); };
