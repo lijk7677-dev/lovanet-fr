@@ -71,6 +71,17 @@ body[data-hide-decors] [data-animated-bg] {
   }
 }
 
+/* First portal video only: keep the desktop banner inside the same visual
+   boundary as the trailer player below and preserve the source 16:9 ratio. */
+@media (min-width: 1024px) {
+  .hero-capture-banner {
+    width: min(50vw, 820px) !important;
+    height: auto !important;
+    max-width: calc(100% - 4rem) !important;
+    aspect-ratio: 16 / 9;
+  }
+}
+
 @layer base {
   :root {
     /* Dark deep-space theme (Anime Moments) */
