@@ -39,6 +39,7 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
 import { NavSuggestionsIndicator } from "@/components/NavSuggestionsIndicator";
+import QuickNavCarousel from "@/components/QuickNavCarousel";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
   "/anime-moments": "navbar-anime-moments-link",
@@ -207,14 +208,28 @@ export const Navbar = () => {
         <div className="mx-auto max-w-[1120px]">
           <div className="relative">
             <div className="nav-theme-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
-              <div className="flex items-center gap-2" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="flex items-center gap-2" onMouseEnter={cancelClose}>
                 {renderLogo()}
+              </div>
+
+              <div className="ml-3 hidden md:flex">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent("quicknav:toggle"));
+                    navigate("/anime-catalog");
+                  }}
+                  className="nav-theme-chip inline-flex h-10 w-10 items-center justify-center rounded-full"
+                  aria-label="Afficher le carrousel de navigation rapide"
+                >
+                  <Compass className="h-4 w-4" />
+                </button>
               </div>
 
               {/* Dynamic suggestions bar — fills the empty space between logo and cart on mobile */}
               <NavSuggestionsBar />
 
-              <div className="hidden items-center gap-2 lg:flex" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="hidden items-center gap-2 md:flex" onMouseEnter={cancelClose}>
                 <button
                   type="button"
                   aria-haspopup="true"
@@ -224,19 +239,22 @@ export const Navbar = () => {
                     cancelClose();
                     setMegaOpen((value) => !value);
                   }}
-                  onMouseEnter={cancelClose}
+                  onMouseEnter={() => {
+                    cancelClose();
+                    setMegaOpen(true);
+                  }}
                   className={cn(
-                    "nav-theme-chip hidden h-11 w-11 items-center justify-center rounded-full lg:inline-flex",
-                    megaOpen && "nav-theme-chip-active rotate-45",
+                    "nav-theme-chip ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full",
+                    megaOpen && "nav-theme-chip-active",
                   )}
-                  aria-label="Ouvrir le méga-menu de navigation"
+                  aria-label="Ouvrir le menu"
                   data-testid="desktop-mega-menu-button"
                 >
-                  <Sparkles className="h-4 w-4" strokeWidth={1.7} />
+                  <Menu className="h-5 w-5" strokeWidth={2} />
                 </button>
               </div>
 
-              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-hidden lg:flex">
+              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-hidden md:flex">
                 {rotatingNavItems.map((item, index) => {
                   const active = isActivePath(item.to);
                   const Icon = item.icon;
@@ -327,8 +345,7 @@ export const Navbar = () => {
                 ref={megaRef}
                 role="menu"
                 onMouseEnter={cancelClose}
-                onMouseLeave={scheduleClose}
-                className="absolute left-0 right-0 top-full z-[70] mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 lg:block"
+                className="absolute left-0 right-0 top-full z-[70] mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 md:block"
               >
                 <div className="nav-theme-shell relative overflow-hidden rounded-[1.8rem] p-3 sm:p-5 lg:p-6" data-testid="desktop-mega-menu-panel">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,color-mix(in_srgb,var(--nav-theme-accent)_18%,transparent),transparent_24%),radial-gradient(circle_at_84%_14%,color-mix(in_srgb,var(--nav-theme-accent-2)_14%,transparent),transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%)]" />
@@ -348,7 +365,11 @@ export const Navbar = () => {
                         <X className="h-4 w-4" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                    <div className="mt-2">
+                      <QuickNavCarousel onClose={() => setMegaOpen(false)} />
+                    </div>
+                    <div className="relative">
+                      <div className="no-scrollbar relative flex gap-4 overflow-x-auto px-1 py-2">
                       {megaSections.map((item) => {
                         const active = isActivePath(item.to);
                         return (
@@ -360,21 +381,25 @@ export const Navbar = () => {
                             data-testid={navTestIds[item.to] ?? undefined}
                             onClick={() => setMegaOpen(false)}
                             className={cn(
-                              "nav-theme-chip group relative flex min-h-[88px] items-start gap-3 rounded-[1.3rem] p-4 text-left",
-                              active && "nav-theme-chip-active",
+                              "relative h-28 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-3 text-left transition-transform duration-200 hover:scale-105 focus:scale-105 sm:w-64",
+                              active && "ring-1 ring-white/20",
                             )}
+                            style={{ background: "transparent" }}
                           >
-                            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[var(--nav-theme-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                              <item.icon className="h-4 w-4" strokeWidth={1.8} />
+                            <span className="absolute inset-0 rounded-2xl bg-black/40 backdrop-blur-md" />
+                            <span className="relative z-10 flex h-full items-center gap-3">
+                              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-white/90">
+                                <item.icon className="h-5 w-5" strokeWidth={1.6} />
+                              </span>
+                              <span className="min-w-0 text-white">
+                                <span className="block text-sm font-semibold">{item.label}</span>
+                                {item.desc && <span className="mt-1 block text-xs text-white/70">{item.desc}</span>}
+                              </span>
                             </span>
-                            <span className="min-w-0">
-                              <span className="block text-sm font-semibold nav-theme-accent-text">{item.label}</span>
-                              <span className="mt-1 block text-xs leading-5 text-[var(--nav-theme-muted)]">{item.desc}</span>
-                            </span>
-                            {active && <span className="nav-theme-active-dot absolute left-0 top-5 h-10 w-1 rounded-r-full" />}
                           </Link>
                         );
                       })}
+                      </div>
                     </div>
                   </div>
                 </div>
