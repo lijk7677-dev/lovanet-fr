@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Sparkles, X } from "lucide-react";
+import { Palette, X } from "lucide-react";
 
 /**
  * Floating bubble anchored to the middle of the RIGHT edge.
@@ -162,7 +162,7 @@ export const CatalogCardColorBubble = () => {
           }}
         />
         <span className="relative z-10 text-white drop-shadow">
-          {open ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+          {open ? <X className="w-5 h-5" /> : <Palette className="w-5 h-5" />}
         </span>
       </button>
     </div>
