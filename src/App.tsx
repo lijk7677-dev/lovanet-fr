@@ -47,6 +47,7 @@ import { PiPProvider } from "./contexts/PiPContext";
 import { GamificationProvider } from "./contexts/GamificationContext";
 import { GlobalPiPWidget } from "./components/GlobalPiPWidget";
 import { Mobile3DSettingsToggle } from "./components/Mobile3DSettingsToggle";
+import { SuggestionsBubble } from "./components/SuggestionsBubble";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
 import { usePushNotifications } from "./hooks/usePushNotifications";
 
@@ -113,7 +114,6 @@ const AppShell = () => {
         <CartProvider>
           {!isHubPreviewRoute && <LocalizedHead />}
           <Toaster />
-          <Onboarding3D />
           <Sonner />
           {!isHubPreviewRoute && <GlobalPiPWidget />}
           <AnimatePresence mode="wait">
@@ -147,6 +147,8 @@ const AppShell = () => {
           <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
           <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
+          <FloatingDockSlot><SuggestionsBubble /></FloatingDockSlot>
+          <FloatingDockSlot><Onboarding3D /></FloatingDockSlot>
         </FloatingDock>
       )}
       {!isHubPreviewRoute && <CartDrawer />}
