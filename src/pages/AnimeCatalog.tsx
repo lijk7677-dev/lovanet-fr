@@ -618,9 +618,10 @@ export default function AnimeCatalog() {
   };
 
   const catalogActiveTrailerId = useMemo<string | undefined>(() => {
+    if (forcedTrailerId && !activePlayer) return forcedTrailerId;
     if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
     return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
-  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer]);
+  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer, forcedTrailerId]);
 
   const catalogTrailerSources = useMemo<Record<string, string>>(() => {
     const out: Record<string, string> = {};
