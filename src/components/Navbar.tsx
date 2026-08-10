@@ -229,7 +229,7 @@ export const Navbar = () => {
               {/* Dynamic suggestions bar — fills the empty space between logo and cart on mobile */}
               <NavSuggestionsBar />
 
-              <div className="hidden items-center gap-2 md:flex" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="hidden items-center gap-2 md:flex" onMouseEnter={cancelClose}>
                 <button
                   type="button"
                   aria-haspopup="true"
