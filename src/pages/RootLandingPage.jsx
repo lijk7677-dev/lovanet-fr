@@ -176,55 +176,6 @@ export default function RootLandingPage() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    fetch("/catalog-seo.json")
-      .then((response) => response.json())
-      .then((data) => {
-        if (cancelled || !Array.isArray(data)) return;
-        const normalized = shuffleArray(
-          data
-            .filter((item) => item?.cover && item?.title && String(item?.trailerId || "").trim())
-            .map((item, index) => ({
-              id: String(item.id || `catalog-${index}`),
-              title: item.title,
-              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
-              trailerId: String(item.trailerId || "").trim(),
-              genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
-              href: `/anime-catalog?anime=${item.id}`,
-              year: item.seasonYear || item.year || "Catalogue",
-            })),
-        );
-        setCatalogPreviewPool(normalized);
-        console.log("Loaded catalog previews:", normalized.length);
-        
-        // Mock availability check to avoid 404
-        normalized.slice(0, 36).forEach(item => {
-          if (item.trailerId) {
-             import('@/lib/videoAvailability').then(({setVideoStatus}) => {
-                setVideoStatus(item.trailerId, "ok");
-             });
-          }
-        });
-      })
-      .catch(() => {
-        if (!cancelled) setCatalogPreviewPool([]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (catalogPreviewPool.length <= catalogBatchSize) return undefined;
-    const id = window.setInterval(() => {
-      setCatalogRotationIndex((current) => (current + catalogBatchSize) % catalogPreviewPool.length);
-    }, catalogRotationIntervalMs);
-    return () => window.clearInterval(id);
-  }, [catalogPreviewPool.length]);
-
-  useEffect(() => {
     const video = bannerVideoRef.current;
     if (!video) return;
 
