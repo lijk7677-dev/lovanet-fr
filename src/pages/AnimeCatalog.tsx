@@ -584,7 +584,7 @@ export default function AnimeCatalog() {
   useEffect(() => {
     if (!seoAnimeId || !forcedTrailerId) return;
     const animeId = Number(seoAnimeId);
-    if (!Number.isFinite(animeId) || allMedia.some((media) => media.id === animeId)) return;
+    if (!Number.isFinite(animeId)) return;
 
     const controller = new AbortController();
     fetch("https://graphql.anilist.co", {
@@ -607,7 +607,7 @@ export default function AnimeCatalog() {
       });
 
     return () => controller.abort();
-  }, [allMedia, forcedTrailerId, seoAnimeId]);
+  }, [forcedTrailerId, seoAnimeId]);
 
   const selectedSeoMedia = useMemo(() => {
     if (!seoAnimeId) return null;
