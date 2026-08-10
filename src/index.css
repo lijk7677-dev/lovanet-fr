@@ -2654,9 +2654,10 @@ body,
 }
 
 /* ---- Panneau flottant rétractable (bord gauche) ---- */
+/* ---- Panneau flottant rétractable (bord gauche) ---- */
 .floating-dock {
   position: fixed;
-  left: 0;
+  left: 0.5rem;
   z-index: 9998;
   display: flex;
   align-items: center;
@@ -2691,8 +2692,6 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: scale(0.62);
-  transform-origin: center;
   width: 40px;
   height: 40px;
 }
@@ -2704,6 +2703,32 @@ body,
   z-index: auto !important;
   margin: 0 !important;
 }
+
+/* Réduit les boutons (et non les menus) dans le dock */
+.floating-dock-slot button,
+.floating-dock-slot [role="button"] {
+  width: 40px !important;
+  height: 40px !important;
+  transform: scale(0.62) !important;
+  transform-origin: center !important;
+}
+
+/* Les menus des bulles s'ouvrent vers la droite pour éviter d'être coupés par le bord gauche */
+.floating-dock-slot .dock-popup {
+  position: absolute !important;
+  inset: auto !important;
+  top: 50% !important;
+  left: 100% !important;
+  transform: translateY(-50%) !important;
+  margin: 0 0 0 0.5rem !important;
+  width: 280px !important;
+  max-width: calc(100vw - 90px) !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 10000 !important;
+}
+
 
 .floating-dock-handle {
   display: flex;
