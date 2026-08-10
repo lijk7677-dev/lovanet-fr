@@ -50,6 +50,21 @@ async function aiTranslateBatch(texts: string[], target: string): Promise<string
   return parsed.map((value: unknown, index: number) => String(value || texts[index]));
 }
 
+async function googleTranslateApi(texts: string[], target: string): Promise<string[]> {
+  const key = Deno.env.get("GOOGLE_API_KEY");
+  if (!key) throw new Error("missing-google-key");
+  const res = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${key}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ q: texts.map((t) => t.slice(0, 4500)), target, format: "text" }),
+  });
+  if (!res.ok) throw new Error(`gapi-${res.status}`);
+  const data = await res.json();
+  const rows = data?.data?.translations;
+  if (!Array.isArray(rows) || rows.length !== texts.length) throw new Error("gapi-shape");
+  return rows.map((r: any, i: number) => String(r?.translatedText || texts[i]));
+}
+
 async function translateOne(text: string, target: string): Promise<string> {
   const url =
     `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(target)}&dt=t&q=` +
@@ -74,6 +89,15 @@ async function handleTranslate(req: Request) {
   for (let i = 0; i < clean.length; i += 20) {
     const slice = clean.slice(i, i + 20);
     const pending: string[] = [];
+    const uncached = slice.filter((t) => !getCache<string>(`tr:${target}:${t}`, 86_400_000));
+    if (uncached.length) {
+      try {
+        const out = await googleTranslateApi(uncached, target);
+        uncached.forEach((t, idx) => setCache(`tr:${target}:${t}`, out[idx] || t));
+      } catch (error) {
+        console.warn("google translate api unavailable", (error as Error)?.message);
+      }
+    }
     const done = await Promise.all(
       slice.map(async (text) => {
         const key = `tr:${target}:${text}`;
@@ -199,7 +223,7 @@ async function handleMultilingualTrailers(url: URL) {
   const cached = getCache<any>(cacheKey, 6 * 3600_000);
   if (cached) return json({ results: cached, cached: true });
 
-  const key = Deno.env.get("YOUTUBE_API_KEY") || undefined;
+  const key = Deno.env.get("YOUTUBE_API_KEY") || Deno.env.get("GOOGLE_API_KEY") || undefined;
 
   const queries: Array<[string, string]> = [
     ["vostfr", `${q} bande annonce VOSTFR`],
