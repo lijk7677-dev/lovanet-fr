@@ -529,10 +529,10 @@ function NewsCard({ item, priority = false, testId }: { item: NewsItem; priority
         </div>
         <CardContent className="space-y-3 p-5">
           <h3 className="font-display text-xl font-black leading-tight text-white transition-colors group-hover:text-[var(--theme-link-hover)]">
-            {item.title}
+            {cardTitle}
           </h3>
           <p className="line-clamp-3 text-sm leading-7 text-white/72">
-            {stripHtml(item.description || item.excerpt || item.content).slice(0, 220)}
+            {cardDescription}
           </p>
           <div className="flex items-center justify-between gap-3 text-xs text-white/60">
             <span className="inline-flex items-center gap-1.5 ml-auto">
