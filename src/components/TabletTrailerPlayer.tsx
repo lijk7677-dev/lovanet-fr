@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 
 /**
@@ -51,6 +52,7 @@ const loadYTApi = (): Promise<any> => {
 };
 
 export default function TabletTrailerPlayer() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Media[]>([]);
   const [current, setCurrent] = useState<Media | null>(null);
   const playedRef = useRef<Set<string>>(new Set());
