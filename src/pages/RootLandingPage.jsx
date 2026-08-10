@@ -128,6 +128,27 @@ const loadHomeBanners = () => {
 const getPortalDestination = (slotIndex, rotationIndex) =>
   rotatingPortalDestinations[(slotIndex + rotationIndex) % rotatingPortalDestinations.length];
 
+/* =============================================================================
+ * REGLES VERROUILLEES — NE PAS MODIFIER (etat valide le 10/08/2026)
+ * 1) BANNIERE TRAILERS : rendu OBLIGATOIRE en 2 lignes defilantes (marquee) :
+ *    .hero-premium-lower-marquee > .hero-premium-lower-row >
+ *    .hero-premium-lower-track. Conversion en grille, mur, mosaique,
+ *    carrousel 3D ou autre bannière = INTERDIT.
+ * 2) VISUELS DES CARTES : utiliser EXCLUSIVEMENT item.cover (puis item.banner)
+ *    de /catalog-seo.json, SANS reecriture d'URL (pas de large->extraLarge,
+ *    pas de proxy, pas de CDN tiers). Le fallback boutique sert UNIQUEMENT
+ *    quand aucune image valide n'existe.
+ * 3) Les evolutions visuelles restent purement CSS (taille, nettete, reflets).
+ * ========================================================================== */
+const TRAILER_BANNER_LAYOUT = "marquee-2-rows"; // verrouille
+
+/** Source d'image verrouillee : jamais de reecriture d'URL. */
+const resolveCatalogImage = (item, index) => {
+  const raw = typeof item?.cover === "string" && item.cover.trim() ? item.cover : item?.banner;
+  if (typeof raw === "string" && /^https?:\/\//.test(raw.trim())) return raw.trim();
+  return siteFallbackImage(String(item?.id ?? index), null);
+};
+
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -192,7 +213,7 @@ export default function RootLandingPage() {
             .map((item, index) => ({
               id: String(item.id || `catalog-${index}`),
               title: item.title,
-              image: item.cover || item.banner || siteFallbackImage(String(item.id || index), null),
+              image: resolveCatalogImage(item, index),
               trailerId: String(item.trailerId || "").trim(),
               genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
               href: `/anime-catalog?anime=${item.id}`,
@@ -442,7 +463,11 @@ export default function RootLandingPage() {
               </div>
 
               {catalogPreviewRows.some((row) => row.length > 0) && (
-                <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
+                <div
+                  className="hero-premium-lower-marquee mt-6"
+                  data-locked-layout={TRAILER_BANNER_LAYOUT}
+                  data-testid="home-platforms-dynamic-banner-grid"
+                >
                   {catalogPreviewRows.map((row, rowIndex) => (
                     <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
                       <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
