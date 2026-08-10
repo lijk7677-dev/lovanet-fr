@@ -505,9 +505,8 @@ export default function AnimeCatalog() {
     
     const fetchMultilingualTrailers = async () => {
       try {
-        const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
         const title = mediaTitle(detailMedia);
-        const res = await fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
+        const res = await fetch(`${API_BASE}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
         if (!res.ok) {
           setDetailTrailers({});
           return;
