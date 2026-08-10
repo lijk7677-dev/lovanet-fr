@@ -1461,6 +1461,7 @@ export default function AnimeCatalog() {
                                 languages={availableCatalogLangs}
                                 sources={catalogTrailerSources}
                                 onLanguageChange={(lang) => {
+                                  releaseDeepLink();
                                   setActiveTrailerLang(lang);
                                   setIsPlaying(true);
                                 }}
