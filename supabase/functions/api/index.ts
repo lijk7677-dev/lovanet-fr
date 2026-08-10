@@ -596,9 +596,25 @@ async function handleNewsDetail(slug: string) {
 async function handleImageProxy(url: URL) {
   const target = url.searchParams.get("url");
   if (!target) return json({ error: "missing-url" }, 400);
+  let origin = "";
   try {
-    const res = await fetch(target, { headers: { "User-Agent": "Mozilla/5.0 (compatible; LovanetBot/1.0)" } });
-    if (!res.ok) return json({ error: "upstream" }, 502);
+    origin = new URL(target).origin;
+  } catch {
+    return json({ error: "bad-url" }, 400);
+  }
+  const fallback = () => Response.redirect(target, 302);
+  try {
+    const res = await fetch(target, {
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        Referer: `${origin}/`,
+      },
+    });
+    if (!res.ok) return fallback();
     const body = await res.arrayBuffer();
     return new Response(body, {
       headers: {
@@ -608,7 +624,7 @@ async function handleImageProxy(url: URL) {
       },
     });
   } catch {
-    return json({ error: "proxy-failed" }, 502);
+    return fallback();
   }
 }
 
