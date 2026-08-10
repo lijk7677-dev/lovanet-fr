@@ -825,11 +825,13 @@ async function loadPrimeCatalog(force = false) {
     }
   }
   const items = await buildPrimeCatalog();
-  if (items.length) {
+  const existing = getCache<any[]>(PRIME_CACHE_KEY, Number.MAX_SAFE_INTEGER) || [];
+  if (items.length && items.length >= existing.length * 0.8) {
     setCache(PRIME_CACHE_KEY, items);
     await writeDbCache(PRIME_CACHE_KEY, items);
+    return items;
   }
-  return items;
+  return existing.length ? existing : items;
 }
 
 async function handlePrimeCatalog(url: URL) {
