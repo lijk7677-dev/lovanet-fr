@@ -29,6 +29,7 @@ export const MiniPreviewPlayer = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [tabVisible, setTabVisible] = useState<boolean>(
     typeof document === "undefined" ? true : !document.hidden
   );
@@ -79,10 +80,22 @@ export const MiniPreviewPlayer = ({
 
   // Auto-rotate for every kind so we cycle reliably even on a single embed.
   useEffect(() => {
-    if (list.length <= 1 || !inView || !tabVisible) return;
+    // Pause auto-advance while the pointer is over the player: the current
+    // trailer keeps playing until the user leaves it.
+    if (list.length <= 1 || !inView || !tabVisible || hovered) return;
+    // On touch devices the trailer plays fully; the next one is only shown
+    // when the visitor scrolls the player out of view (see effect below).
+    if (constrained) return;
     const t = setInterval(() => setI((x) => (x + 1) % list.length), rotateMs);
     return () => clearInterval(t);
-  }, [kind, list.length, rotateMs, inView, tabVisible]);
+  }, [kind, list.length, rotateMs, inView, tabVisible, hovered, constrained]);
+
+  // Touch devices: advance only when the player leaves the viewport (scroll).
+  useEffect(() => {
+    if (!constrained || list.length <= 1) return;
+    if (inView) return;
+    setI((x) => (x + 1) % list.length);
+  }, [constrained, inView, list.length]);
 
   useEffect(() => {
     setList(sources);
@@ -111,6 +124,11 @@ export const MiniPreviewPlayer = ({
 
   // Auto-skip to the next item if the current embed errors (blocked / copyright).
   // Only show the poster after we've cycled through everything once.
+  const hoverProps = {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  };
+
   const onEmbedError = () => {
     errCountRef.current += 1;
     if (errCountRef.current >= Math.max(1, list.length)) {
@@ -122,7 +140,7 @@ export const MiniPreviewPlayer = ({
 
   if (!list.length || errored) {
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {poster}
       </div>
     );
@@ -133,7 +151,7 @@ export const MiniPreviewPlayer = ({
     // Single-video loop requires playlist=ID for the YouTube IFrame API.
     const src = buildYouTubeEmbedUrl(current, { autoplay: true, muted: true, controls: false, loop: true, playlist: current, playsInline: true });
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {active ? (
           <iframe
             key={current}
@@ -152,7 +170,7 @@ export const MiniPreviewPlayer = ({
   if (kind === "tiktok") {
     const id = list[i];
     return (
-      <div ref={wrapRef} className={"w-full h-full " + className}>
+      <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
         {active ? (
           <iframe
             key={id}
@@ -171,7 +189,7 @@ export const MiniPreviewPlayer = ({
   // mp4
   const src = list[i];
   return (
-    <div ref={wrapRef} className={"w-full h-full " + className}>
+    <div ref={wrapRef} {...hoverProps} className={"w-full h-full " + className}>
       {active ? (
         <video
           ref={videoRef}
