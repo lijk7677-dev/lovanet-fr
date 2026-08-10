@@ -218,7 +218,7 @@ export default function RootLandingPage() {
               image: resolveCatalogImage(item, index),
               trailerId: String(item.trailerId || "").trim(),
               genres: Array.isArray(item.genres) ? item.genres.slice(0, 3) : [],
-              href: `/anime-catalog?anime=${item.id}`,
+              href: `/anime-catalog?anime=${item.id}&trailer=${String(item.trailerId || "").trim()}&autoplay=1`,
               year: item.seasonYear || item.year || "Catalogue",
             })),
         );

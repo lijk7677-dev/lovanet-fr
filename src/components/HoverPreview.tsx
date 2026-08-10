@@ -95,6 +95,17 @@ export const HoverPreview = ({
       onMouseLeave={stop}
       onFocus={start}
       onBlur={stop}
+      onClick={(event) => {
+        // PC : un clic sur l'apercu verrouille la lecture (meme regle que le tap mobile).
+        if (knownUnavailable && knownUnavailable !== "ok") return;
+        if (event.detail === 0) return; // clavier : laisse le lien agir
+        if (!heldRef.current) {
+          event.preventDefault();
+          event.stopPropagation();
+          setActive(true);
+          hold();
+        }
+      }}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         setActive((value) => {

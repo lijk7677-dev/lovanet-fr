@@ -139,6 +139,8 @@ export const MiniPreviewPlayer = ({
     onMouseEnter: () => setHovered(true),
     onMouseLeave: () => setHovered(false),
     onTouchStart: () => setTouchLocked((v) => !v),
+    // PC : un clic verrouille/deverrouille la lecture, comme le tap mobile.
+    onClick: () => setTouchLocked((v) => !v),
   };
 
   const onEmbedError = () => {
