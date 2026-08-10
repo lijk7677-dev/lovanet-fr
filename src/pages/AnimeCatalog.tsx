@@ -1036,12 +1036,12 @@ export default function AnimeCatalog() {
     if (suggestionPreparedRef.current) return;
     if (loading || gridLoading || !promptPreviewItems.length) return;
     suggestionPreparedRef.current = true;
-    if (!activePlayerId) {
+    if (!activePlayerId && !deepLinkTrailerId && !seoAnimeId) {
       setActivePlayerId(promptPreviewItems[0].id);
       syncSearchParam(promptPreviewItems[0]);
     }
     setShowVideoPrompt(true);
-  }, [activePlayerId, gridLoading, loading, promptPreviewItems]);
+  }, [activePlayerId, deepLinkTrailerId, gridLoading, loading, promptPreviewItems, seoAnimeId]);
 
   useEffect(() => {
     setRenderCount(PAGE_SIZE);
