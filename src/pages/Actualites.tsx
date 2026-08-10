@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { Helmet } from "react-helmet-async";
 import { useGamification } from "@/contexts/GamificationContext";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { usePiP } from "@/contexts/PiPContext";
 import {
   ArrowRight,
@@ -604,6 +604,7 @@ export default function ActualitesPage() {
 
 function Actualites() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [home, setHome] = useState<NewsHomePayload | null>(null);
   const [listing, setListing] = useState<NewsListingPayload | null>(null);
   const [detail, setDetail] = useState<NewsDetailPayload | null>(null);
@@ -648,10 +649,16 @@ function Actualites() {
       setError(null);
       try {
         if (slug) {
-          const detailData: NewsDetailPayload = await fetch(`${API}/news/${slug}`, { signal: controller.signal }).then((res) => {
-            if (!res.ok) throw new Error(`detail-${res.status}`);
-            return res.json();
-          });
+          const detailRes = await fetch(`${API}/news/${slug}`, { signal: controller.signal });
+          if (detailRes.status === 404) {
+            // Article retiré (source supprimée / flux régénéré) : retour à la liste au lieu d'un écran blanc
+            navigate("/actualites", { replace: true });
+            setDetail(null);
+            setError("Cet article n'est plus disponible. Voici les actualités les plus récentes.");
+            return;
+          }
+          if (!detailRes.ok) throw new Error(`detail-${detailRes.status}`);
+          const detailData: NewsDetailPayload = await detailRes.json();
           setDetail(detailData);
           setHome(null);
           setListing(null);
