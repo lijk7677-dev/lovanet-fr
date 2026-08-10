@@ -120,7 +120,40 @@ function classifyVersion(title: string, channel: string): string | null {
   return null;
 }
 
-async function ytSearch(query: string, key: string): Promise<TrailerHit[]> {
+async function ytScrapeSearch(query: string): Promise<TrailerHit[]> {
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+          "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+      },
+    );
+    if (!res.ok) return [];
+    const html = await res.text();
+    const hits: TrailerHit[] = [];
+    const seen = new Set<string>();
+    const regex =
+      /"videoRenderer":\{"videoId":"([\w-]{11})"[\s\S]{0,400}?"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"[\s\S]{0,900}?"ownerText":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(html)) && hits.length < 8) {
+      const [, id, rawTitle, rawChannel] = match;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const unescape = (value: string) => value.replace(/\\u0026/g, "&").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+      hits.push({ id, title: unescape(rawTitle), source: unescape(rawChannel) });
+    }
+    return hits;
+  } catch (error) {
+    console.error("youtube scrape failed", error);
+    return [];
+  }
+}
+
+async function ytApiSearch(query: string, key: string): Promise<TrailerHit[]> {
   const url =
     `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&videoEmbeddable=true&q=` +
     `${encodeURIComponent(query)}&key=${key}`;
@@ -139,6 +172,13 @@ async function ytSearch(query: string, key: string): Promise<TrailerHit[]> {
     .filter((hit: TrailerHit) => Boolean(hit.id));
 }
 
+async function ytSearch(query: string, key?: string): Promise<TrailerHit[]> {
+  const scraped = await ytScrapeSearch(query);
+  if (scraped.length) return scraped;
+  if (!key) return [];
+  return await ytApiSearch(query, key);
+}
+
 async function handleMultilingualTrailers(url: URL) {
   const q = (url.searchParams.get("q") || "").trim();
   if (!q) return json({ results: {} });
@@ -146,8 +186,7 @@ async function handleMultilingualTrailers(url: URL) {
   const cached = getCache<any>(cacheKey, 6 * 3600_000);
   if (cached) return json({ results: cached, cached: true });
 
-  const key = Deno.env.get("YOUTUBE_API_KEY");
-  if (!key) return json({ results: {}, error: "missing-youtube-key" });
+  const key = Deno.env.get("YOUTUBE_API_KEY") || undefined;
 
   const queries: Array<[string, string]> = [
     ["vostfr", `${q} bande annonce VOSTFR`],
