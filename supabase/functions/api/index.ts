@@ -438,6 +438,7 @@ Deno.serve(async (req) => {
     if (route === "prime/multilingual-trailers") return await handleMultilingualTrailers(url);
     if (route === "news/home") return await handleNewsHome();
     if (route === "news/image-proxy") return await handleImageProxy(url);
+    if (route === "image-proxy") return await handleImageProxy(url);
     if (route === "sync/news" && req.method === "POST") {
       const items = await loadNews(true);
       return json({ ok: true, count: items.length, updated_at: new Date().toISOString() });
