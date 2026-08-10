@@ -604,6 +604,7 @@ export default function ActualitesPage() {
 
 function Actualites() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [home, setHome] = useState<NewsHomePayload | null>(null);
   const [listing, setListing] = useState<NewsListingPayload | null>(null);
   const [detail, setDetail] = useState<NewsDetailPayload | null>(null);
