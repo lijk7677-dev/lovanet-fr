@@ -2443,6 +2443,7 @@ body[data-hide-decors] [data-animated-bg] {
   /* Support vitré (comme la capture) sous les textes hors carte */
   .hero-premium-lower-copy > p {
     position: relative;
+    z-index: 1;
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-top-color: rgba(255, 255, 255, 0.24);
     background:
