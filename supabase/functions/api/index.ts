@@ -122,29 +122,36 @@ function classifyVersion(title: string, channel: string): string | null {
 
 async function ytScrapeSearch(query: string): Promise<TrailerHit[]> {
   try {
-    const res = await fetch(
-      `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`,
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-          "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-        },
+    const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
       },
-    );
-    if (!res.ok) return [];
+    });
+    if (!res.ok) {
+      console.error("youtube scrape http", res.status);
+      return [];
+    }
     const html = await res.text();
+    const unescape = (value: string) =>
+      value.replace(/\\u0026/g, "&").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+    const chunks = html.split('"videoRenderer":{"videoId":"').slice(1);
     const hits: TrailerHit[] = [];
     const seen = new Set<string>();
-    const regex =
-      /"videoRenderer":\{"videoId":"([\w-]{11})"[\s\S]{0,400}?"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"[\s\S]{0,900}?"ownerText":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/g;
-    let match: RegExpExecArray | null;
-    while ((match = regex.exec(html)) && hits.length < 8) {
-      const [, id, rawTitle, rawChannel] = match;
-      if (seen.has(id)) continue;
+    for (const chunk of chunks) {
+      const id = chunk.slice(0, 11);
+      if (!/^[\w-]{11}$/.test(id) || seen.has(id)) continue;
+      const window = chunk.slice(0, 3000);
+      const title = window.match(/"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/)?.[1];
+      const channel =
+        window.match(/"longBylineText":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/)?.[1] ||
+        window.match(/"ownerText":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/)?.[1] ||
+        "YouTube";
+      if (!title) continue;
       seen.add(id);
-      const unescape = (value: string) => value.replace(/\\u0026/g, "&").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
-      hits.push({ id, title: unescape(rawTitle), source: unescape(rawChannel) });
+      hits.push({ id, title: unescape(title), source: unescape(channel) });
+      if (hits.length >= 8) break;
     }
     return hits;
   } catch (error) {
