@@ -719,8 +719,7 @@ export const ThemeBubble = () => {
   }, [activeTheme, navMode, open]);
 
   const panelBody = (
-    <div className="theme-orb-panel flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl" data-testid="theme-bubble-panel">
-      <div className="theme-orb-panel-highlight" aria-hidden="true" />
+    <div className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl" data-testid="theme-bubble-panel">
       <div className="relative flex h-full flex-col">
         <div className="border-b border-white/20 px-4 pb-3 pt-4 md:px-5">
           <div className="mb-3 flex items-start justify-between gap-3">
@@ -745,7 +744,7 @@ export const ThemeBubble = () => {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Rechercher un style..."
-              className="theme-search-input h-10 rounded-xl bg-white/5 border-white/10 pl-9 pr-4 text-[13px] text-white placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-white/20"
+              className="h-10 rounded-xl bg-white/5 border-white/10 pl-9 pr-4 text-[13px] text-white placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-white/20"
               data-testid="theme-search-input"
             />
           </div>
