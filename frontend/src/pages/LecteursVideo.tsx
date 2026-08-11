@@ -196,7 +196,6 @@ export default function LecteursVideo() {
     setAccent(activeClip.vibe);
   }, [activeClip.vibe]);
 
-  const rail = useMemo(() => [...LOCAL_CLIPS, ...LOCAL_CLIPS], []);
   const activeFerryCard = useMemo(
     () => FERRY_SELECTED_ELEMENTS.find((item) => item.id === activeFerryElement) ?? FERRY_SELECTED_ELEMENTS[0],
     [activeFerryElement],
@@ -216,6 +215,21 @@ export default function LecteursVideo() {
   const goNext = () => {
     setActiveIndex((prev) => (prev + 1) % LOCAL_CLIPS.length);
   };
+
+  // Hide any horizontal scrollers/carousels that may be injected below the player
+  useEffect(() => {
+    const main = document.querySelector('[data-testid="page-shell"] .theme-main-content') || document.querySelector('main');
+    if (!main) return;
+    const scrollers = Array.from(main.querySelectorAll('.overflow-x-auto, .snap-x, .scroll-smooth, [data-carousel], .mobile-rail-peek')) as HTMLElement[];
+    scrollers.forEach((el) => {
+      el.style.display = 'none';
+    });
+    return () => {
+      scrollers.forEach((el) => {
+        el.style.display = '';
+      });
+    };
+  }, []);
 
   return (
     <PageShell>
@@ -325,65 +339,6 @@ export default function LecteursVideo() {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 lg:px-8 pb-16">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/15 bg-white/[0.08] p-4">
-          <div className="overflow-x-auto pb-2">
-            <div
-              className="inline-flex min-w-max gap-4"
-              style={{ animation: "lecteurRail 28s linear infinite" }}
-            >
-              {rail.map((clip, i) => (
-                <button
-                  key={`${clip.id}-${i}`}
-                  type="button"
-                  onClick={() => { setAutoSlide(false); setActiveIndex(i % LOCAL_CLIPS.length); }}
-                  className={cn(
-                    "group relative w-[240px] shrink-0 overflow-hidden rounded-[1.2rem] border text-left transition",
-                    activeIndex === i % LOCAL_CLIPS.length
-                      ? "border-amber-300/60 shadow-[0_0_28px_rgba(251,191,36,0.35)]"
-                      : "border-white/12 hover:border-white/25",
-                  )}
-                >
-                  <div className="relative aspect-video overflow-hidden rounded-t-[1.2rem] bg-neutral-900">
-                    <img
-                      src={clip.poster}
-                      alt={clip.title}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = crystalCity.url;
-                      }}
-                      className="absolute inset-0 h-full w-full object-cover brightness-110 saturate-110 transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <video
-                      src={clip.src}
-                      muted
-                      loop
-                      playsInline
-                      preload="none"
-                      onError={(e) => {
-                        const video = e.currentTarget as HTMLVideoElement;
-                        video.src = "/catalogue-banner.mp4";
-                        video.load();
-                      }}
-                      className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLVideoElement).pause(); }}
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <span className="absolute right-2 top-2 z-10 rounded-full bg-black/50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur">
-                      {clip.vibe}
-                    </span>
-                  </div>
-                  <div className="bg-[rgba(255,255,255,0.04)] p-3">
-                    <p className="line-clamp-2 text-sm font-semibold text-white">{clip.title}</p>
-                    <p className="mt-1 text-xs text-white/60">{clip.note}</p>
-                  </div>
-                </button>
-              ))}
             </div>
           </div>
         </div>
@@ -595,13 +550,6 @@ export default function LecteursVideo() {
           </div>
         </div>
       </section>
-
-      <style>{`
-        @keyframes lecteurRail {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
     </PageShell>
   );
 }
