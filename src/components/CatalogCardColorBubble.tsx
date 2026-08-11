@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Sparkles, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Move, Sparkles, X } from "lucide-react";
 
 /**
  * Floating bubble anchored to the middle of the RIGHT edge.
@@ -76,6 +76,8 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:catalog-card-color";
+const FLOATING_STORAGE = "lovanet:catalog-color-floating";
+const POSITION_STORAGE = "lovanet:catalog-color-position";
 
 const apply = (s: Skin) => {
   const r = document.documentElement.style;
@@ -97,13 +99,41 @@ const apply = (s: Skin) => {
 export const CatalogCardColorBubble = () => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("off");
+  const [floating, setFloating] = useState(false);
+  const [panelPosition, setPanelPosition] = useState({ x: 40, y: 100 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE) ?? "off";
     const s = SKINS.find((x) => x.key === saved) ?? SKINS[0];
     apply(s);
     setActive(s.key);
+
+    const savedFloating = localStorage.getItem(FLOATING_STORAGE);
+    setFloating(savedFloating === "1");
+
+    const savedPosition = localStorage.getItem(POSITION_STORAGE);
+    if (savedPosition) {
+      try {
+        const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
+        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+          setPanelPosition({ x: parsed.x, y: parsed.y });
+        }
+      } catch {
+        // Ignore malformed saved position.
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(FLOATING_STORAGE, floating ? "1" : "0");
+  }, [floating]);
+
+  useEffect(() => {
+    localStorage.setItem(POSITION_STORAGE, JSON.stringify(panelPosition));
+  }, [panelPosition]);
 
   const pick = (s: Skin) => {
     apply(s);
@@ -111,21 +141,84 @@ export const CatalogCardColorBubble = () => {
     setActive(s.key);
   };
 
+  const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!floating || !panelRef.current) return;
+    const rect = panelRef.current.getBoundingClientRect();
+    dragOffsetRef.current = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+    setIsDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!floating || !isDragging || !dragOffsetRef.current || !panelRef.current) return;
+    const margin = 8;
+    const nextX = event.clientX - dragOffsetRef.current.x;
+    const nextY = event.clientY - dragOffsetRef.current.y;
+    const maxX = Math.max(margin, window.innerWidth - panelRef.current.offsetWidth - margin);
+    const maxY = Math.max(margin, window.innerHeight - panelRef.current.offsetHeight - margin);
+    setPanelPosition({
+      x: Math.min(Math.max(nextX, margin), maxX),
+      y: Math.min(Math.max(nextY, margin), maxY),
+    });
+  };
+
+  const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setIsDragging(false);
+    dragOffsetRef.current = null;
+  };
+
   return (
     <div className="fixed right-2 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-3 sm:right-3">
       {open && (
-        <div className="relative w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Fermer le panneau couleur des cartes"
-            className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
-            Couleur des cartes catalogue
-          </p>
+        <div
+          ref={panelRef}
+          className={`relative rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in w-[min(92vw,340px)] max-h-[70vh] overflow-y-auto sm:w-[320px] ${
+            floating ? "fixed z-[90]" : ""
+          }`}
+          style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
+        >
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div
+              className={`inline-flex items-center gap-1 rounded-full px-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground ${
+                floating ? "cursor-move" : ""
+              }`}
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+            >
+              <Move className="h-3.5 w-3.5" />
+              Couleur des cartes catalogue
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setFloating((value) => !value)}
+                aria-label={floating ? "Désactiver le mode flottant" : "Activer le mode flottant"}
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors ${
+                  floating
+                    ? "border-white/40 bg-white/20 text-white"
+                    : "border-white/20 bg-white/5 text-white/80 hover:bg-white/15"
+                }`}
+              >
+                <Move className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Fermer le panneau couleur des cartes"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-5 gap-3 sm:grid-cols-6 md:grid-cols-7">
             {SKINS.map((s) => (
               <button

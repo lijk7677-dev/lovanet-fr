@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   Clock3,
   Gem,
+  Move,
   Palette,
   RefreshCcw,
   Search,
@@ -102,6 +103,8 @@ const STORAGE_KEY = "lovanet:theme-v2";
 const FAVORITES_KEY = "lovanet:theme-favorites";
 const RECENTS_KEY = "lovanet:theme-recents";
 const NAV_MODE_KEY = "lovanet:nav-theme-mode";
+const FLOATING_KEY = "lovanet:theme-panel-floating";
+const FLOATING_POSITION_KEY = "lovanet:theme-panel-position";
 const DEFAULT_THEME_ID = "mint-vibrant-cyber";
 const RECENT_LIMIT = 18;
 const BRIGHT_TEXT = "#f7faff";
@@ -606,6 +609,11 @@ export const ThemeBubble = () => {
   const [recents, setRecents] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [navMode, setNavMode] = useState<NavPreviewMode>("derived");
+  const [floating, setFloating] = useState(false);
+  const [panelPosition, setPanelPosition] = useState({ x: 56, y: 72 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const activeTheme = useMemo(
     () => THEME_CATALOG.find((theme) => theme.id === activeThemeId) ?? THEME_CATALOG[0],
@@ -624,6 +632,8 @@ export const ThemeBubble = () => {
   useEffect(() => {
     const savedTheme = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
     const savedNavMode = typeof window !== "undefined" ? window.localStorage.getItem(NAV_MODE_KEY) : null;
+    const savedFloating = typeof window !== "undefined" ? window.localStorage.getItem(FLOATING_KEY) : null;
+    const savedPosition = typeof window !== "undefined" ? window.localStorage.getItem(FLOATING_POSITION_KEY) : null;
     const mode = NAV_PREVIEW_MODES.some((item) => item.id === savedNavMode) ? (savedNavMode as NavPreviewMode) : "derived";
     const theme = THEME_CATALOG.find((item) => item.id === savedTheme) ?? THEME_CATALOG.find((item) => item.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
     applyTheme(theme, mode);
@@ -631,6 +641,21 @@ export const ThemeBubble = () => {
     setNavMode(mode);
     setFavorites(readStoredArray(FAVORITES_KEY));
     setRecents(readStoredArray(RECENTS_KEY));
+
+    if (savedFloating === "1") {
+      setFloating(true);
+    }
+
+    if (savedPosition) {
+      try {
+        const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
+        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+          setPanelPosition({ x: parsed.x, y: parsed.y });
+        }
+      } catch {
+        // Ignore malformed saved position.
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -648,6 +673,16 @@ export const ThemeBubble = () => {
     window.localStorage.setItem(NAV_MODE_KEY, navMode);
     applyNavTheme(activeTheme, navMode);
   }, [activeTheme, navMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(FLOATING_KEY, floating ? "1" : "0");
+  }, [floating]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(FLOATING_POSITION_KEY, JSON.stringify(panelPosition));
+  }, [panelPosition]);
 
   const filteredByTab = useMemo(() => {
     if (tab === "favorites") {
@@ -719,18 +754,85 @@ export const ThemeBubble = () => {
     };
   }, [activeTheme, navMode, open]);
 
+  const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!floating || !panelRef.current) return;
+    const rect = panelRef.current.getBoundingClientRect();
+    dragOffsetRef.current = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+    setIsDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!floating || !isDragging || !dragOffsetRef.current || !panelRef.current) return;
+    const margin = 8;
+    const nextX = event.clientX - dragOffsetRef.current.x;
+    const nextY = event.clientY - dragOffsetRef.current.y;
+    const maxX = Math.max(margin, window.innerWidth - panelRef.current.offsetWidth - margin);
+    const maxY = Math.max(margin, window.innerHeight - panelRef.current.offsetHeight - margin);
+    setPanelPosition({
+      x: Math.min(Math.max(nextX, margin), maxX),
+      y: Math.min(Math.max(nextY, margin), maxY),
+    });
+  };
+
+  const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setIsDragging(false);
+    dragOffsetRef.current = null;
+  };
+
   const panelBody = (
-    <div className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl" data-testid="theme-bubble-panel">
+    <div
+      ref={panelRef}
+      className={cn(
+        "flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl",
+        floating && "fixed z-[10050] w-[min(94vw,480px)] max-h-[90vh]"
+      )}
+      style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
+      data-testid="theme-bubble-panel"
+    >
       <div className="relative flex h-full flex-col">
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-label="Fermer le panneau des thèmes"
-          className="absolute right-3 top-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <div className="border-b border-white/20 px-4 pb-3 pt-4 pr-12 md:px-5 md:pr-14">
+        <div className="border-b border-white/20 px-4 pb-3 pt-4 pr-20 md:px-5 md:pr-24">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div
+              className={cn("inline-flex items-center gap-1 rounded-full px-1 text-[10px] uppercase tracking-[0.25em] text-white/70", floating && "cursor-move")}
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+            >
+              <Move className="h-3.5 w-3.5" />
+              Panneau thèmes
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setFloating((value) => !value)}
+                aria-label={floating ? "Désactiver le mode flottant" : "Activer le mode flottant"}
+                className={cn(
+                  "inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
+                  floating
+                    ? "border-white/40 bg-white/20 text-white"
+                    : "border-white/20 bg-white/5 text-white/80 hover:bg-white/15"
+                )}
+              >
+                <Move className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Fermer le panneau des thèmes"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="inline-flex h-8 items-center gap-2 rounded-full px-3 text-[11px] font-medium text-white/90 bg-white/10 border border-white/20">
               <Sparkles className="h-3.5 w-3.5" style={{ color: activeTheme.primaryHex }} />
