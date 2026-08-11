@@ -76,7 +76,6 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:catalog-card-color";
-const FLOATING_STORAGE = "lovanet:catalog-color-floating";
 const POSITION_STORAGE = "lovanet:catalog-color-position";
 
 const apply = (s: Skin) => {
@@ -99,9 +98,8 @@ const apply = (s: Skin) => {
 export const CatalogCardColorBubble = () => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("off");
-  const [floating, setFloating] = useState(false);
-  const [panelPosition, setPanelPosition] = useState({ x: 40, y: 100 });
-  const [isDragging, setIsDragging] = useState(false);
+  const [panelPos, setPanelPos] = useState({ x: 12, y: 80 });
+  const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -111,29 +109,19 @@ export const CatalogCardColorBubble = () => {
     apply(s);
     setActive(s.key);
 
-    const savedFloating = localStorage.getItem(FLOATING_STORAGE);
-    setFloating(savedFloating === "1");
-
-    const savedPosition = localStorage.getItem(POSITION_STORAGE);
-    if (savedPosition) {
+    const savedPos = localStorage.getItem(POSITION_STORAGE);
+    if (savedPos) {
       try {
-        const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
-        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
-          setPanelPosition({ x: parsed.x, y: parsed.y });
+        const p = JSON.parse(savedPos) as { x?: number; y?: number };
+        if (typeof p.x === "number" && typeof p.y === "number") {
+          setPanelPos({ x: p.x, y: p.y });
+          return;
         }
-      } catch {
-        // Ignore malformed saved position.
-      }
+      } catch { /* ignore */ }
     }
+    // Default: upper-right, beside the orb button, clear of settings panel
+    setPanelPos({ x: Math.max(8, window.innerWidth - 370), y: Math.max(8, Math.round(window.innerHeight * 0.12)) });
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem(FLOATING_STORAGE, floating ? "1" : "0");
-  }, [floating]);
-
-  useEffect(() => {
-    localStorage.setItem(POSITION_STORAGE, JSON.stringify(panelPosition));
-  }, [panelPosition]);
 
   const pick = (s: Skin) => {
     apply(s);
@@ -141,88 +129,63 @@ export const CatalogCardColorBubble = () => {
     setActive(s.key);
   };
 
-  const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!floating || !panelRef.current) return;
+  const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if ((e.target as Element).closest("button")) return;
+    if (!panelRef.current) return;
     const rect = panelRef.current.getBoundingClientRect();
-    dragOffsetRef.current = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    };
-    setIsDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
+    dragOffsetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    isDraggingRef.current = true;
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    e.preventDefault();
   };
 
-  const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!floating || !isDragging || !dragOffsetRef.current || !panelRef.current) return;
-    const margin = 8;
-    const nextX = event.clientX - dragOffsetRef.current.x;
-    const nextY = event.clientY - dragOffsetRef.current.y;
-    const maxX = Math.max(margin, window.innerWidth - panelRef.current.offsetWidth - margin);
-    const maxY = Math.max(margin, window.innerHeight - panelRef.current.offsetHeight - margin);
-    setPanelPosition({
-      x: Math.min(Math.max(nextX, margin), maxX),
-      y: Math.min(Math.max(nextY, margin), maxY),
-    });
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !dragOffsetRef.current || !panelRef.current) return;
+    const m = 8;
+    const nx = Math.min(Math.max(e.clientX - dragOffsetRef.current.x, m), window.innerWidth - panelRef.current.offsetWidth - m);
+    const ny = Math.min(Math.max(e.clientY - dragOffsetRef.current.y, m), window.innerHeight - panelRef.current.offsetHeight - m);
+    setPanelPos({ x: nx, y: ny });
+    localStorage.setItem(POSITION_STORAGE, JSON.stringify({ x: nx, y: ny }));
   };
 
-  const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    setIsDragging(false);
+  const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if ((e.currentTarget as HTMLDivElement).hasPointerCapture(e.pointerId))
+      (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    isDraggingRef.current = false;
     dragOffsetRef.current = null;
   };
 
   return (
-    <div className="fixed right-2 top-1/2 -translate-y-1/2 z-[85] flex flex-row-reverse items-center gap-3 sm:right-3">
+    <>
       {open && (
         <div
           ref={panelRef}
-          className={`relative rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in w-[min(88vw,340px)] max-h-[80vh] overflow-y-auto sm:w-[320px] ${
-            floating ? "fixed z-[90]" : ""
-          }`}
-          style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
+          className="fixed z-[9980] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"
+          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px` }}
+          onPointerDown={onDown}
+          onPointerMove={onMove}
+          onPointerUp={onUp}
+          onPointerCancel={onUp}
         >
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div
-              className={`inline-flex items-center gap-1 rounded-full px-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground ${
-                floating ? "cursor-move" : ""
-              }`}
-              onPointerDown={handleDragStart}
-              onPointerMove={handleDragMove}
-              onPointerUp={handleDragEnd}
-              onPointerCancel={handleDragEnd}
-            >
+          <div className="mb-2 flex cursor-grab select-none items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-white/70">
               <Move className="h-3.5 w-3.5" />
-              Couleur des cartes catalogue
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setFloating((value) => !value)}
-                aria-label={floating ? "Désactiver le mode flottant" : "Activer le mode flottant"}
-                className={`inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors ${
-                  floating
-                    ? "border-white/40 bg-white/20 text-white"
-                    : "border-white/20 bg-white/5 text-white/80 hover:bg-white/15"
-                }`}
-              >
-                <Move className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Fermer le panneau couleur des cartes"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+              Couleur des cartes
+            </span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Fermer le panneau couleur des cartes"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
           <div className="grid grid-cols-5 gap-3 sm:grid-cols-6 md:grid-cols-7">
             {SKINS.map((s) => (
               <button
                 key={s.key}
+                type="button"
                 onClick={() => pick(s)}
                 title={s.label}
                 aria-label={s.label}
@@ -243,30 +206,31 @@ export const CatalogCardColorBubble = () => {
               </button>
             ))}
           </div>
-          <p className="text-[10px] text-muted-foreground mt-2 px-1">
+          <p className="mt-2 px-1 text-[10px] text-white/60">
             {SKINS.find((s) => s.key === active)?.label}
           </p>
         </div>
       )}
+      {/* Orb button stays fixed on right edge, vertically centered */}
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Couleur des cartes du catalogue"
-        className="relative w-12 h-12 rounded-full shadow-[0_10px_30px_hsl(var(--primary)/0.45)] border border-border bg-card/90 backdrop-blur-xl hover:scale-110 transition-all flex items-center justify-center overflow-hidden"
+        className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-border shadow-[0_10px_30px_hsl(var(--primary)/0.45)] backdrop-blur-xl transition-all hover:scale-110 sm:right-3"
       >
         <span
           className="absolute inset-0 opacity-80"
           style={{
-            background:
-              "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
+            background: "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
             backgroundSize: "300% 300%",
             animation: "lovanet-bg-shift 6s ease infinite",
           }}
         />
         <span className="relative z-10 text-white drop-shadow">
-          {open ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+          {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
         </span>
       </button>
-    </div>
+    </>
   );
 };
 

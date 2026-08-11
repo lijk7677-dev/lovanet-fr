@@ -609,7 +609,7 @@ export const ThemeBubble = () => {
   const [recents, setRecents] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [navMode, setNavMode] = useState<NavPreviewMode>("derived");
-  const [floating, setFloating] = useState(false);
+  const [floating, setFloating] = useState(true);
   const [panelPosition, setPanelPosition] = useState({ x: 56, y: 72 });
   const [isDragging, setIsDragging] = useState(false);
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
@@ -642,8 +642,9 @@ export const ThemeBubble = () => {
     setFavorites(readStoredArray(FAVORITES_KEY));
     setRecents(readStoredArray(RECENTS_KEY));
 
-    if (savedFloating === "1") {
-      setFloating(true);
+    // Persist off-state only; default is floating=true
+    if (savedFloating === "0") {
+      setFloating(false);
     }
 
     if (savedPosition) {
@@ -790,22 +791,22 @@ export const ThemeBubble = () => {
     <div
       ref={panelRef}
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl",
-        floating && "fixed z-[10050] w-[min(94vw,480px)] max-h-[90vh]"
+        "flex flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl",
+        floating ? "fixed z-[9980] h-auto w-[min(94vw,480px)] max-h-[88vh]" : "h-full"
       )}
       style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
       data-testid="theme-bubble-panel"
     >
       <div className="relative flex h-full flex-col">
-        <div className="border-b border-white/20 px-4 pb-3 pt-4 pr-20 md:px-5 md:pr-24">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div
-              className={cn("inline-flex items-center gap-1 rounded-full px-1 text-[10px] uppercase tracking-[0.25em] text-white/70", floating && "cursor-move")}
-              onPointerDown={handleDragStart}
-              onPointerMove={handleDragMove}
-              onPointerUp={handleDragEnd}
-              onPointerCancel={handleDragEnd}
-            >
+        <div className="border-b border-white/20 px-4 pb-3 pt-4 md:px-5">
+          <div
+            className={cn("mb-2 flex select-none items-center justify-between gap-2", floating && "cursor-grab")}
+            onPointerDown={(e) => { if (!(e.target as Element).closest("button")) handleDragStart(e); }}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+          >
+            <div className="inline-flex items-center gap-1 rounded-full px-1 text-[10px] uppercase tracking-[0.25em] text-white/70">
               <Move className="h-3.5 w-3.5" />
               Panneau thèmes
             </div>
@@ -995,7 +996,10 @@ export const ThemeBubble = () => {
         <AnimatedThemeGlyph open={open} />
       </Button>
 
-      {!isMobile ? (
+      {floating ? (
+        // Direct render when floating — no Sheet/Drawer backdrop
+        open && panelBody
+      ) : !isMobile ? (
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent side="right" className="w-full max-w-[480px] border-none bg-transparent p-3 shadow-none sm:max-w-[480px]" data-testid="theme-desktop-sheet">
             <SheetHeader className="sr-only">
