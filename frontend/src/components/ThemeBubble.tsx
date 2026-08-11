@@ -104,8 +104,8 @@ const FAVORITES_KEY = "lovanet:theme-favorites";
 const RECENTS_KEY = "lovanet:theme-recents";
 const NAV_MODE_KEY = "lovanet:nav-theme-mode";
 const FLOATING_KEY = "lovanet:theme-panel-floating";
-// v2 key forces fresh positioning on all existing sessions
-const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v2";
+// v3 key forces refresh from old overlapping positions
+const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v3";
 const DEFAULT_THEME_ID = "mint-vibrant-cyber";
 
 const THEME_PANEL_W = 480;
@@ -113,10 +113,11 @@ const THEME_PANEL_W = 480;
 const safeDefaultThemePos = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  if (w < 600) {
-    return { x: Math.max(8, Math.round((w - Math.min(w * 0.94, THEME_PANEL_W)) / 2)), y: 62 };
-  }
-  return { x: Math.max(8, w - THEME_PANEL_W - 16), y: Math.max(8, Math.round(h * 0.06)) };
+  const panelW = Math.min(Math.round(w * 0.94), THEME_PANEL_W);
+  return {
+    x: Math.max(8, w - panelW - 16),
+    y: w < 600 ? 36 : Math.max(8, Math.round(h * 0.06)),
+  };
 };
 
 const clampThemePos = (x: number, y: number) => ({

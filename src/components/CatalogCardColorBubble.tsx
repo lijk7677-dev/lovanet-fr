@@ -76,22 +76,23 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:catalog-card-color";
-// v2 key forces fresh positioning on all existing sessions
-const POSITION_STORAGE = "lovanet:catalog-color-pos-v2";
+// v3 key forces refresh from old overlapping positions
+const POSITION_STORAGE = "lovanet:catalog-color-pos-v3";
 
 const PANEL_W = 340;
 
 const safeDefault = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  if (w < 600) {
-    return { x: Math.max(8, Math.round((w - PANEL_W) / 2)), y: 62 };
-  }
-  return { x: Math.max(8, w - PANEL_W - 16), y: Math.max(8, Math.round(h * 0.08)) };
+  const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
+  return {
+    x: Math.max(8, w - panelW - 16),
+    y: w < 600 ? 164 : Math.max(8, Math.round(h * 0.26)),
+  };
 };
 
 const clampPos = (x: number, y: number) => ({
-  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - PANEL_W - 8)),
+  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - Math.min(Math.round(window.innerWidth * 0.9), PANEL_W) - 8)),
   y: Math.min(Math.max(y, 8), window.innerHeight - 120),
 });
 
@@ -176,7 +177,7 @@ export const CatalogCardColorBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[9980] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"
+          className="fixed z-[9980] touch-none rounded-2xl border border-white/45 bg-[rgba(255,255,255,0.18)] p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"
           style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px` }}
           onPointerDown={onDown}
           onPointerMove={onMove}

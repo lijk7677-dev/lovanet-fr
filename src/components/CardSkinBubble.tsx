@@ -56,8 +56,8 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:card-skin";
-// v2 key forces fresh positioning on all existing sessions
-const POSITION_STORAGE = "lovanet:card-skin-pos-v2";
+// v3 key forces refresh from old overlapping positions
+const POSITION_STORAGE = "lovanet:card-skin-pos-v3";
 
 const PANEL_W = 290;
 
@@ -65,17 +65,16 @@ const PANEL_W = 290;
 const safeDefault = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  if (w < 600) {
-    // mobile: top-center, safely above the bottom settings panel
-    return { x: Math.max(8, Math.round((w - PANEL_W) / 2)), y: 62 };
-  }
-  // desktop/tablet: upper-right, away from left-side orbs
-  return { x: Math.max(8, w - PANEL_W - 16), y: Math.max(8, Math.round(h * 0.08)) };
+  const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
+  return {
+    x: Math.max(8, w - panelW - 16),
+    y: w < 600 ? 88 : Math.max(8, Math.round(h * 0.15)),
+  };
 };
 
 /** Clamp a saved position so it stays fully visible after a resize or device change. */
 const clampPos = (x: number, y: number) => ({
-  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - PANEL_W - 8)),
+  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - Math.min(Math.round(window.innerWidth * 0.9), PANEL_W) - 8)),
   y: Math.min(Math.max(y, 8), window.innerHeight - 120),
 });
 
