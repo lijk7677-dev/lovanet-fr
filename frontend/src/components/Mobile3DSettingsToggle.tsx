@@ -168,7 +168,7 @@ export function Mobile3DSettingsToggle() {
   };
 
   const anyOff = !decorOverlayEnabled || disableVideos;
-  const buttonLeft = isDesktop ? 24 : 14;
+  const buttonRight = isDesktop ? 24 : 14;
   const panelBottom = isDesktop ? 170 : 220;
 
   return (
@@ -185,7 +185,7 @@ export function Mobile3DSettingsToggle() {
         style={{
           position: "fixed",
           bottom: isDesktop ? 104 : 84,
-          left: buttonLeft,
+          right: buttonRight,
           zIndex: 9999,
           width: 54, height: 54, borderRadius: "50%",
           border: "1px solid rgba(255,255,255,0.2)",
@@ -207,13 +207,12 @@ export function Mobile3DSettingsToggle() {
         <div style={{
           position: "fixed",
           bottom: panelBottom,
-          left: 14,
-          right: 14,
-          marginInline: "auto",
+          right: isDesktop ? 24 : 14,
+          left: "auto",
           zIndex: 9998,
           background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
           borderRadius: 20, padding: "12px 12px 10px",
-          width: "min(92vw, 320px)",
+          width: isDesktop ? 320 : "min(86vw, 320px)",
           maxHeight: "min(78vh, 620px)",
           backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
           display: "flex", flexDirection: "column", gap: 10,

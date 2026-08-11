@@ -88,7 +88,7 @@ const safeDefault = () => {
   const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
   return {
     x: Math.max(VIEWPORT_MARGIN, w - panelW - 24),
-    y: w < 600 ? 28 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.1)),
+    y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.08)),
   };
 };
 
@@ -167,11 +167,11 @@ const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: n
     const hit = blockers.find((b) => overlaps(rect, b));
     if (!hit) break;
 
-    let nextX = hit.x - rect.w - gap;
-    if (nextX < VIEWPORT_MARGIN) {
-      nextX = hit.x + hit.w + gap;
-    }
+    let nextX = hit.x + hit.w + gap;
     if (nextX > window.innerWidth - rect.w - VIEWPORT_MARGIN) {
+      nextX = hit.x - rect.w - gap;
+    }
+    if (nextX < VIEWPORT_MARGIN) {
       nextX = rect.x;
     }
 
