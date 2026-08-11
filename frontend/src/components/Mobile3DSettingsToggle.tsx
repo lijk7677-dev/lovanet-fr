@@ -77,22 +77,22 @@ function OrbIcon({ anyOff }: { anyOff: boolean }) {
         position: "absolute", inset: 0, borderRadius: "50%",
         border: "1.5px solid rgba(255,255,255,0.45)",
         animation: "lv-orb-spin 6s linear infinite",
-        boxShadow: anyOff ? "0 0 10px rgba(255,255,255,0.5)" : "0 0 14px rgba(56,189,248,0.5)",
+        boxShadow: anyOff ? "0 0 10px rgba(255,255,255,0.5)" : "0 0 14px rgba(255,255,255,0.55)",
       }} />
       {/* inner dot */}
       <span style={{
         width: 10, height: 10, borderRadius: "50%",
-        background: anyOff ? "rgba(255,255,255,0.9)" : "rgba(56,189,248,0.9)",
-        boxShadow: anyOff ? "0 0 12px rgba(255,255,255,0.75)" : "0 0 16px rgba(56,189,248,0.8)",
+        background: "rgba(255,255,255,0.92)",
+        boxShadow: anyOff ? "0 0 12px rgba(255,255,255,0.75)" : "0 0 16px rgba(255,255,255,0.8)",
         animation: "lv-orb-pulse 2s ease-in-out infinite",
       }} />
       {/* orbit dot */}
       <span style={{
         position: "absolute", width: 5, height: 5, borderRadius: "50%",
-        background: anyOff ? "#ffffff" : "#a78bfa",
+        background: "#ffffff",
         top: 1, left: "50%", transformOrigin: "0 12px",
         animation: "lv-orb-spin 3s linear infinite reverse",
-        boxShadow: anyOff ? "0 0 6px #ffffff" : "0 0 8px #a78bfa",
+        boxShadow: "0 0 8px rgba(255,255,255,0.9)",
       }} />
     </span>
   );
@@ -189,11 +189,11 @@ export function Mobile3DSettingsToggle() {
           zIndex: 9999,
           width: 54, height: 54, borderRadius: "50%",
           border: "1px solid rgba(255,255,255,0.2)",
-          background: anyOff ? "rgba(255,255,255,0.13)" : "rgba(6,182,212,0.12)",
+          background: "rgba(255,255,255,0.14)",
           backdropFilter: "blur(16px)",
           boxShadow: anyOff
             ? "0 0 24px rgba(255,255,255,0.35), 0 8px 32px rgba(0,0,0,0.4)"
-            : "0 0 28px rgba(56,189,248,0.35), 0 8px 32px rgba(0,0,0,0.4)",
+            : "0 0 28px rgba(255,255,255,0.4), 0 8px 32px rgba(0,0,0,0.4)",
           cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "box-shadow 0.3s, background 0.3s",
@@ -225,9 +225,9 @@ export function Mobile3DSettingsToggle() {
                 <button key={t} type="button" onClick={() => setTab(t)} style={{
                   flex: 1, padding: "6px 0", borderRadius: 10, fontSize: 11, fontWeight: 700,
                   letterSpacing: "0.08em", textTransform: "uppercase",
-                  border: tab === t ? "1px solid rgba(56,189,248,0.55)" : "1px solid rgba(255,255,255,0.08)",
-                  background: tab === t ? "rgba(56,189,248,0.14)" : "rgba(255,255,255,0.03)",
-                  color: tab === t ? "#7dd3fc" : "rgba(255,255,255,0.4)", cursor: "pointer",
+                  border: tab === t ? "1px solid rgba(255,255,255,0.45)" : "1px solid rgba(255,255,255,0.08)",
+                  background: tab === t ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.03)",
+                  color: tab === t ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.4)", cursor: "pointer",
                 }}>
                   {t === "controls" ? "Réglages" : `Ambiance (${activeDecors.length})`}
                 </button>
@@ -238,8 +238,8 @@ export function Mobile3DSettingsToggle() {
               <>
                 <button type="button" onClick={toggleVideos} aria-pressed={!disableVideos} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(125,211,252,0.35)"}`,
-                  background: disableVideos ? "rgba(255,255,255,0.08)" : "rgba(56,189,248,0.12)",
+                  border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
+                  background: disableVideos ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
                   color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: 12, fontWeight: 600,
                 }}>
                   {disableVideos ? <VideoOff size={14} /> : <Video size={14} />}
@@ -250,8 +250,8 @@ export function Mobile3DSettingsToggle() {
                 </button>
                 <button type="button" onClick={handleToggleDecorOverlay} aria-pressed={decorOverlayEnabled} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${!decorOverlayEnabled ? "rgba(255,255,255,0.3)" : "rgba(125,211,252,0.35)"}`,
-                  background: !decorOverlayEnabled ? "rgba(255,255,255,0.08)" : "rgba(56,189,248,0.12)",
+                  border: `1px solid ${!decorOverlayEnabled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
+                  background: !decorOverlayEnabled ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
                   color: "rgba(255,255,255,0.92)", cursor: "pointer", fontSize: 12, fontWeight: 700,
                 }}>
                   {!decorOverlayEnabled ? <EyeOff size={14} /> : <Eye size={14} />}
