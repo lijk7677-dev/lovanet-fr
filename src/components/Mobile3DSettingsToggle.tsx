@@ -122,6 +122,13 @@ export function Mobile3DSettingsToggle() {
     window.dispatchEvent(new Event("lovanet:decor-update"));
   }, [activeDecors]);
 
+  // If user enables decors from the orb panel while animations are disabled, re-enable animations.
+  useEffect(() => {
+    if (activeDecors.length > 0 && disableAnimations) {
+      try { toggleAnimations(); } catch {}
+    }
+  }, [activeDecors, disableAnimations, toggleAnimations]);
+
   useEffect(() => {
     const onResize = () => setIsDesktop(window.innerWidth >= 1024);
     onResize();

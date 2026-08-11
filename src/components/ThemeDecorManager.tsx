@@ -136,7 +136,7 @@ const generateDecorItems = () => DECOR_GROUPS.flatMap((group) => group.items.map
 const DECOR_MODELS = generateDecorItems();
 
 export function ThemeDecorManager() {
-  const { disableAnimations } = usePerformance();
+  const { disableAnimations, toggleAnimations } = usePerformance();
   const [activeDecorIds, setActiveDecorIds] = useState<string[]>(getStored);
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -155,6 +155,13 @@ export function ThemeDecorManager() {
     }
     window.dispatchEvent(new Event("lovanet:decor-update"));
   }, [activeDecorIds]);
+
+  // If user enables any decor while animations are disabled, turn animations back on.
+  useEffect(() => {
+    if (activeDecorIds.length > 0 && disableAnimations) {
+      try { toggleAnimations(); } catch { /* ignore */ }
+    }
+  }, [activeDecorIds, disableAnimations, toggleAnimations]);
 
   const toggleDecor = (id: string) => {
     setActiveDecorIds((prev) =>
