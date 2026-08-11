@@ -104,9 +104,6 @@ export function Mobile3DSettingsToggle() {
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const [viewportWidth, setViewportWidth] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth : 1280,
-  );
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
   );
@@ -132,10 +129,7 @@ export function Mobile3DSettingsToggle() {
   }, [activeDecors, disableAnimations, toggleAnimations]);
 
   useEffect(() => {
-    const onResize = () => {
-      setViewportWidth(window.innerWidth);
-      setIsDesktop(window.innerWidth >= 1024);
-    };
+    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -213,12 +207,13 @@ export function Mobile3DSettingsToggle() {
         <div style={{
           position: "fixed",
           bottom: panelBottom,
-          left: "50%",
-          transform: "translateX(-50%)",
+          left: 14,
+          right: 14,
+          marginInline: "auto",
           zIndex: 9998,
           background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
           borderRadius: 20, padding: "12px 12px 10px",
-          width: isDesktop ? 320 : `min(${viewportWidth - 28}px, 320px)`,
+          width: "min(92vw, 320px)",
           maxHeight: "min(78vh, 620px)",
           backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
           display: "flex", flexDirection: "column", gap: 10,
