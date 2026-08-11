@@ -528,7 +528,7 @@ export const Navbar = () => {
                     <ShoppingCart className="h-5 w-5" />
                     Ouvrir le panier
                   </span>
-                  <span className="nav-theme-active-dot grid min-h-[28px] min-w-[28px] place-items-center rounded-full px-2 text-[12px] font-black text-black bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
+                  <span className="nav-theme-active-dot grid min-h-[28px] min-w-[28px] place-items-center rounded-full px-2 text-[12px] font-black text-white bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
                     {count}
                   </span>
                 </motion.button>

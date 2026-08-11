@@ -448,8 +448,8 @@ const applyNavTheme = (theme: ThemeOption, mode: NavPreviewMode) => {
   const accent3 = mode === "contrast" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.14) : mode === "intense" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.08) : theme.tertiaryHex;
   const navBg = mode === "intense" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.34), 0.74) : mode === "contrast" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.52), 0.82) : alphaHex(mixHex(theme.backgroundHex, theme.cardHex, 0.46), 0.72);
   const navSurface = mode === "intense" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.18), 0.9) : mode === "contrast" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.32), 0.94) : alphaHex(mixHex(theme.cardHex, theme.card2Hex, 0.28), 0.86);
-  const navText = pickReadableTextColor(mode === "contrast" ? mixHex(theme.cardHex, DARK_TEXT, 0.32) : theme.cardHex, 5);
-  const navMuted = alphaHex(navText, navText === DARK_TEXT ? 0.66 : 0.74);
+  const navText = BRIGHT_TEXT;
+  const navMuted = alphaHex(BRIGHT_TEXT, 0.74);
   const navBorder = mode === "contrast" ? alphaHex(accent, 0.28) : alphaHex(BRIGHT_TEXT, 0.18);
 
   styles.setProperty("--bubble-h", String(parseInt(theme.primaryHsl.split(" ")[0], 10) || 210));
