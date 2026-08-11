@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Video, VideoOff, Check } from "lucide-react";
 import { usePerformance } from "@/contexts/PerformanceContext";
 
@@ -70,7 +70,6 @@ const getStored = (): string[] => {
 
 /** Animated transparent orb icon */
 function OrbIcon({ anyOff }: { anyOff: boolean }) {
-  const spin = useRef(0);
   return (
     <span style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28 }}>
       {/* outer ring */}
@@ -78,29 +77,29 @@ function OrbIcon({ anyOff }: { anyOff: boolean }) {
         position: "absolute", inset: 0, borderRadius: "50%",
         border: "1.5px solid rgba(255,255,255,0.45)",
         animation: "lv-orb-spin 6s linear infinite",
-        boxShadow: anyOff ? "0 0 10px rgba(249,115,22,0.6)" : "0 0 14px rgba(56,189,248,0.5)",
+        boxShadow: anyOff ? "0 0 10px rgba(255,255,255,0.5)" : "0 0 14px rgba(56,189,248,0.5)",
       }} />
       {/* inner dot */}
       <span style={{
         width: 10, height: 10, borderRadius: "50%",
-        background: anyOff ? "rgba(249,115,22,0.9)" : "rgba(56,189,248,0.9)",
-        boxShadow: anyOff ? "0 0 12px rgba(249,115,22,0.8)" : "0 0 16px rgba(56,189,248,0.8)",
+        background: anyOff ? "rgba(255,255,255,0.9)" : "rgba(56,189,248,0.9)",
+        boxShadow: anyOff ? "0 0 12px rgba(255,255,255,0.75)" : "0 0 16px rgba(56,189,248,0.8)",
         animation: "lv-orb-pulse 2s ease-in-out infinite",
       }} />
       {/* orbit dot */}
       <span style={{
         position: "absolute", width: 5, height: 5, borderRadius: "50%",
-        background: anyOff ? "#f97316" : "#a78bfa",
+        background: anyOff ? "#ffffff" : "#a78bfa",
         top: 1, left: "50%", transformOrigin: "0 12px",
         animation: "lv-orb-spin 3s linear infinite reverse",
-        boxShadow: anyOff ? "0 0 6px #f97316" : "0 0 8px #a78bfa",
+        boxShadow: anyOff ? "0 0 6px #ffffff" : "0 0 8px #a78bfa",
       }} />
     </span>
   );
 }
 
 export function Mobile3DSettingsToggle() {
-  const { disableAnimations, disableVideos, decorOverlayEnabled, toggleDecorOverlay, toggleVideos } = usePerformance();
+  const { disableAnimations, disableVideos, decorOverlayEnabled, toggleAnimations, toggleDecorOverlay, toggleVideos } = usePerformance();
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
@@ -185,10 +184,10 @@ export function Mobile3DSettingsToggle() {
           style={{
             width: 54, height: 54, borderRadius: "50%",
             border: "1px solid rgba(255,255,255,0.2)",
-            background: anyOff ? "rgba(234,88,12,0.18)" : "rgba(6,182,212,0.12)",
+            background: anyOff ? "rgba(255,255,255,0.13)" : "rgba(6,182,212,0.12)",
             backdropFilter: "blur(16px)",
             boxShadow: anyOff
-              ? "0 0 24px rgba(249,115,22,0.4), 0 8px 32px rgba(0,0,0,0.4)"
+              ? "0 0 24px rgba(255,255,255,0.35), 0 8px 32px rgba(0,0,0,0.4)"
               : "0 0 28px rgba(56,189,248,0.35), 0 8px 32px rgba(0,0,0,0.4)",
             cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -202,7 +201,8 @@ export function Mobile3DSettingsToggle() {
         {isOpen && (
           <div style={{
             background: "rgba(3,7,18,0.92)", border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: 20, padding: "12px 12px 10px", width: 272,
+            borderRadius: 20, padding: "12px 12px 10px", width: "min(92vw, 320px)",
+            maxHeight: "min(78vh, 620px)",
             backdropFilter: "blur(28px)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
             display: "flex", flexDirection: "column", gap: 10,
           }}>
@@ -223,30 +223,36 @@ export function Mobile3DSettingsToggle() {
 
             {tab === "controls" && (
               <>
-                <button type="button" onClick={toggleVideos} style={{
+                <button type="button" onClick={toggleVideos} aria-pressed={!disableVideos} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${disableVideos ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: disableVideos ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
-                  color: disableVideos ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
+                  border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(125,211,252,0.35)"}`,
+                  background: disableVideos ? "rgba(255,255,255,0.08)" : "rgba(56,189,248,0.12)",
+                  color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: 12, fontWeight: 600,
                 }}>
                   {disableVideos ? <VideoOff size={14} /> : <Video size={14} />}
                   {disableVideos ? "Arrière-plan vidéo : désactivé" : "Arrière-plan vidéo : activé"}
+                  <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.24)", background: "rgba(255,255,255,0.08)", color: "#fff" }}>
+                    {disableVideos ? "OFF" : "ON"}
+                  </span>
                 </button>
-                <button type="button" onClick={handleToggleDecorOverlay} style={{
+                <button type="button" onClick={handleToggleDecorOverlay} aria-pressed={decorOverlayEnabled} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${!decorOverlayEnabled ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: !decorOverlayEnabled ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
-                  color: !decorOverlayEnabled ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
+                  border: `1px solid ${!decorOverlayEnabled ? "rgba(255,255,255,0.3)" : "rgba(125,211,252,0.35)"}`,
+                  background: !decorOverlayEnabled ? "rgba(255,255,255,0.08)" : "rgba(56,189,248,0.12)",
+                  color: "rgba(255,255,255,0.92)", cursor: "pointer", fontSize: 12, fontWeight: 700,
                 }}>
                   {!decorOverlayEnabled ? <EyeOff size={14} /> : <Eye size={14} />}
                   {!decorOverlayEnabled ? "Effets visuels 3D : désactivés" : "Effets visuels 3D : activés"}
+                  <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.26)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>
+                    {!decorOverlayEnabled ? "OFF" : "ON"}
+                  </span>
                 </button>
               </>
             )}
 
             {tab === "decors" && (
               <>
-                <div style={{ maxHeight: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, paddingRight: 2 }}>
+                <div style={{ maxHeight: "min(48vh, 360px)", overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, paddingRight: 2 }}>
                   {DECOR_GROUPS.map((g) => {
                     const status = groupActive(g);
                     const isExpanded = expandedGroup === g.group;
@@ -268,12 +274,12 @@ export function Mobile3DSettingsToggle() {
                           >
                             <span style={{
                               width: 14, height: 14, borderRadius: 4,
-                              border: `1.5px solid ${status.all ? g.color : status.some ? g.color : "rgba(255,255,255,0.2)"}`,
-                              background: status.all ? g.color : status.some ? `${g.color}55` : "transparent",
+                              border: `1.5px solid ${status.all ? "#ffffff" : status.some ? "#ffffff" : "rgba(255,255,255,0.2)"}`,
+                              background: status.all ? "rgba(255,255,255,0.95)" : status.some ? "rgba(255,255,255,0.45)" : "transparent",
                               display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
                               {status.all && <Check size={9} color="#000" />}
-                              {status.some && <span style={{ width: 6, height: 2, background: g.color, borderRadius: 2, display: "block" }} />}
+                              {status.some && <span style={{ width: 6, height: 2, background: "#fff", borderRadius: 2, display: "block" }} />}
                             </span>
                           </button>
 
@@ -285,11 +291,11 @@ export function Mobile3DSettingsToggle() {
                               flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between",
                               gap: 6, padding: "7px 10px 7px 4px", border: "none",
                               background: "transparent", cursor: "pointer",
-                              color: status.some || status.all ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.55)",
+                              color: status.some || status.all ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.55)",
                               fontSize: 12, fontWeight: 600,
                             }}
                           >
-                            <span>{g.label} {status.count > 0 ? <span style={{ fontSize: 10, color: g.color }}>({status.count})</span> : null}</span>
+                            <span>{g.label} {status.count > 0 ? <span style={{ fontSize: 10, color: "#fff" }}>({status.count})</span> : null}</span>
                             <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
                           </button>
                         </div>
@@ -306,13 +312,13 @@ export function Mobile3DSettingsToggle() {
                                   onClick={() => toggleDecor(item.key)}
                                   style={{
                                     padding: "3px 9px", borderRadius: 99, fontSize: 11, fontWeight: 600,
-                                    border: `1px solid ${on ? g.color : "rgba(255,255,255,0.1)"}`,
-                                    background: on ? `${g.color}22` : "rgba(255,255,255,0.03)",
-                                    color: on ? g.color : "rgba(255,255,255,0.5)",
+                                    border: `1px solid ${on ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.1)"}`,
+                                    background: on ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.03)",
+                                    color: on ? "#ffffff" : "rgba(255,255,255,0.6)",
                                     cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
                                   }}
                                 >
-                                  {on && <Check size={9} />}{item.label}
+                                  {on && <Check size={10} />} {item.label}
                                 </button>
                               );
                             })}
@@ -327,8 +333,8 @@ export function Mobile3DSettingsToggle() {
                 <div style={{ display: "flex", gap: 5, paddingTop: 2 }}>
                   <button type="button" onClick={() => setActiveDecors(ALL_KEYS)} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    border: "1px solid rgba(56,189,248,0.3)", background: "rgba(56,189,248,0.08)",
-                    color: "#7dd3fc", cursor: "pointer",
+                    border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.12)",
+                    color: "#ffffff", cursor: "pointer",
                   }}>Tout activer</button>
                   <button type="button" onClick={() => setActiveDecors([])} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,

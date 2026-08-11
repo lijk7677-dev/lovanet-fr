@@ -621,8 +621,7 @@ export const ThemeBubble = () => {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
-    const savedTheme = null;
+    const savedTheme = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
     const savedNavMode = typeof window !== "undefined" ? window.localStorage.getItem(NAV_MODE_KEY) : null;
     const mode = NAV_PREVIEW_MODES.some((item) => item.id === savedNavMode) ? (savedNavMode as NavPreviewMode) : "derived";
     const theme = THEME_CATALOG.find((item) => item.id === savedTheme) ?? THEME_CATALOG.find((item) => item.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
@@ -782,7 +781,8 @@ export const ThemeBubble = () => {
               <TabsTrigger value="recent" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50">Récents</TabsTrigger>
             </TabsList>
 
-            <div className="mb-3 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+            <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
+              <div className="mb-2 h-1.5 w-full rounded-full" style={navPreviewStyles} aria-hidden="true" />
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 {NAV_PREVIEW_MODES.map((mode) => (
                   <button
@@ -795,7 +795,7 @@ export const ThemeBubble = () => {
                     className={cn(
                       "whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[10px] font-medium transition-colors border",
                       navMode === mode.id 
-                        ? "bg-white/10 text-white border-white/20" 
+                        ? "bg-white/14 text-white border-white/32" 
                         : "bg-transparent text-white/50 border-transparent hover:bg-white/5 hover:text-white/80"
                     )}
                   >
@@ -841,7 +841,12 @@ export const ThemeBubble = () => {
                             <div className="flex flex-1 flex-col gap-1.5 p-3">
                               <h4 className="text-[13px] font-bold text-white line-clamp-1 flex items-center justify-between">
                                 {theme.label}
-                                {isActive && <Check className="h-3 w-3 text-green-400" />}
+                                {isActive && (
+                                  <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-white/15 px-1.5 py-0.5 text-[10px] text-white">
+                                    <Check className="h-3 w-3 text-white" />
+                                    Actif
+                                  </span>
+                                )}
                               </h4>
                               <p className="text-[10px] uppercase tracking-widest text-white/50">
                                 {theme.family}
@@ -892,7 +897,7 @@ export const ThemeBubble = () => {
         </Sheet>
       ) : (
         <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerContent className="max-h-[85vh] border-none bg-transparent px-2 pb-2 shadow-none" data-testid="theme-mobile-drawer">
+          <DrawerContent className="max-h-[90vh] border-none bg-transparent px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-none" data-testid="theme-mobile-drawer">
             <DrawerHeader className="sr-only">
               <DrawerTitle>Catalogue des thèmes</DrawerTitle>
               <DrawerDescription>Sélection de thèmes premium Lovanet.</DrawerDescription>
