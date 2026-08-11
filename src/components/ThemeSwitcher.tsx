@@ -12,6 +12,7 @@ type ThemeDef = {
 };
 
 const THEMES: ThemeDef[] = [
+  { id: "menthe-vibrant-cypher", label: "Menthe Vibrant Cypher", bg: "#06120d", preview: ["#00ff9d", "#22d3ee", "#10b981"] },
   { id: "default-blue", label: "Anime Moments", bg: "#020617", preview: ["#38bdf8", "#f472b6", "#8b5cf6"] },
   { id: "cyberpunk", label: "Cyberpunk", bg: "#09090b", preview: ["#22c55e", "#facc15", "#ef4444"] },
   { id: "kawaii", label: "Kawaii Pink", bg: "#fff0f5", preview: ["#ff69b4", "#ff1493", "#ba55d3"] },
@@ -20,7 +21,7 @@ const THEMES: ThemeDef[] = [
   { id: "auto", label: "Auto Jour / Nuit", bg: "#0a1020", preview: ["#fcd34d", "#38bdf8", "#0f172a"], auto: true },
 ];
 
-const REAL_THEME_IDS = ["dark", "cyberpunk", "kawaii", "samurai", "aurora"];
+const REAL_THEME_IDS = ["dark", "cyberpunk", "kawaii", "samurai", "aurora", "menthe-vibrant-cypher"];
 
 function isDaytime(): boolean {
   const h = new Date().getHours();
@@ -83,7 +84,7 @@ function setEffective(effectiveId: string, animate: boolean) {
 
 export function ThemeSwitcher({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
-  const [activeTheme, setActiveTheme] = useState("default-blue");
+  const [activeTheme, setActiveTheme] = useState("menthe-vibrant-cypher");
   const [hovered, setHovered] = useState<ThemeDef | null>(null);
   const autoTimer = useRef<number | null>(null);
 
@@ -94,9 +95,8 @@ export function ThemeSwitcher({ className }: { className?: string }) {
   };
 
   useEffect(() => {
-    // Force reset for users reporting wrong theme
-    localStorage.removeItem("lovanet.theme");
-    const saved = "default-blue";
+    // Défaut Menthe Vibrant Cypher ; respecte la préférence sauvegardée si elle existe.
+    const saved = localStorage.getItem("lovanet.theme") || "menthe-vibrant-cypher";
     setActiveTheme(saved);
     currentEffective = "__init__"; // force premi\u00e8re application (sans animation)
     setEffective(resolveEffective(saved), false);
