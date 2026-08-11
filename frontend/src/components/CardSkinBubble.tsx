@@ -78,6 +78,68 @@ const clampPos = (x: number, y: number) => ({
   y: Math.min(Math.max(y, 8), window.innerHeight - 120),
 });
 
+type PanelRect = { x: number; y: number; w: number; h: number };
+const REGISTRY_KEY = "__lovanetOpenBubblePanels";
+const PANEL_ID = "card-skin";
+
+const getRegistry = (): Record<string, PanelRect> => {
+  const host = window as unknown as { [REGISTRY_KEY]?: Record<string, PanelRect> };
+  if (!host[REGISTRY_KEY]) host[REGISTRY_KEY] = {};
+  return host[REGISTRY_KEY] as Record<string, PanelRect>;
+};
+
+const overlaps = (a: PanelRect, b: PanelRect) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
+const getSettingsPanelRect = (): PanelRect => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const panelW = Math.min(Math.round(w * 0.92), 320);
+  const panelH = Math.min(Math.round(h * 0.78), 620);
+  const panelBottom = (w >= 1024 ? 104 : 84) + 54 + 10;
+  const x = Math.round((w - panelW) / 2);
+  const y = h - panelBottom - panelH;
+  return { x, y, w: panelW, h: panelH };
+};
+
+const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
+  const gap = 12;
+  const blockers: PanelRect[] = [getSettingsPanelRect(), ...Object.entries(getRegistry()).filter(([key]) => key !== id).map(([, rect]) => rect)];
+  let rect = { x, y, w, h };
+
+  rect.x = Math.min(Math.max(rect.x, 8), Math.max(8, window.innerWidth - rect.w - 8));
+  rect.y = Math.min(Math.max(rect.y, 8), Math.max(8, window.innerHeight - rect.h - 8));
+
+  for (let i = 0; i < 8; i += 1) {
+    const hit = blockers.find((b) => overlaps(rect, b));
+    if (!hit) break;
+
+    let nextX = hit.x - rect.w - gap;
+    if (nextX < 8) {
+      nextX = hit.x + hit.w + gap;
+    }
+    if (nextX > window.innerWidth - rect.w - 8) {
+      nextX = rect.x;
+    }
+
+    let nextY = rect.y;
+    if (nextX === rect.x) {
+      nextY = hit.y + hit.h + gap;
+      if (nextY > window.innerHeight - rect.h - 8) {
+        nextY = Math.max(8, hit.y - rect.h - gap);
+      }
+    }
+
+    rect = {
+      ...rect,
+      x: Math.min(Math.max(nextX, 8), Math.max(8, window.innerWidth - rect.w - 8)),
+      y: Math.min(Math.max(nextY, 8), Math.max(8, window.innerHeight - rect.h - 8)),
+    };
+  }
+
+  return { x: rect.x, y: rect.y };
+};
+
 const apply = (s: Skin) => {
   const r = document.documentElement.style;
   r.setProperty("--card-skin-bg", s.bg);
@@ -93,6 +155,19 @@ export const CardSkinBubble = () => {
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
 
+  const estimatePanelSize = () => ({
+    w: Math.min(Math.round(window.innerWidth * 0.9), PANEL_W),
+    h: 250,
+  });
+
+  const placePanel = (base: { x: number; y: number }) => {
+    const size = panelRef.current
+      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
+      : estimatePanelSize();
+    const clamped = clampPos(base.x, base.y);
+    return resolveNonOverlapping(PANEL_ID, clamped.x, clamped.y, size.w, size.h);
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE) ?? "white";
     const s = SKINS.find((x) => x.key === saved) ?? SKINS[0];
@@ -104,13 +179,24 @@ export const CardSkinBubble = () => {
       try {
         const p = JSON.parse(savedPos) as { x?: number; y?: number };
         if (typeof p.x === "number" && typeof p.y === "number") {
-          setPanelPos(clampPos(p.x, p.y));
+          setPanelPos(placePanel({ x: p.x, y: p.y }));
           return;
         }
       } catch { /* ignore */ }
     }
-    setPanelPos(safeDefault());
+    setPanelPos(placePanel(safeDefault()));
   }, []);
+
+  useEffect(() => {
+    if (!open || !panelPos) return;
+    const size = panelRef.current
+      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
+      : estimatePanelSize();
+    getRegistry()[PANEL_ID] = { x: panelPos.x, y: panelPos.y, w: size.w, h: size.h };
+    return () => {
+      delete getRegistry()[PANEL_ID];
+    };
+  }, [open, panelPos]);
 
   const pick = (s: Skin) => {
     apply(s);
@@ -133,8 +219,9 @@ export const CardSkinBubble = () => {
     const m = 8;
     const nx = Math.min(Math.max(e.clientX - dragOffsetRef.current.x, m), window.innerWidth - panelRef.current.offsetWidth - m);
     const ny = Math.min(Math.max(e.clientY - dragOffsetRef.current.y, m), window.innerHeight - panelRef.current.offsetHeight - m);
-    setPanelPos({ x: nx, y: ny });
-    localStorage.setItem(POSITION_STORAGE, JSON.stringify({ x: nx, y: ny }));
+    const resolved = resolveNonOverlapping(PANEL_ID, nx, ny, panelRef.current.offsetWidth, panelRef.current.offsetHeight);
+    setPanelPos(resolved);
+    localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
   };
 
   const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -192,7 +279,18 @@ export const CardSkinBubble = () => {
       )}
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          setOpen((o) => {
+            const next = !o;
+            if (next) {
+              const base = panelPos ?? safeDefault();
+              const resolved = placePanel(base);
+              setPanelPos(resolved);
+              localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
+            }
+            return next;
+          });
+        }}
         aria-label="Apparence des cartes"
         className="fixed bottom-5 left-4 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/90 shadow-[0_10px_30px_hsl(var(--primary)/0.45)] backdrop-blur-xl transition-all hover:scale-110 sm:left-5"
       >

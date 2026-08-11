@@ -124,6 +124,68 @@ const clampThemePos = (x: number, y: number) => ({
   x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - Math.min(window.innerWidth * 0.94, THEME_PANEL_W) - 8)),
   y: Math.min(Math.max(y, 8), window.innerHeight - 120),
 });
+
+type PanelRect = { x: number; y: number; w: number; h: number };
+const REGISTRY_KEY = "__lovanetOpenBubblePanels";
+const PANEL_ID = "theme";
+
+const getRegistry = (): Record<string, PanelRect> => {
+  const host = window as unknown as { [REGISTRY_KEY]?: Record<string, PanelRect> };
+  if (!host[REGISTRY_KEY]) host[REGISTRY_KEY] = {};
+  return host[REGISTRY_KEY] as Record<string, PanelRect>;
+};
+
+const overlaps = (a: PanelRect, b: PanelRect) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
+const getSettingsPanelRect = (): PanelRect => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const panelW = Math.min(Math.round(w * 0.92), 320);
+  const panelH = Math.min(Math.round(h * 0.78), 620);
+  const panelBottom = (w >= 1024 ? 104 : 84) + 54 + 10;
+  const x = Math.round((w - panelW) / 2);
+  const y = h - panelBottom - panelH;
+  return { x, y, w: panelW, h: panelH };
+};
+
+const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
+  const gap = 12;
+  const blockers: PanelRect[] = [getSettingsPanelRect(), ...Object.entries(getRegistry()).filter(([key]) => key !== id).map(([, rect]) => rect)];
+  let rect = { x, y, w, h };
+
+  rect.x = Math.min(Math.max(rect.x, 8), Math.max(8, window.innerWidth - rect.w - 8));
+  rect.y = Math.min(Math.max(rect.y, 8), Math.max(8, window.innerHeight - rect.h - 8));
+
+  for (let i = 0; i < 8; i += 1) {
+    const hit = blockers.find((b) => overlaps(rect, b));
+    if (!hit) break;
+
+    let nextX = hit.x - rect.w - gap;
+    if (nextX < 8) {
+      nextX = hit.x + hit.w + gap;
+    }
+    if (nextX > window.innerWidth - rect.w - 8) {
+      nextX = rect.x;
+    }
+
+    let nextY = rect.y;
+    if (nextX === rect.x) {
+      nextY = hit.y + hit.h + gap;
+      if (nextY > window.innerHeight - rect.h - 8) {
+        nextY = Math.max(8, hit.y - rect.h - gap);
+      }
+    }
+
+    rect = {
+      ...rect,
+      x: Math.min(Math.max(nextX, 8), Math.max(8, window.innerWidth - rect.w - 8)),
+      y: Math.min(Math.max(nextY, 8), Math.max(8, window.innerHeight - rect.h - 8)),
+    };
+  }
+
+  return { x: rect.x, y: rect.y };
+};
 const RECENT_LIMIT = 18;
 const BRIGHT_TEXT = "#f7faff";
 const DARK_TEXT = "#0b1020";
@@ -634,6 +696,19 @@ export const ThemeBubble = () => {
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
 
+  const estimatePanelSize = () => ({
+    w: Math.min(Math.round(window.innerWidth * 0.94), THEME_PANEL_W),
+    h: Math.min(Math.round(window.innerHeight * 0.88), 760),
+  });
+
+  const placePanel = (base: { x: number; y: number }) => {
+    const size = panelRef.current
+      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
+      : estimatePanelSize();
+    const clamped = clampThemePos(base.x, base.y);
+    return resolveNonOverlapping(PANEL_ID, clamped.x, clamped.y, size.w, size.h);
+  };
+
   const activeTheme = useMemo(
     () => THEME_CATALOG.find((theme) => theme.id === activeThemeId) ?? THEME_CATALOG[0],
     [activeThemeId],
@@ -670,17 +745,28 @@ export const ThemeBubble = () => {
       try {
         const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
         if (typeof parsed.x === "number" && typeof parsed.y === "number") {
-          setPanelPosition(clampThemePos(parsed.x, parsed.y));
+          setPanelPosition(placePanel({ x: parsed.x, y: parsed.y }));
         } else {
-          setPanelPosition(safeDefaultThemePos());
+          setPanelPosition(placePanel(safeDefaultThemePos()));
         }
       } catch {
-        setPanelPosition(safeDefaultThemePos());
+        setPanelPosition(placePanel(safeDefaultThemePos()));
       }
     } else {
-      setPanelPosition(safeDefaultThemePos());
+      setPanelPosition(placePanel(safeDefaultThemePos()));
     }
   }, []);
+
+  useEffect(() => {
+    if (!floating || !open || !panelPosition) return;
+    const size = panelRef.current
+      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
+      : estimatePanelSize();
+    getRegistry()[PANEL_ID] = { x: panelPosition.x, y: panelPosition.y, w: size.w, h: size.h };
+    return () => {
+      delete getRegistry()[PANEL_ID];
+    };
+  }, [floating, open, panelPosition]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -796,10 +882,14 @@ export const ThemeBubble = () => {
     const nextY = event.clientY - dragOffsetRef.current.y;
     const maxX = Math.max(margin, window.innerWidth - panelRef.current.offsetWidth - margin);
     const maxY = Math.max(margin, window.innerHeight - panelRef.current.offsetHeight - margin);
-    setPanelPosition({
-      x: Math.min(Math.max(nextX, margin), maxX),
-      y: Math.min(Math.max(nextY, margin), maxY),
-    });
+    const resolved = resolveNonOverlapping(
+      PANEL_ID,
+      Math.min(Math.max(nextX, margin), maxX),
+      Math.min(Math.max(nextY, margin), maxY),
+      panelRef.current.offsetWidth,
+      panelRef.current.offsetHeight,
+    );
+    setPanelPosition(resolved);
   };
 
   const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -1009,7 +1099,12 @@ export const ThemeBubble = () => {
     <>
       <Button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          const base = panelPosition ?? safeDefaultThemePos();
+          const resolved = placePanel(base);
+          setPanelPosition(resolved);
+          setOpen(true);
+        }}
         aria-label="Ouvrir le sélecteur de thèmes"
         data-testid="theme-bubble-toggle"
         className="theme-orb-button fixed bottom-4 left-3 z-[9999] h-[52px] w-[52px] rounded-full p-0 shadow-[0_0_20px_rgba(var(--theme-primary-rgb),0.4)] sm:left-4 md:bottom-6 md:left-6 md:h-16 md:w-16"
