@@ -70,8 +70,16 @@ export const InstallAppPrompt = () => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-sm rounded-3xl bg-white text-slate-900 shadow-2xl p-7 text-center animate-in fade-in zoom-in-95 duration-300">
+    <div
+      className="fixed inset-0 z-[10050] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={dismiss}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-3xl bg-white text-slate-900 shadow-2xl p-7 text-center animate-in fade-in zoom-in-95 duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={dismiss}
           aria-label="Fermer"

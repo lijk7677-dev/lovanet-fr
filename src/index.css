@@ -2801,7 +2801,9 @@ body,
 }
 
 /* Neutralise le positionnement fixe des bulles déplacées dans le dock */
-.floating-dock-slot > * {
+.floating-dock-slot > *,
+.floating-dock-slot > * > button,
+.floating-dock-slot > * > [role="button"] {
   position: static !important;
   inset: auto !important;
   z-index: auto !important;
@@ -2833,6 +2835,10 @@ body,
   z-index: 10000 !important;
 }
 
+
+.floating-dock-slot .dock-popup.dock-popup-top {
+  z-index: 10030 !important;
+}
 
 .floating-dock-handle {
   display: flex;
@@ -2912,9 +2918,8 @@ body,
     padding: 0.7rem 0.5rem;
     border-radius: 0 1.25rem 1.25rem 0;
     background: rgba(10, 14, 24, 0.42);
-    max-height: 72vh;
-    overflow-y: auto;
-    overflow-x: visible;
+    max-height: 78vh;
+    overflow: visible;
   }
 
   .floating-dock-slot {
