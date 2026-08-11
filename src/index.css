@@ -319,6 +319,69 @@ body[data-hide-decors] [data-animated-bg] {
     --nav-theme-text: #99f6e4;
   }
 
+  .theme-menthe-vibrant-cypher {
+    /* Thème par défaut vibrant mint / cypher green */
+    /* shadcn tokens */
+    --background: 150 45% 4%;
+    --foreground: 150 30% 96%;
+    --card: 150 35% 7%;
+    --card-foreground: 150 30% 96%;
+    --popover: 150 35% 7%;
+    --popover-foreground: 150 30% 96%;
+    --primary: 156 100% 50%;
+    --primary-foreground: 150 45% 4%;
+    --secondary: 150 20% 14%;
+    --secondary-foreground: 150 30% 96%;
+    --muted: 150 18% 14%;
+    --muted-foreground: 150 20% 70%;
+    --accent: 156 100% 50%;
+    --accent-foreground: 150 45% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 150 20% 18%;
+    --input: 150 20% 18%;
+    --ring: 156 100% 50%;
+    --neon-cyan: 156 100% 50%;
+    --neon-magenta: 191 84% 53%;
+    --neon-purple: 160 84% 40%;
+    --surface: 150 35% 7%;
+    --surface-elevated: 150 30% 10%;
+    --pill: 150 18% 14%;
+    /* legacy theme tokens */
+    --theme-bg: #06120d;
+    --theme-card: #0a1f15;
+    --theme-card-2: #0f2a1d;
+    --theme-border: rgba(0, 255, 157, 0.4);
+    --theme-border-soft: rgba(0, 255, 157, 0.2);
+    --theme-border-strong: rgba(0, 255, 157, 0.6);
+    --theme-overlay: rgba(6, 18, 13, 0.85);
+    --theme-overlay-strong: rgba(6, 18, 13, 0.95);
+    --theme-fg-on-bg: #d1fae5;
+    --theme-fg-on-card: #a7f3d0;
+    --theme-fg-on-overlay: #d1fae5;
+    --theme-muted: rgba(167, 243, 208, 0.72);
+    --theme-link: #00ff9d;
+    --theme-link-hover: #22d3ee;
+    --theme-glow: 0 0 18px rgba(0, 255, 157, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
+    --theme-glow-2: 0 0 12px rgba(0, 255, 157, 0.2), 0 0 28px rgba(16, 185, 129, 0.2);
+    --theme-ring: #00ff9d;
+    --theme-neon-a: #00ff9d;
+    --theme-neon-b: #22d3ee;
+    --theme-neon-c: #10b981;
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(0, 255, 157, 0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34, 211, 238, 0.15) 0%, transparent 22%), linear-gradient(160deg, #06120d 0%, #0a1f15 55%, #031008 100%);
+    --bubble-a: #00ff9d;
+    --bubble-b: #22d3ee;
+    --bubble-c: #10b981;
+    --nav-theme-bg: rgba(6, 18, 13, 0.75);
+    --nav-theme-surface: rgba(6, 18, 13, 0.9);
+    --nav-theme-border: rgba(0, 255, 157, 0.3);
+    --nav-theme-accent: #00ff9d;
+    --nav-theme-accent-2: #22d3ee;
+    --nav-theme-accent-3: #10b981;
+    --nav-theme-text: #d1fae5;
+  }
+
+
 
 
   .dark {
@@ -3014,4 +3077,67 @@ body,
     min-height: 0 !important;
     height: 300px !important;
   }
+}
+
+/* Menthe Vibrant Cypher — default theme override at end of stylesheet
+   to ensure it survives any intermediate processing issues. */
+.theme-menthe-vibrant-cypher {
+  /* shadcn tokens */
+  --background: 150 45% 4%;
+  --foreground: 150 30% 96%;
+  --card: 150 35% 7%;
+  --card-foreground: 150 30% 96%;
+  --popover: 150 35% 7%;
+  --popover-foreground: 150 30% 96%;
+  --primary: 156 100% 50%;
+  --primary-foreground: 150 45% 4%;
+  --secondary: 150 20% 14%;
+  --secondary-foreground: 150 30% 96%;
+  --muted: 150 18% 14%;
+  --muted-foreground: 150 20% 70%;
+  --accent: 156 100% 50%;
+  --accent-foreground: 150 45% 4%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 150 20% 18%;
+  --input: 150 20% 18%;
+  --ring: 156 100% 50%;
+  --neon-cyan: 156 100% 50%;
+  --neon-magenta: 191 84% 53%;
+  --neon-purple: 160 84% 40%;
+  --surface: 150 35% 7%;
+  --surface-elevated: 150 30% 10%;
+  --pill: 150 18% 14%;
+  /* legacy theme tokens */
+  --theme-bg: #06120d;
+  --theme-card: #0a1f15;
+  --theme-card-2: #0f2a1d;
+  --theme-border: rgba(0, 255, 157, 0.4);
+  --theme-border-soft: rgba(0, 255, 157, 0.2);
+  --theme-border-strong: rgba(0, 255, 157, 0.6);
+  --theme-overlay: rgba(6, 18, 13, 0.85);
+  --theme-overlay-strong: rgba(6, 18, 13, 0.95);
+  --theme-fg-on-bg: #d1fae5;
+  --theme-fg-on-card: #a7f3d0;
+  --theme-fg-on-overlay: #d1fae5;
+  --theme-muted: rgba(167, 243, 208, 0.72);
+  --theme-link: #00ff9d;
+  --theme-link-hover: #22d3ee;
+  --theme-glow: 0 0 18px rgba(0, 255, 157, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
+  --theme-glow-2: 0 0 12px rgba(0, 255, 157, 0.2), 0 0 28px rgba(16, 185, 129, 0.2);
+  --theme-ring: #00ff9d;
+  --theme-neon-a: #00ff9d;
+  --theme-neon-b: #22d3ee;
+  --theme-neon-c: #10b981;
+  --site-tint: radial-gradient(circle at 18% 18%, rgba(0, 255, 157, 0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34, 211, 238, 0.15) 0%, transparent 22%), linear-gradient(160deg, #06120d 0%, #0a1f15 55%, #031008 100%);
+  --bubble-a: #00ff9d;
+  --bubble-b: #22d3ee;
+  --bubble-c: #10b981;
+  --nav-theme-bg: rgba(6, 18, 13, 0.75);
+  --nav-theme-surface: rgba(6, 18, 13, 0.9);
+  --nav-theme-border: rgba(0, 255, 157, 0.3);
+  --nav-theme-accent: #00ff9d;
+  --nav-theme-accent-2: #22d3ee;
+  --nav-theme-accent-3: #10b981;
+  --nav-theme-text: #d1fae5;
 }
