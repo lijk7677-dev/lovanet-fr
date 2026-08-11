@@ -176,7 +176,7 @@ export function Mobile3DSettingsToggle() {
   const anyOff = !decorOverlayEnabled || disableVideos;
   const buttonLeft = isDesktop ? 24 : 14;
   const panelWidth = Math.min(320, viewportWidth * 0.92);
-  const mobilePanelShift = Math.max(0, (viewportWidth - panelWidth) / 2 - buttonLeft);
+  const mobilePanelShift = (viewportWidth - panelWidth) / 2 - buttonLeft;
 
   return (
     <>
@@ -209,11 +209,11 @@ export function Mobile3DSettingsToggle() {
         {/* Panel */}
         {isOpen && (
           <div style={{
-            background: "rgba(3,7,18,0.92)", border: "1px solid rgba(255,255,255,0.12)",
+            background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.42)",
             borderRadius: 20, padding: "12px 12px 10px", width: "min(92vw, 320px)",
             maxHeight: "min(78vh, 620px)",
             marginLeft: isDesktop ? 0 : mobilePanelShift,
-            backdropFilter: "blur(28px)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+            backdropFilter: "blur(20px) saturate(1.12)", boxShadow: "0 20px 56px rgba(0,0,0,0.34)",
             display: "flex", flexDirection: "column", gap: 10,
           }}>
             {/* Tabs */}
