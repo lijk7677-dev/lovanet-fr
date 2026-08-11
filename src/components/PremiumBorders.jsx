@@ -77,8 +77,9 @@ export const PremiumBorders = () => {
     color: i % 2 === 0 ? 'bg-cyan-300' : 'bg-fuchsia-300'
   })), []);
 
-  if (customDecors) return null;
-
+  // Always render the global background video so users can choose the full-page
+  // video overlay independently from custom 3D decors. When `customDecors` is
+  // active we avoid rendering the duplicated decorative particles/leaves.
   return (
     <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-3d-decor data-animated-bg>
       {/* Global Background Video */}
@@ -99,8 +100,8 @@ export const PremiumBorders = () => {
         <source src="/global-bg-web.mp4" type="video/mp4" />
       </video>
 
-      {/* All animated décors hidden when toggle is active */}
-      {!hidden && (<>
+      {/* All animated décors hidden when toggle is active or when custom decors are used elsewhere */}
+      {!hidden && !customDecors && (<> 
       {/* Ciel & Nuages (Haut) */}
       <div className="absolute top-0 left-0 right-0 h-[40vh] bg-gradient-to-b from-blue-600/30 via-indigo-600/10 to-transparent">
         <Cloud delay={0} y="5%" duration={40} scale={1} />
