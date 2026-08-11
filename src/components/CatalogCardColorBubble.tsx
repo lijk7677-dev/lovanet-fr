@@ -179,7 +179,9 @@ export const CatalogCardColorBubble = () => {
         <div
           ref={panelRef}
           className={`relative rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in w-[min(92vw,340px)] max-h-[70vh] overflow-y-auto sm:w-[320px] ${
-            floating ? "fixed z-[90]" : ""
+            floating
+              ? "fixed z-[90]"
+              : "fixed top-1/2 right-2 -translate-y-1/2 z-[85] max-sm:left-1/2 max-sm:right-auto max-sm:-translate-x-1/2 sm:right-3"
           }`}
           style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
         >
