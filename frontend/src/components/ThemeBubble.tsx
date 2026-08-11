@@ -104,8 +104,25 @@ const FAVORITES_KEY = "lovanet:theme-favorites";
 const RECENTS_KEY = "lovanet:theme-recents";
 const NAV_MODE_KEY = "lovanet:nav-theme-mode";
 const FLOATING_KEY = "lovanet:theme-panel-floating";
-const FLOATING_POSITION_KEY = "lovanet:theme-panel-position";
+// v2 key forces fresh positioning on all existing sessions
+const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v2";
 const DEFAULT_THEME_ID = "mint-vibrant-cyber";
+
+const THEME_PANEL_W = 480;
+
+const safeDefaultThemePos = () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  if (w < 600) {
+    return { x: Math.max(8, Math.round((w - Math.min(w * 0.94, THEME_PANEL_W)) / 2)), y: 62 };
+  }
+  return { x: Math.max(8, w - THEME_PANEL_W - 16), y: Math.max(8, Math.round(h * 0.06)) };
+};
+
+const clampThemePos = (x: number, y: number) => ({
+  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - Math.min(window.innerWidth * 0.94, THEME_PANEL_W) - 8)),
+  y: Math.min(Math.max(y, 8), window.innerHeight - 120),
+});
 const RECENT_LIMIT = 18;
 const BRIGHT_TEXT = "#f7faff";
 const DARK_TEXT = "#0b1020";
@@ -611,7 +628,7 @@ export const ThemeBubble = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [navMode, setNavMode] = useState<NavPreviewMode>("derived");
   const [floating, setFloating] = useState(true);
-  const [panelPosition, setPanelPosition] = useState({ x: 56, y: 72 });
+  const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -652,11 +669,15 @@ export const ThemeBubble = () => {
       try {
         const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
         if (typeof parsed.x === "number" && typeof parsed.y === "number") {
-          setPanelPosition({ x: parsed.x, y: parsed.y });
+          setPanelPosition(clampThemePos(parsed.x, parsed.y));
+        } else {
+          setPanelPosition(safeDefaultThemePos());
         }
       } catch {
-        // Ignore malformed saved position.
+        setPanelPosition(safeDefaultThemePos());
       }
+    } else {
+      setPanelPosition(safeDefaultThemePos());
     }
   }, []);
 
@@ -795,7 +816,7 @@ export const ThemeBubble = () => {
         "flex flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl",
         floating ? "fixed z-[9980] h-auto w-[min(94vw,480px)] max-h-[88vh]" : "h-full"
       )}
-      style={floating ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
+      style={floating && panelPosition ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
       data-testid="theme-bubble-panel"
     >
       <div className="relative flex h-full flex-col">

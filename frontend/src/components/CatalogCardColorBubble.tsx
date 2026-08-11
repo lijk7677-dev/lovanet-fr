@@ -76,7 +76,24 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:catalog-card-color";
-const POSITION_STORAGE = "lovanet:catalog-color-position";
+// v2 key forces fresh positioning on all existing sessions
+const POSITION_STORAGE = "lovanet:catalog-color-pos-v2";
+
+const PANEL_W = 340;
+
+const safeDefault = () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  if (w < 600) {
+    return { x: Math.max(8, Math.round((w - PANEL_W) / 2)), y: 62 };
+  }
+  return { x: Math.max(8, w - PANEL_W - 16), y: Math.max(8, Math.round(h * 0.08)) };
+};
+
+const clampPos = (x: number, y: number) => ({
+  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - PANEL_W - 8)),
+  y: Math.min(Math.max(y, 8), window.innerHeight - 120),
+});
 
 const apply = (s: Skin) => {
   const r = document.documentElement.style;
@@ -98,7 +115,7 @@ const apply = (s: Skin) => {
 export const CatalogCardColorBubble = () => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("off");
-  const [panelPos, setPanelPos] = useState({ x: 12, y: 80 });
+  const [panelPos, setPanelPos] = useState<{ x: number; y: number } | null>(null);
   const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -114,13 +131,12 @@ export const CatalogCardColorBubble = () => {
       try {
         const p = JSON.parse(savedPos) as { x?: number; y?: number };
         if (typeof p.x === "number" && typeof p.y === "number") {
-          setPanelPos({ x: p.x, y: p.y });
+          setPanelPos(clampPos(p.x, p.y));
           return;
         }
       } catch { /* ignore */ }
     }
-    // Default: upper-right, beside the orb button, clear of settings panel
-    setPanelPos({ x: Math.max(8, window.innerWidth - 370), y: Math.max(8, Math.round(window.innerHeight * 0.12)) });
+    setPanelPos(safeDefault());
   }, []);
 
   const pick = (s: Skin) => {
@@ -157,7 +173,7 @@ export const CatalogCardColorBubble = () => {
 
   return (
     <>
-      {open && (
+      {open && panelPos && (
         <div
           ref={panelRef}
           className="fixed z-[9980] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"

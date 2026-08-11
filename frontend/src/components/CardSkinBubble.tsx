@@ -56,7 +56,28 @@ const SKINS: Skin[] = [
 ];
 
 const STORAGE = "lovanet:card-skin";
-const POSITION_STORAGE = "lovanet:card-skin-position";
+// v2 key forces fresh positioning on all existing sessions
+const POSITION_STORAGE = "lovanet:card-skin-pos-v2";
+
+const PANEL_W = 290;
+
+/** Returns a position that keeps the panel on screen and clear of the bottom-left settings panel. */
+const safeDefault = () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  if (w < 600) {
+    // mobile: top-center, safely above the bottom settings panel
+    return { x: Math.max(8, Math.round((w - PANEL_W) / 2)), y: 62 };
+  }
+  // desktop/tablet: upper-right, away from left-side orbs
+  return { x: Math.max(8, w - PANEL_W - 16), y: Math.max(8, Math.round(h * 0.08)) };
+};
+
+/** Clamp a saved position so it stays fully visible after a resize or device change. */
+const clampPos = (x: number, y: number) => ({
+  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - PANEL_W - 8)),
+  y: Math.min(Math.max(y, 8), window.innerHeight - 120),
+});
 
 const apply = (s: Skin) => {
   const r = document.documentElement.style;
@@ -68,7 +89,7 @@ const apply = (s: Skin) => {
 export const CardSkinBubble = () => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("white");
-  const [panelPos, setPanelPos] = useState({ x: 12, y: 80 });
+  const [panelPos, setPanelPos] = useState<{ x: number; y: number } | null>(null);
   const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -84,13 +105,12 @@ export const CardSkinBubble = () => {
       try {
         const p = JSON.parse(savedPos) as { x?: number; y?: number };
         if (typeof p.x === "number" && typeof p.y === "number") {
-          setPanelPos({ x: p.x, y: p.y });
+          setPanelPos(clampPos(p.x, p.y));
           return;
         }
       } catch { /* ignore */ }
     }
-    // Default: upper-right, clear of the bottom-left settings panel
-    setPanelPos({ x: Math.max(8, window.innerWidth - 310), y: Math.max(8, Math.round(window.innerHeight * 0.12)) });
+    setPanelPos(safeDefault());
   }, []);
 
   const pick = (s: Skin) => {
@@ -127,7 +147,7 @@ export const CardSkinBubble = () => {
 
   return (
     <>
-      {open && (
+      {open && panelPos && (
         <div
           ref={panelRef}
           className="fixed z-[9980] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,290px)]"
