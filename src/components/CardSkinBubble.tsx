@@ -84,7 +84,15 @@ export const CardSkinBubble = () => {
   return (
     <div className="fixed bottom-5 left-4 z-[60] flex flex-col items-start gap-3 sm:left-5">
       {open && (
-        <div className="w-[min(90vw,300px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in sm:w-[280px]">
+        <div className="relative w-[min(90vw,300px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in sm:w-[280px]">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Fermer le panneau apparence des cartes"
+            className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+          >
+            <X className="h-4 w-4" />
+          </button>
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Apparence des cartes
           </p>

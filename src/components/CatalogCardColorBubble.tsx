@@ -114,7 +114,15 @@ export const CatalogCardColorBubble = () => {
   return (
     <div className="fixed right-2 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-3 sm:right-3">
       {open && (
-        <div className="w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
+        <div className="relative w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Fermer le panneau couleur des cartes"
+            className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+          >
+            <X className="h-4 w-4" />
+          </button>
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Couleur des cartes catalogue
           </p>

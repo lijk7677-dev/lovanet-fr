@@ -9,6 +9,7 @@ import {
   Shuffle,
   Sparkles,
   Star,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -721,7 +722,15 @@ export const ThemeBubble = () => {
   const panelBody = (
     <div className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl" data-testid="theme-bubble-panel">
       <div className="relative flex h-full flex-col">
-        <div className="border-b border-white/20 px-4 pb-3 pt-4 md:px-5">
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Fermer le panneau des thèmes"
+          className="absolute right-3 top-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="border-b border-white/20 px-4 pb-3 pt-4 pr-12 md:px-5 md:pr-14">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="inline-flex h-8 items-center gap-2 rounded-full px-3 text-[11px] font-medium text-white/90 bg-white/10 border border-white/20">
               <Sparkles className="h-3.5 w-3.5" style={{ color: activeTheme.primaryHex }} />
