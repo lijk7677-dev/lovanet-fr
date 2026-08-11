@@ -80,12 +80,24 @@ const clampPos = (x: number, y: number) => ({
 
 type PanelRect = { x: number; y: number; w: number; h: number };
 const REGISTRY_KEY = "__lovanetOpenBubblePanels";
+const REGISTRY_EVENT = "lovanet:bubble-registry-change";
 const PANEL_ID = "card-skin";
+const PANEL_PRIORITY: Record<string, number> = {
+  theme: 3,
+  "catalog-color": 2,
+  "card-skin": 1,
+};
+
+const getPriority = (id: string) => PANEL_PRIORITY[id] ?? 0;
 
 const getRegistry = (): Record<string, PanelRect> => {
   const host = window as unknown as { [REGISTRY_KEY]?: Record<string, PanelRect> };
   if (!host[REGISTRY_KEY]) host[REGISTRY_KEY] = {};
   return host[REGISTRY_KEY] as Record<string, PanelRect>;
+};
+
+const notifyRegistryChange = (source: string) => {
+  window.dispatchEvent(new CustomEvent(REGISTRY_EVENT, { detail: { source } }));
 };
 
 const overlaps = (a: PanelRect, b: PanelRect) =>
@@ -104,7 +116,13 @@ const getSettingsPanelRect = (): PanelRect => {
 
 const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
   const gap = 12;
-  const blockers: PanelRect[] = [getSettingsPanelRect(), ...Object.entries(getRegistry()).filter(([key]) => key !== id).map(([, rect]) => rect)];
+  const blockers: PanelRect[] = [
+    getSettingsPanelRect(),
+    ...Object.entries(getRegistry())
+      .filter(([key]) => key !== id && getPriority(key) >= getPriority(id))
+      .sort(([left], [right]) => getPriority(right) - getPriority(left))
+      .map(([, rect]) => rect),
+  ];
   let rect = { x, y, w, h };
 
   rect.x = Math.min(Math.max(rect.x, 8), Math.max(8, window.innerWidth - rect.w - 8));
@@ -193,8 +211,33 @@ export const CardSkinBubble = () => {
       ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
       : estimatePanelSize();
     getRegistry()[PANEL_ID] = { x: panelPos.x, y: panelPos.y, w: size.w, h: size.h };
+    notifyRegistryChange(PANEL_ID);
     return () => {
       delete getRegistry()[PANEL_ID];
+      notifyRegistryChange(PANEL_ID);
+    };
+  }, [open, panelPos]);
+
+  useEffect(() => {
+    if (!open || !panelPos) return;
+    const handleRegistryChange = (event: Event) => {
+      const source = (event as CustomEvent<{ source?: string }>).detail?.source;
+      if (source === PANEL_ID || !panelRef.current) return;
+      const resolved = resolveNonOverlapping(
+        PANEL_ID,
+        panelPos.x,
+        panelPos.y,
+        panelRef.current.offsetWidth,
+        panelRef.current.offsetHeight,
+      );
+      if (resolved.x === panelPos.x && resolved.y === panelPos.y) return;
+      setPanelPos(resolved);
+      localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
+    };
+
+    window.addEventListener(REGISTRY_EVENT, handleRegistryChange as EventListener);
+    return () => {
+      window.removeEventListener(REGISTRY_EVENT, handleRegistryChange as EventListener);
     };
   }, [open, panelPos]);
 
