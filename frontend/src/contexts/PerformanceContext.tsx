@@ -89,8 +89,19 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
     setDisableVideos((v) => !v);
   };
 
+  const _toggleAnimationsImmediate = () => {
+    setDisableAnimations((v) => {
+      const next = !v;
+      try { localStorage.setItem("site_disable_animations", JSON.stringify(next)); } catch {}
+      if (next) document.body.setAttribute("data-hide-decors", "1");
+      else document.body.removeAttribute("data-hide-decors");
+      try { window.dispatchEvent(new Event("lovanet:decor-update")); } catch {}
+      return next;
+    });
+  };
+
   return (
-    <PerformanceContext.Provider value={{ disableAnimations, disableVideos, toggleAnimations, toggleVideos, isMobile }}>
+    <PerformanceContext.Provider value={{ disableAnimations, disableVideos, toggleAnimations: _toggleAnimationsImmediate, toggleVideos, isMobile }}>
       {children}
     </PerformanceContext.Provider>
   );
