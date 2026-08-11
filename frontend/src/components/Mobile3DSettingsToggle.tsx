@@ -169,7 +169,7 @@ export function Mobile3DSettingsToggle() {
 
   const anyOff = !decorOverlayEnabled || disableVideos;
   const buttonLeft = isDesktop ? 24 : 14;
-  const panelBottom = (isDesktop ? 104 : 84) + 54 + 10;
+  const panelBottom = isDesktop ? 170 : 220;
 
   return (
     <>
@@ -235,15 +235,16 @@ export function Mobile3DSettingsToggle() {
             </div>
 
             {tab === "controls" && (
-              <>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
                 <button type="button" onClick={toggleVideos} aria-pressed={!disableVideos} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
                   border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
                   background: disableVideos ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
                   color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: 12, fontWeight: 600,
+                  minHeight: 58,
                 }}>
                   {disableVideos ? <VideoOff size={14} /> : <Video size={14} />}
-                  {disableVideos ? "Arrière-plan vidéo : désactivé" : "Arrière-plan vidéo : activé"}
+                  <span style={{ lineHeight: 1.15 }}>{disableVideos ? "Vidéo fond OFF" : "Vidéo fond ON"}</span>
                   <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.24)", background: "rgba(255,255,255,0.08)", color: "#fff" }}>
                     {disableVideos ? "OFF" : "ON"}
                   </span>
@@ -253,14 +254,15 @@ export function Mobile3DSettingsToggle() {
                   border: `1px solid ${!decorOverlayEnabled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
                   background: !decorOverlayEnabled ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
                   color: "rgba(255,255,255,0.92)", cursor: "pointer", fontSize: 12, fontWeight: 700,
+                  minHeight: 58,
                 }}>
                   {!decorOverlayEnabled ? <EyeOff size={14} /> : <Eye size={14} />}
-                  {!decorOverlayEnabled ? "Effets visuels 3D : désactivés" : "Effets visuels 3D : activés"}
+                  <span style={{ lineHeight: 1.15 }}>{!decorOverlayEnabled ? "Décors 3D OFF" : "Décors 3D ON"}</span>
                   <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.26)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>
                     {!decorOverlayEnabled ? "OFF" : "ON"}
                   </span>
                 </button>
-              </>
+              </div>
             )}
 
             {tab === "decors" && (

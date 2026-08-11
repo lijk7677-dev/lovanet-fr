@@ -126,7 +126,7 @@ const getSettingsPanelRect = (): PanelRect => {
   const h = window.innerHeight;
   const panelW = Math.min(Math.round(w * 0.92), 320);
   const panelH = Math.min(Math.round(h * 0.78), 620);
-  const panelBottom = (w >= 1024 ? 104 : 84) + 54 + 10;
+  const panelBottom = w >= 1024 ? 170 : 220;
   const x = Math.round((w - panelW) / 2);
   const y = h - panelBottom - panelH;
   return { x, y, w: panelW, h: panelH };
