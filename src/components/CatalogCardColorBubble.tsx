@@ -184,9 +184,8 @@ export const CatalogCardColorBubble = () => {
           onPointerCancel={onUp}
         >
           <div className="mb-2 flex cursor-grab select-none items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-white/70">
+            <span className="inline-flex items-center text-white/70" aria-hidden="true">
               <Move className="h-3.5 w-3.5" />
-              Couleur des cartes
             </span>
             <button
               type="button"
@@ -214,17 +213,10 @@ export const CatalogCardColorBubble = () => {
                   animation: s.animated ? "lovanet-bg-shift 8s ease infinite" : undefined,
                 }}
               >
-                {s.key === "off" && (
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] text-muted-foreground">
-                    OFF
-                  </span>
-                )}
+                {s.key === "off" && <span className="absolute inset-0" aria-hidden="true" />}
               </button>
             ))}
           </div>
-          <p className="mt-2 px-1 text-[10px] text-white/60">
-            {SKINS.find((s) => s.key === active)?.label}
-          </p>
         </div>
       )}
       {/* Orb button stays fixed on right edge, vertically centered */}
