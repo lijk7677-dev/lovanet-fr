@@ -175,8 +175,7 @@ export function Mobile3DSettingsToggle() {
 
   const anyOff = !decorOverlayEnabled || disableVideos;
   const buttonLeft = isDesktop ? 24 : 14;
-  const panelWidth = Math.min(320, viewportWidth * 0.92);
-  const mobilePanelShift = (viewportWidth - panelWidth) / 2 - buttonLeft;
+  const panelBottom = (isDesktop ? 104 : 84) + 54 + 10;
 
   return (
     <>
@@ -184,38 +183,47 @@ export function Mobile3DSettingsToggle() {
         @keyframes lv-orb-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes lv-orb-pulse { 0%,100% { transform: scale(1); opacity:0.85; } 50% { transform: scale(1.3); opacity:1; } }
       `}</style>
-      <div style={{ position: "fixed", bottom: isDesktop ? 104 : 84, left: buttonLeft, zIndex: 9999, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
-        {/* Main orb button */}
-        <button
-          type="button"
-          onClick={() => setIsOpen((v) => !v)}
-          aria-label="Arrière-plans et décors"
-          style={{
-            width: 54, height: 54, borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.2)",
-            background: anyOff ? "rgba(255,255,255,0.13)" : "rgba(6,182,212,0.12)",
-            backdropFilter: "blur(16px)",
-            boxShadow: anyOff
-              ? "0 0 24px rgba(255,255,255,0.35), 0 8px 32px rgba(0,0,0,0.4)"
-              : "0 0 28px rgba(56,189,248,0.35), 0 8px 32px rgba(0,0,0,0.4)",
-            cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            transition: "box-shadow 0.3s, background 0.3s",
-          }}
-        >
-          <OrbIcon anyOff={anyOff} />
-        </button>
+      {/* Main orb button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-label="Arrière-plans et décors"
+        style={{
+          position: "fixed",
+          bottom: isDesktop ? 104 : 84,
+          left: buttonLeft,
+          zIndex: 9999,
+          width: 54, height: 54, borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.2)",
+          background: anyOff ? "rgba(255,255,255,0.13)" : "rgba(6,182,212,0.12)",
+          backdropFilter: "blur(16px)",
+          boxShadow: anyOff
+            ? "0 0 24px rgba(255,255,255,0.35), 0 8px 32px rgba(0,0,0,0.4)"
+            : "0 0 28px rgba(56,189,248,0.35), 0 8px 32px rgba(0,0,0,0.4)",
+          cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "box-shadow 0.3s, background 0.3s",
+        }}
+      >
+        <OrbIcon anyOff={anyOff} />
+      </button>
 
-        {/* Panel */}
-        {isOpen && (
-          <div style={{
-            background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.42)",
-            borderRadius: 20, padding: "12px 12px 10px", width: "min(92vw, 320px)",
-            maxHeight: "min(78vh, 620px)",
-            marginLeft: isDesktop ? 0 : mobilePanelShift,
-            backdropFilter: "blur(20px) saturate(1.12)", boxShadow: "0 20px 56px rgba(0,0,0,0.34)",
-            display: "flex", flexDirection: "column", gap: 10,
-          }}>
+      {/* Panel — independently centered on screen */}
+      {isOpen && (
+        <div style={{
+          position: "fixed",
+          bottom: panelBottom,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 9998,
+          background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
+          borderRadius: 20, padding: "12px 12px 10px",
+          width: isDesktop ? 320 : `min(${viewportWidth - 28}px, 320px)`,
+          maxHeight: "min(78vh, 620px)",
+          backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
+          display: "flex", flexDirection: "column", gap: 10,
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {/* Tabs */}
             <div style={{ display: "flex", gap: 5 }}>
               {(["controls", "decors"] as const).map((t) => (
@@ -355,8 +363,8 @@ export function Mobile3DSettingsToggle() {
               </>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
