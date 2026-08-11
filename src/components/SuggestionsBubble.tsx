@@ -56,7 +56,8 @@ export function SuggestionsBubble() {
       <NavSuggestionsIndicator isActive={open} onClick={() => setOpen((o) => !o)} />
 
       {open && (
-        <div className="dock-popup absolute bottom-full left-0 z-[10000] mb-3 w-[280px] rounded-2xl border border-border bg-card/95 p-3 shadow-2xl backdrop-blur-xl animate-scale-in">
+        <div style={{ zIndex: 10030 }}
+          className="dock-popup absolute bottom-full left-0 mb-3 w-[280px] rounded-2xl border border-border bg-card/95 p-3 shadow-2xl backdrop-blur-xl animate-scale-in">
           <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
             Accès rapide
           </p>
