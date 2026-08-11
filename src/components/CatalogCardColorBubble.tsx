@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Palette, X } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 
 /**
  * Floating bubble anchored to the middle of the RIGHT edge.
@@ -114,19 +114,19 @@ export const CatalogCardColorBubble = () => {
   return (
     <div className="fixed right-2 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-3 sm:right-3">
       {open && (
-      <div className="w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
+        <div className="w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Couleur des cartes catalogue
           </p>
-        <div className="grid grid-cols-5 gap-3 sm:grid-cols-6 md:grid-cols-7">
+          <div className="grid grid-cols-5 gap-3 sm:grid-cols-6 md:grid-cols-7">
             {SKINS.map((s) => (
               <button
                 key={s.key}
                 onClick={() => pick(s)}
                 title={s.label}
                 aria-label={s.label}
-              className={`relative h-10 w-10 rounded-full border border-white/35 transition-transform hover:scale-110 sm:h-9 sm:w-9 md:h-8 md:w-8 ${
-                active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
+                className={`relative h-10 w-10 rounded-full border border-white/35 transition-transform hover:scale-110 sm:h-9 sm:w-9 md:h-8 md:w-8 ${
+                  active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
                 }`}
                 style={{
                   background: s.swatch,
@@ -147,15 +147,22 @@ export const CatalogCardColorBubble = () => {
           </p>
         </div>
       )}
-      {/* Bulle 3D neutre (sans couleur) : verre argenté + animation de flottement */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Couleur des cartes du catalogue"
-        className="catalog-color-orb relative w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
+        className="relative w-12 h-12 rounded-full shadow-[0_10px_30px_hsl(var(--primary)/0.45)] border border-border bg-card/90 backdrop-blur-xl hover:scale-110 transition-all flex items-center justify-center overflow-hidden"
       >
-        <span className="catalog-color-orb-shine absolute inset-0" aria-hidden />
-        <span className="relative z-10 text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]">
-          {open ? <X className="w-5 h-5" /> : <Palette className="w-5 h-5" />}
+        <span
+          className="absolute inset-0 opacity-80"
+          style={{
+            background:
+              "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
+            backgroundSize: "300% 300%",
+            animation: "lovanet-bg-shift 6s ease infinite",
+          }}
+        />
+        <span className="relative z-10 text-white drop-shadow">
+          {open ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
         </span>
       </button>
     </div>
