@@ -112,21 +112,21 @@ export const CatalogCardColorBubble = () => {
   };
 
   return (
-    <div className="fixed right-3 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-3">
+    <div className="fixed right-2 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-3 sm:right-3">
       {open && (
-        <div className="dock-popup rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-3 shadow-2xl animate-scale-in w-[280px] max-h-[70vh] overflow-y-auto">
+      <div className="w-[min(92vw,340px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in max-h-[70vh] overflow-y-auto sm:w-[320px]">
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Couleur des cartes catalogue
           </p>
-          <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-5 gap-3 sm:grid-cols-6 md:grid-cols-7">
             {SKINS.map((s) => (
               <button
                 key={s.key}
                 onClick={() => pick(s)}
                 title={s.label}
                 aria-label={s.label}
-                className={`relative w-8 h-8 rounded-full border border-border/60 transition-transform hover:scale-110 ${
-                  active === s.key ? "ring-2 ring-primary ring-offset-2 ring-offset-card" : ""
+              className={`relative h-10 w-10 rounded-full border border-white/35 transition-transform hover:scale-110 sm:h-9 sm:w-9 md:h-8 md:w-8 ${
+                active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
                 }`}
                 style={{
                   background: s.swatch,

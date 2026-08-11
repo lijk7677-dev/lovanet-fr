@@ -719,10 +719,10 @@ export const ThemeBubble = () => {
   }, [activeTheme, navMode, open]);
 
   const panelBody = (
-    <div className="theme-orb-panel flex h-full flex-col overflow-hidden bg-black/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] rounded-[2rem]" data-testid="theme-bubble-panel">
+    <div className="theme-orb-panel flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl" data-testid="theme-bubble-panel">
       <div className="theme-orb-panel-highlight" aria-hidden="true" />
       <div className="relative flex h-full flex-col">
-        <div className="border-b border-white/5 px-4 pb-3 pt-4 md:px-5">
+        <div className="border-b border-white/20 px-4 pb-3 pt-4 md:px-5">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="inline-flex h-8 items-center gap-2 rounded-full px-3 text-[11px] font-medium text-white/90 bg-white/10 border border-white/20">
               <Sparkles className="h-3.5 w-3.5" style={{ color: activeTheme.primaryHex }} />

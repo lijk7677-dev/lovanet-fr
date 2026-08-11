@@ -82,21 +82,21 @@ export const CardSkinBubble = () => {
   };
 
   return (
-    <div className="fixed bottom-5 left-5 z-[60] flex flex-col items-start gap-3">
+    <div className="fixed bottom-5 left-4 z-[60] flex flex-col items-start gap-3 sm:left-5">
       {open && (
-        <div className="rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-3 shadow-2xl animate-scale-in w-[260px]">
+        <div className="w-[min(90vw,300px)] rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl animate-scale-in sm:w-[280px]">
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 px-1">
             Apparence des cartes
           </p>
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-5 gap-3 sm:grid-cols-6">
             {SKINS.map((s) => (
               <button
                 key={s.key}
                 onClick={() => pick(s)}
                 title={s.label}
                 aria-label={s.label}
-                className={`relative w-9 h-9 rounded-full border border-border/60 transition-transform hover:scale-110 ${
-                  active === s.key ? "ring-2 ring-primary ring-offset-2 ring-offset-card" : ""
+                className={`relative h-10 w-10 rounded-full border border-white/35 transition-transform hover:scale-110 sm:h-9 sm:w-9 ${
+                  active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
                 }`}
                 style={{ background: s.swatch }}
               />
