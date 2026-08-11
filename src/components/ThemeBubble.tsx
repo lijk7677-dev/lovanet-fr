@@ -109,20 +109,21 @@ const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v3";
 const DEFAULT_THEME_ID = "mint-vibrant-cyber";
 
 const THEME_PANEL_W = 480;
+const VIEWPORT_MARGIN = 16;
 
 const safeDefaultThemePos = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const panelW = Math.min(Math.round(w * 0.94), THEME_PANEL_W);
   return {
-    x: Math.max(8, w - panelW - 16),
-    y: w < 600 ? 36 : Math.max(8, Math.round(h * 0.06)),
+    x: Math.max(VIEWPORT_MARGIN, w - panelW - 24),
+    y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.05)),
   };
 };
 
 const clampThemePos = (x: number, y: number) => ({
-  x: Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - Math.min(window.innerWidth * 0.94, THEME_PANEL_W) - 8)),
-  y: Math.min(Math.max(y, 8), window.innerHeight - 120),
+  x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - Math.min(window.innerWidth * 0.94, THEME_PANEL_W) - VIEWPORT_MARGIN)),
+  y: Math.min(Math.max(y, VIEWPORT_MARGIN), window.innerHeight - (window.innerWidth >= 1024 ? 160 : 220)),
 });
 
 type PanelRect = { x: number; y: number; w: number; h: number };
@@ -158,13 +159,29 @@ const getSettingsPanelRect = (): PanelRect => {
   const panelBottom = w >= 1024 ? 170 : 220;
   const x = Math.round((w - panelW) / 2);
   const y = h - panelBottom - panelH;
-  return { x, y, w: panelW, h: panelH };
+  const sidePad = w >= 1024 ? 36 : 48;
+  const topPad = w >= 1024 ? 44 : 64;
+  const bottomPad = w >= 1024 ? 26 : 38;
+  return {
+    x: Math.max(0, x - sidePad),
+    y: Math.max(0, y - topPad),
+    w: Math.min(w, panelW + sidePad * 2),
+    h: Math.min(h, panelH + topPad + bottomPad),
+  };
+};
+
+const getBottomBarRect = (): PanelRect => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const reserved = w >= 1024 ? 120 : 170;
+  return { x: 0, y: h - reserved, w, h: reserved };
 };
 
 const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
   const gap = 12;
   const blockers: PanelRect[] = [
     getSettingsPanelRect(),
+    getBottomBarRect(),
     ...Object.entries(getRegistry())
       .filter(([key]) => key !== id && getPriority(key) >= getPriority(id))
       .sort(([left], [right]) => getPriority(right) - getPriority(left))
@@ -172,33 +189,33 @@ const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: n
   ];
   let rect = { x, y, w, h };
 
-  rect.x = Math.min(Math.max(rect.x, 8), Math.max(8, window.innerWidth - rect.w - 8));
-  rect.y = Math.min(Math.max(rect.y, 8), Math.max(8, window.innerHeight - rect.h - 8));
+  rect.x = Math.min(Math.max(rect.x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN));
+  rect.y = Math.min(Math.max(rect.y, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN));
 
   for (let i = 0; i < 8; i += 1) {
     const hit = blockers.find((b) => overlaps(rect, b));
     if (!hit) break;
 
     let nextX = hit.x - rect.w - gap;
-    if (nextX < 8) {
+    if (nextX < VIEWPORT_MARGIN) {
       nextX = hit.x + hit.w + gap;
     }
-    if (nextX > window.innerWidth - rect.w - 8) {
+    if (nextX > window.innerWidth - rect.w - VIEWPORT_MARGIN) {
       nextX = rect.x;
     }
 
     let nextY = rect.y;
     if (nextX === rect.x) {
       nextY = hit.y + hit.h + gap;
-      if (nextY > window.innerHeight - rect.h - 8) {
-        nextY = Math.max(8, hit.y - rect.h - gap);
+      if (nextY > window.innerHeight - rect.h - VIEWPORT_MARGIN) {
+        nextY = Math.max(VIEWPORT_MARGIN, hit.y - rect.h - gap);
       }
     }
 
     rect = {
       ...rect,
-      x: Math.min(Math.max(nextX, 8), Math.max(8, window.innerWidth - rect.w - 8)),
-      y: Math.min(Math.max(nextY, 8), Math.max(8, window.innerHeight - rect.h - 8)),
+      x: Math.min(Math.max(nextX, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN)),
+      y: Math.min(Math.max(nextY, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN)),
     };
   }
 
