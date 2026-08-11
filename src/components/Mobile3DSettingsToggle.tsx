@@ -104,6 +104,9 @@ export function Mobile3DSettingsToggle() {
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 1280,
+  );
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
   );
@@ -129,7 +132,10 @@ export function Mobile3DSettingsToggle() {
   }, [activeDecors, disableAnimations, toggleAnimations]);
 
   useEffect(() => {
-    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
+    const onResize = () => {
+      setViewportWidth(window.innerWidth);
+      setIsDesktop(window.innerWidth >= 1024);
+    };
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -168,6 +174,9 @@ export function Mobile3DSettingsToggle() {
   };
 
   const anyOff = !decorOverlayEnabled || disableVideos;
+  const buttonLeft = isDesktop ? 24 : 14;
+  const panelWidth = Math.min(320, viewportWidth * 0.92);
+  const mobilePanelShift = Math.max(0, (viewportWidth - panelWidth) / 2 - buttonLeft);
 
   return (
     <>
@@ -175,7 +184,7 @@ export function Mobile3DSettingsToggle() {
         @keyframes lv-orb-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes lv-orb-pulse { 0%,100% { transform: scale(1); opacity:0.85; } 50% { transform: scale(1.3); opacity:1; } }
       `}</style>
-      <div style={{ position: "fixed", bottom: isDesktop ? 104 : 84, left: isDesktop ? 24 : 14, zIndex: 9999, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
+      <div style={{ position: "fixed", bottom: isDesktop ? 104 : 84, left: buttonLeft, zIndex: 9999, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
         {/* Main orb button */}
         <button
           type="button"
@@ -203,6 +212,7 @@ export function Mobile3DSettingsToggle() {
             background: "rgba(3,7,18,0.92)", border: "1px solid rgba(255,255,255,0.12)",
             borderRadius: 20, padding: "12px 12px 10px", width: "min(92vw, 320px)",
             maxHeight: "min(78vh, 620px)",
+            marginLeft: isDesktop ? 0 : mobilePanelShift,
             backdropFilter: "blur(28px)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
             display: "flex", flexDirection: "column", gap: 10,
           }}>
