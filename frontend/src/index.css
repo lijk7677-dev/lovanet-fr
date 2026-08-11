@@ -1917,7 +1917,7 @@ body[data-hide-decors] [data-animated-bg] {
   .nav-theme-shell {
     border-color: var(--nav-theme-border) !important;
     background: linear-gradient(180deg, color-mix(in srgb, var(--nav-theme-bg) 88%, transparent), color-mix(in srgb, var(--nav-theme-surface) 94%, transparent)) !important;
-    color: var(--nav-theme-text) !important;
+    color: #ffffff !important;
     backdrop-filter: blur(22px) saturate(1.14);
     -webkit-backdrop-filter: blur(22px) saturate(1.14);
     box-shadow: var(--nav-theme-shadow), 0 0 28px color-mix(in srgb, var(--nav-theme-accent) 18%, transparent);
@@ -1926,11 +1926,17 @@ body[data-hide-decors] [data-animated-bg] {
   .nav-theme-chip {
     border: 1px solid color-mix(in srgb, var(--nav-theme-border) 92%, transparent);
     background: linear-gradient(180deg, color-mix(in srgb, var(--nav-theme-bg) 82%, transparent), color-mix(in srgb, var(--nav-theme-surface) 88%, transparent));
-    color: var(--nav-theme-text);
+    color: #ffffff;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+  }
+
+  .nav-theme-chip svg,
+  .nav-theme-shell svg,
+  .nav-theme-accent-text {
+    color: #ffffff !important;
   }
 
   .nav-theme-chip:hover,

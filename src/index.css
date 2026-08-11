@@ -71,17 +71,6 @@ body[data-hide-decors] [data-animated-bg] {
   }
 }
 
-/* First portal video only: keep the desktop banner inside the same visual
-   boundary as the trailer player below and preserve the source 16:9 ratio. */
-@media (min-width: 1024px) {
-  .hero-capture-banner {
-    width: min(50vw, 820px) !important;
-    height: auto !important;
-    max-width: calc(100% - 4rem) !important;
-    aspect-ratio: 16 / 9;
-  }
-}
-
 @layer base {
   :root {
     /* Dark deep-space theme (Anime Moments) */
@@ -318,69 +307,6 @@ body[data-hide-decors] [data-animated-bg] {
     --nav-theme-accent-3: #818cf8;
     --nav-theme-text: #99f6e4;
   }
-
-  .theme-menthe-vibrant-cypher {
-    /* Thème par défaut vibrant mint / cypher green */
-    /* shadcn tokens */
-    --background: 150 45% 4%;
-    --foreground: 150 30% 96%;
-    --card: 150 35% 7%;
-    --card-foreground: 150 30% 96%;
-    --popover: 150 35% 7%;
-    --popover-foreground: 150 30% 96%;
-    --primary: 156 100% 50%;
-    --primary-foreground: 150 45% 4%;
-    --secondary: 150 20% 14%;
-    --secondary-foreground: 150 30% 96%;
-    --muted: 150 18% 14%;
-    --muted-foreground: 150 20% 70%;
-    --accent: 156 100% 50%;
-    --accent-foreground: 150 45% 4%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 150 20% 18%;
-    --input: 150 20% 18%;
-    --ring: 156 100% 50%;
-    --neon-cyan: 156 100% 50%;
-    --neon-magenta: 191 84% 53%;
-    --neon-purple: 160 84% 40%;
-    --surface: 150 35% 7%;
-    --surface-elevated: 150 30% 10%;
-    --pill: 150 18% 14%;
-    /* legacy theme tokens */
-    --theme-bg: #06120d;
-    --theme-card: #0a1f15;
-    --theme-card-2: #0f2a1d;
-    --theme-border: rgba(0, 255, 157, 0.4);
-    --theme-border-soft: rgba(0, 255, 157, 0.2);
-    --theme-border-strong: rgba(0, 255, 157, 0.6);
-    --theme-overlay: rgba(6, 18, 13, 0.85);
-    --theme-overlay-strong: rgba(6, 18, 13, 0.95);
-    --theme-fg-on-bg: #d1fae5;
-    --theme-fg-on-card: #a7f3d0;
-    --theme-fg-on-overlay: #d1fae5;
-    --theme-muted: rgba(167, 243, 208, 0.72);
-    --theme-link: #00ff9d;
-    --theme-link-hover: #22d3ee;
-    --theme-glow: 0 0 18px rgba(0, 255, 157, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
-    --theme-glow-2: 0 0 12px rgba(0, 255, 157, 0.2), 0 0 28px rgba(16, 185, 129, 0.2);
-    --theme-ring: #00ff9d;
-    --theme-neon-a: #00ff9d;
-    --theme-neon-b: #22d3ee;
-    --theme-neon-c: #10b981;
-    --site-tint: radial-gradient(circle at 18% 18%, rgba(0, 255, 157, 0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34, 211, 238, 0.15) 0%, transparent 22%), linear-gradient(160deg, #06120d 0%, #0a1f15 55%, #031008 100%);
-    --bubble-a: #00ff9d;
-    --bubble-b: #22d3ee;
-    --bubble-c: #10b981;
-    --nav-theme-bg: rgba(6, 18, 13, 0.75);
-    --nav-theme-surface: rgba(6, 18, 13, 0.9);
-    --nav-theme-border: rgba(0, 255, 157, 0.3);
-    --nav-theme-accent: #00ff9d;
-    --nav-theme-accent-2: #22d3ee;
-    --nav-theme-accent-3: #10b981;
-    --nav-theme-text: #d1fae5;
-  }
-
 
 
 
@@ -1488,22 +1414,6 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   /* Animated rainbow price text */
-  /* Neutral soft frame — no rainbow, used for video preview players */
-  .soft-frame {
-    position: relative;
-    overflow: hidden;
-    border-radius: inherit;
-    border: 1px solid hsl(0 0% 100% / 0.14);
-    background: linear-gradient(180deg, hsl(220 24% 12% / 0.55), hsl(220 24% 8% / 0.55));
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.08),
-      0 10px 30px -18px hsl(220 40% 4% / 0.8);
-    transition: border-color .35s ease, box-shadow .35s ease;
-  }
-  .soft-frame:hover {
-    border-color: hsl(0 0% 100% / 0.24);
-  }
-
   .rgb-price {
     background: linear-gradient(90deg,
       hsl(330 95% 60%),
@@ -2007,7 +1917,7 @@ body[data-hide-decors] [data-animated-bg] {
   .nav-theme-shell {
     border-color: var(--nav-theme-border) !important;
     background: linear-gradient(180deg, color-mix(in srgb, var(--nav-theme-bg) 88%, transparent), color-mix(in srgb, var(--nav-theme-surface) 94%, transparent)) !important;
-    color: var(--nav-theme-text) !important;
+    color: #ffffff !important;
     backdrop-filter: blur(22px) saturate(1.14);
     -webkit-backdrop-filter: blur(22px) saturate(1.14);
     box-shadow: var(--nav-theme-shadow), 0 0 28px color-mix(in srgb, var(--nav-theme-accent) 18%, transparent);
@@ -2016,11 +1926,17 @@ body[data-hide-decors] [data-animated-bg] {
   .nav-theme-chip {
     border: 1px solid color-mix(in srgb, var(--nav-theme-border) 92%, transparent);
     background: linear-gradient(180deg, color-mix(in srgb, var(--nav-theme-bg) 82%, transparent), color-mix(in srgb, var(--nav-theme-surface) 88%, transparent));
-    color: var(--nav-theme-text);
+    color: #ffffff;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+  }
+
+  .nav-theme-chip svg,
+  .nav-theme-shell svg,
+  .nav-theme-accent-text {
+    color: #ffffff !important;
   }
 
   .nav-theme-chip:hover,
@@ -2169,20 +2085,6 @@ body[data-hide-decors] [data-animated-bg] {
 
   .hero-banner-content > * {
     transform: translateZ(22px);
-  }
-
-  /* The first portal banner only: constrain the actual desktop landing hero. */
-  @media (min-width: 1024px) {
-    .root-hero-section {
-      width: min(100%, 760px) !important;
-      padding: 3rem 2rem 4rem !important;
-    }
-
-    .root-hero-banner,
-    .root-hero-content {
-      min-height: 0 !important;
-      height: 300px !important;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -2387,8 +2289,11 @@ body[data-hide-decors] [data-animated-bg] {
     border-radius: 1rem;
     border: 1px solid rgba(255,255,255,0.28);
     background: linear-gradient(180deg, rgba(30,45,70,0.85), rgba(15,22,38,0.80));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     box-shadow: 0 12px 28px -22px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.25), 0 0 20px rgba(90,220,255,0.15);
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    contain: layout paint;
   }
 
   .hero-premium-lower-card:hover,
@@ -2404,24 +2309,6 @@ body[data-hide-decors] [data-animated-bg] {
     overflow: hidden;
   }
 
-  /* Blister brillant : reflet vitré + arêtes lumineuses */
-  .hero-premium-lower-thumb-shell::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 12;
-    border-radius: inherit;
-    background:
-      linear-gradient(118deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 12%, rgba(255,255,255,0) 26%);
-    opacity: 0.4;
-    transition: opacity 220ms ease;
-  }
-
-  .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell::after {
-    opacity: 0.55;
-  }
-
   .hero-premium-lower-thumb-shell-vertical {
     aspect-ratio: 3 / 4;
     width: 100%;
@@ -2432,35 +2319,18 @@ body[data-hide-decors] [data-animated-bg] {
     height: 100%;
     object-fit: cover;
     display: block;
-    image-rendering: -webkit-optimize-contrast;
     transition: transform 240ms ease;
-  }
-
-  /* Couleur maximale + netteté sur les visuels de cartes trailer */
-  .hero-premium-lower-thumb-shell img,
-  .hero-premium-lower-thumb-shell video {
-    filter: saturate(1.18) contrast(1.03) brightness(1.03);
-    image-rendering: auto;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    will-change: transform;
-    transition: filter 220ms ease, transform 240ms ease;
-  }
-
-  .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell img,
-  .hero-premium-lower-card:hover .hero-premium-lower-thumb-shell video {
-    filter: saturate(1.28) contrast(1.06) brightness(1.06);
   }
 
   .hero-premium-lower-card:hover .hero-premium-lower-thumb,
   .hero-premium-lower-card:focus-visible .hero-premium-lower-thumb {
-    transform: scale(1.015);
+    transform: scale(1.04);
   }
 
   .hero-premium-lower-thumb-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.24));
+    background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.44));
   }
 
   .hero-premium-lower-badge {
@@ -2483,52 +2353,6 @@ body[data-hide-decors] [data-animated-bg] {
 
   .hero-premium-lower-copy {
     padding: 0.65rem 0.65rem 0.75rem;
-    position: relative;
-  }
-
-  /* Bokeh derrière le bloc de texte sous les cartes */
-  .hero-premium-lower-copy::after {
-    content: "";
-    position: absolute;
-    inset: -6px -4px -4px -4px;
-    z-index: 0;
-    pointer-events: none;
-    border-radius: 18px;
-    background:
-      radial-gradient(22px 22px at 18% 26%, rgba(120,200,255,0.22), rgba(120,200,255,0) 70%),
-      radial-gradient(30px 30px at 78% 18%, rgba(255,255,255,0.16), rgba(255,255,255,0) 70%),
-      radial-gradient(26px 26px at 62% 82%, rgba(150,140,255,0.20), rgba(150,140,255,0) 70%),
-      radial-gradient(18px 18px at 32% 76%, rgba(90,240,220,0.18), rgba(90,240,220,0) 70%);
-    filter: blur(6px);
-    opacity: 0.85;
-  }
-
-  /* Support vitré (comme la capture) sous les textes hors carte */
-  .hero-premium-lower-copy > p {
-    position: relative;
-    z-index: 1;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-top-color: rgba(255, 255, 255, 0.24);
-    background:
-      linear-gradient(150deg, rgba(46,62,78,0.72) 0%, rgba(24,34,46,0.66) 45%, rgba(12,18,26,0.72) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.16),
-      inset 0 -1px 0 rgba(0,0,0,0.35),
-      0 8px 20px -14px rgba(0,0,0,0.75);
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
-    border-radius: 14px 22px 22px 14px;
-    padding: 0.4rem 0.7rem;
-    overflow: hidden;
-  }
-
-  .hero-premium-lower-copy > p::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 52%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0));
-    pointer-events: none;
   }
 
   .hero-premium-lower-title {
@@ -2547,7 +2371,7 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   .hero-premium-lower-description {
-    margin-top: 0.35rem;
+    margin-top: 0.45rem;
     margin-bottom: 0;
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -2807,337 +2631,3 @@ body,
   .theme-subpanel { transition: none !important; }
 }
 
-/* ---- Texte fort et personnalisable sous les cartes de preview ---- */
-.hero-premium-lower-title {
-  color: var(--preview-text-color, #ffffff) !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 12px rgba(0, 0, 0, 0.55);
-}
-
-.hero-premium-lower-description {
-  color: var(--preview-text-color, #ffffff) !important;
-  opacity: 0.92;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-/* ---- Panneau flottant rétractable (bord gauche) ---- */
-/* ---- Panneau flottant rétractable (bord gauche) ---- */
-.floating-dock {
-  position: fixed;
-  left: 0.5rem;
-  z-index: 9998;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), top 0.25s linear;
-}
-
-.floating-dock-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.45rem 0.3rem;
-  border-radius: 0 1rem 1rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-left: none;
-  background: rgba(10, 14, 24, 0.28);
-  backdrop-filter: blur(14px) saturate(1.15);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.8);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
-}
-
-.floating-dock[data-collapsed="true"] .floating-dock-panel {
-  transform: translateX(-101%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.floating-dock-slot {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 auto;
-}
-
-/* Neutralise le positionnement fixe des bulles déplacées dans le dock */
-.floating-dock-slot > *,
-.floating-dock-slot > * > button,
-.floating-dock-slot > * > [role="button"] {
-  position: static !important;
-  inset: auto !important;
-  z-index: auto !important;
-  margin: 0 !important;
-}
-
-/* Réduit les boutons (et non les menus) dans le dock */
-.floating-dock-slot button,
-.floating-dock-slot [role="button"] {
-  width: 40px !important;
-  height: 40px !important;
-  transform: scale(0.62) !important;
-  transform-origin: center !important;
-}
-
-/* Les menus des bulles s'ouvrent vers la droite pour éviter d'être coupés par le bord gauche */
-.floating-dock-slot .dock-popup {
-  position: absolute !important;
-  inset: auto !important;
-  top: 50% !important;
-  left: 100% !important;
-  transform: translateY(-50%) !important;
-  margin: 0 0 0 0.5rem !important;
-  width: 280px !important;
-  max-width: calc(100vw - 90px) !important;
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  z-index: 10000 !important;
-}
-
-
-.floating-dock-slot .dock-popup.dock-popup-top {
-  z-index: 10030 !important;
-}
-
-.floating-dock-handle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 52px;
-  border-radius: 0 0.75rem 0.75rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-left: none;
-  background: rgba(10, 14, 24, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: rgba(255, 255, 255, 0.85);
-  transition: background 0.25s ease;
-}
-
-.floating-dock-handle:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-/* ---- Bulle 3D neutre (couleur des cartes catalogue) ---- */
-.catalog-color-orb {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background:
-    radial-gradient(120% 120% at 30% 22%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.05) 46%),
-    linear-gradient(160deg, rgba(70, 76, 90, 0.85), rgba(14, 17, 24, 0.92));
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.35),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.55),
-    0 10px 24px -10px rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: catalog-orb-float 5.5s ease-in-out infinite;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.catalog-color-orb:hover {
-  transform: translateY(-3px) scale(1.06);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.45),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.5),
-    0 16px 30px -12px rgba(0, 0, 0, 0.9);
-}
-
-.catalog-color-orb-shine {
-  border-radius: 9999px;
-  background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.28) 48%, transparent 62%);
-  opacity: 0.75;
-  animation: catalog-orb-sheen 4.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes catalog-orb-float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-5px) rotate(-4deg); }
-}
-
-@keyframes catalog-orb-sheen {
-  0% { transform: translateX(-120%); }
-  55%, 100% { transform: translateX(120%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .catalog-color-orb,
-  .catalog-color-orb-shine { animation: none; }
-}
-/* ---- Version mobile / tactile : panneau et bulles plus gros ---- */
-@media (max-width: 768px), (pointer: coarse) {
-  .floating-dock {
-    left: 0;
-    gap: 0.25rem;
-  }
-
-  .floating-dock-panel {
-    gap: 0.9rem;
-    padding: 0.7rem 0.5rem;
-    border-radius: 0 1.25rem 1.25rem 0;
-    background: rgba(10, 14, 24, 0.42);
-    max-height: 78vh;
-    overflow: visible;
-  }
-
-  .floating-dock-slot {
-    width: 60px;
-    height: 64px;
-    margin-block: 2px;
-  }
-
-  .floating-dock-slot button,
-  .floating-dock-slot [role="button"] {
-    width: 60px !important;
-    height: 60px !important;
-    transform: scale(1) !important;
-  }
-
-  .floating-dock-slot button svg,
-  .floating-dock-slot [role="button"] svg {
-    width: 26px !important;
-    height: 26px !important;
-  }
-
-  .floating-dock-handle {
-    width: 34px;
-    height: 76px;
-    border-radius: 0 1rem 1rem 0;
-  }
-
-  .floating-dock-handle svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .floating-dock-slot .dock-popup {
-    width: min(300px, calc(100vw - 96px)) !important;
-    max-width: calc(100vw - 96px) !important;
-    margin-left: 0.6rem !important;
-  }
-}
-
-
-/* ============ Menu mobile personnalisable (bulle MobileMenuSkinBubble) ============ */
-:root {
-  --mnav-panel: rgba(0, 0, 0, 0);
-  --mnav-section: rgba(255, 255, 255, 0.04);
-  --mnav-text: #ffffff;
-  --mnav-border: rgba(255, 255, 255, 0.14);
-}
-
-.mnav-backdrop {
-  background: transparent;
-  backdrop-filter: blur(6px);
-}
-
-.mnav-shell {
-  background: var(--mnav-panel);
-  border: 1px solid var(--mnav-border);
-  backdrop-filter: blur(14px);
-}
-
-.mnav-section {
-  background: var(--mnav-section);
-  border: 1px solid var(--mnav-border);
-}
-
-.mnav-text {
-  color: var(--mnav-text) !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
-}
-
-.mnav-item {
-  background: transparent;
-  border: 1px solid var(--mnav-border);
-}
-.mnav-item:hover {
-  background: var(--mnav-section);
-}
-.mnav-item-active {
-  background: var(--mnav-section);
-  box-shadow: 0 0 14px var(--mnav-border);
-}
-
-/* Desktop dimensions for the first video banner on the portal page. Kept
-   outside Tailwind layers because the landing page is authored in JSX. */
-@media (min-width: 1024px) {
-  section.root-hero-section {
-    width: min(100%, 760px) !important;
-    padding: 3rem 2rem 4rem !important;
-  }
-
-  .root-hero-section .root-hero-banner,
-  .root-hero-section .root-hero-content {
-    min-height: 0 !important;
-    height: 300px !important;
-  }
-}
-
-/* Menthe Vibrant Cypher — default theme override at end of stylesheet
-   to ensure it survives any intermediate processing issues. */
-.theme-menthe-vibrant-cypher {
-  /* shadcn tokens */
-  --background: 150 45% 4%;
-  --foreground: 150 30% 96%;
-  --card: 150 35% 7%;
-  --card-foreground: 150 30% 96%;
-  --popover: 150 35% 7%;
-  --popover-foreground: 150 30% 96%;
-  --primary: 156 100% 50%;
-  --primary-foreground: 150 45% 4%;
-  --secondary: 150 20% 14%;
-  --secondary-foreground: 150 30% 96%;
-  --muted: 150 18% 14%;
-  --muted-foreground: 150 20% 70%;
-  --accent: 156 100% 50%;
-  --accent-foreground: 150 45% 4%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 150 20% 18%;
-  --input: 150 20% 18%;
-  --ring: 156 100% 50%;
-  --neon-cyan: 156 100% 50%;
-  --neon-magenta: 191 84% 53%;
-  --neon-purple: 160 84% 40%;
-  --surface: 150 35% 7%;
-  --surface-elevated: 150 30% 10%;
-  --pill: 150 18% 14%;
-  /* legacy theme tokens */
-  --theme-bg: #06120d;
-  --theme-card: #0a1f15;
-  --theme-card-2: #0f2a1d;
-  --theme-border: rgba(0, 255, 157, 0.4);
-  --theme-border-soft: rgba(0, 255, 157, 0.2);
-  --theme-border-strong: rgba(0, 255, 157, 0.6);
-  --theme-overlay: rgba(6, 18, 13, 0.85);
-  --theme-overlay-strong: rgba(6, 18, 13, 0.95);
-  --theme-fg-on-bg: #d1fae5;
-  --theme-fg-on-card: #a7f3d0;
-  --theme-fg-on-overlay: #d1fae5;
-  --theme-muted: rgba(167, 243, 208, 0.72);
-  --theme-link: #00ff9d;
-  --theme-link-hover: #22d3ee;
-  --theme-glow: 0 0 18px rgba(0, 255, 157, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
-  --theme-glow-2: 0 0 12px rgba(0, 255, 157, 0.2), 0 0 28px rgba(16, 185, 129, 0.2);
-  --theme-ring: #00ff9d;
-  --theme-neon-a: #00ff9d;
-  --theme-neon-b: #22d3ee;
-  --theme-neon-c: #10b981;
-  --site-tint: radial-gradient(circle at 18% 18%, rgba(0, 255, 157, 0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34, 211, 238, 0.15) 0%, transparent 22%), linear-gradient(160deg, #06120d 0%, #0a1f15 55%, #031008 100%);
-  --bubble-a: #00ff9d;
-  --bubble-b: #22d3ee;
-  --bubble-c: #10b981;
-  --nav-theme-bg: rgba(6, 18, 13, 0.75);
-  --nav-theme-surface: rgba(6, 18, 13, 0.9);
-  --nav-theme-border: rgba(0, 255, 157, 0.3);
-  --nav-theme-accent: #00ff9d;
-  --nav-theme-accent-2: #22d3ee;
-  --nav-theme-accent-3: #10b981;
-  --nav-theme-text: #d1fae5;
-}
