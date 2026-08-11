@@ -136,7 +136,7 @@ const generateDecorItems = () => DECOR_GROUPS.flatMap((group) => group.items.map
 const DECOR_MODELS = generateDecorItems();
 
 export function ThemeDecorManager() {
-  const { disableAnimations, toggleAnimations } = usePerformance();
+  const { disableAnimations, decorOverlayEnabled, toggleAnimations, toggleDecorOverlay } = usePerformance();
   const [activeDecorIds, setActiveDecorIds] = useState<string[]>(getStored);
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -162,6 +162,13 @@ export function ThemeDecorManager() {
       try { toggleAnimations(); } catch { /* ignore */ }
     }
   }, [activeDecorIds, disableAnimations, toggleAnimations]);
+
+  // If user selects decors while the overlay is disabled, enable it.
+  useEffect(() => {
+    if (activeDecorIds.length > 0 && !decorOverlayEnabled) {
+      try { toggleDecorOverlay(); } catch { /* ignore */ }
+    }
+  }, [activeDecorIds, decorOverlayEnabled, toggleDecorOverlay]);
 
   const toggleDecor = (id: string) => {
     setActiveDecorIds((prev) =>

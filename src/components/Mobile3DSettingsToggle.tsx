@@ -100,7 +100,7 @@ function OrbIcon({ anyOff }: { anyOff: boolean }) {
 }
 
 export function Mobile3DSettingsToggle() {
-  const { disableAnimations, disableVideos, toggleAnimations, toggleVideos } = usePerformance();
+  const { disableAnimations, disableVideos, decorOverlayEnabled, toggleAnimations, toggleDecorOverlay, toggleVideos } = usePerformance();
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
@@ -136,6 +136,21 @@ export function Mobile3DSettingsToggle() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  const DEFAULT_ACTIVE_DECORS = [
+  "skyline-glow",
+  "billboard-holo",
+  "drone-orbit",
+  "starfield",
+  "nebula-drift",
+];
+
+  const handleToggleDecorOverlay = () => {
+    if (!decorOverlayEnabled && activeDecors.length === 0) {
+      setActiveDecors(DEFAULT_ACTIVE_DECORS);
+    }
+    toggleDecorOverlay();
+  };
+
   const toggleDecor = (key: string) =>
     setActiveDecors((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]);
 
@@ -153,7 +168,7 @@ export function Mobile3DSettingsToggle() {
     return { all: count === keys.length, some: count > 0 && count < keys.length, count };
   };
 
-  const anyOff = disableAnimations || disableVideos;
+  const anyOff = !decorOverlayEnabled || disableVideos;
 
   return (
     <>
@@ -217,14 +232,14 @@ export function Mobile3DSettingsToggle() {
                   {disableVideos ? <VideoOff size={14} /> : <Video size={14} />}
                   {disableVideos ? "Arrière-plan vidéo : désactivé" : "Arrière-plan vidéo : activé"}
                 </button>
-                <button type="button" onClick={toggleAnimations} style={{
+                <button type="button" onClick={handleToggleDecorOverlay} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${disableAnimations ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: disableAnimations ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
-                  color: disableAnimations ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
+                  border: `1px solid ${!decorOverlayEnabled ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
+                  background: !decorOverlayEnabled ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
+                  color: !decorOverlayEnabled ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
                 }}>
-                  {disableAnimations ? <EyeOff size={14} /> : <Eye size={14} />}
-                  {disableAnimations ? "Effets visuels 3D : désactivés" : "Effets visuels 3D : activés"}
+                  {!decorOverlayEnabled ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {!decorOverlayEnabled ? "Effets visuels 3D : désactivés" : "Effets visuels 3D : activés"}
                 </button>
               </>
             )}
