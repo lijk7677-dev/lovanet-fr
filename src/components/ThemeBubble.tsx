@@ -535,8 +535,9 @@ const applyTheme = (theme: ThemeOption, navMode: NavPreviewMode = "derived") => 
   root.dataset.themeId = theme.id;
   root.dataset.themeMood = theme.mood;
   root.style.colorScheme = "dark";
-  document.body.style.background = theme.pageTint;
-  document.body.style.backgroundAttachment = "fixed";
+  /* Don't tint body background — video must show without theme coloring */
+  document.body.style.background = "";
+  document.body.style.backgroundAttachment = "";
   document.body.style.color = theme.foregroundHex;
 };
 

@@ -434,15 +434,16 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   html {
-    background: var(--theme-bg);
+    /* Neutral dark base so the background video shows without theme tinting */
+    background: #06090e;
   }
 
   body {
     @apply antialiased;
     font-family: var(--font-body);
-    background: var(--site-tint);
+    background: transparent;
     color: var(--theme-fg-on-bg);
-    transition: background-color 220ms ease, color 220ms ease, background-image 220ms ease;
+    transition: color 220ms ease;
   }
 
   body::before {
@@ -451,7 +452,8 @@ body[data-hide-decors] [data-animated-bg] {
     inset: 0;
     pointer-events: none;
     z-index: -2;
-    background: var(--site-tint);
+    /* No theme tint behind the video — theming applies to UI elements via CSS vars */
+    background: transparent;
   }
 
   body::after {
