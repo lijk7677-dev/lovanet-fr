@@ -104,9 +104,34 @@ export function Mobile3DSettingsToggle() {
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
   );
+
+  const getPanelPosition = () => {
+    if (typeof window === "undefined") return { x: 16, y: 16 };
+
+    const trigger = document.querySelector('[aria-label="Arrière-plans et décors"]') as HTMLElement | null;
+    const width = Math.min(window.innerWidth - 24, 320);
+    const height = 440;
+    const margin = 12;
+
+    if (trigger) {
+      const rect = trigger.getBoundingClientRect();
+      const x = Math.min(
+        Math.max(rect.right + 12, margin),
+        Math.max(margin, window.innerWidth - width - margin),
+      );
+      const y = Math.min(Math.max(rect.top + (rect.height - height) / 2, margin), Math.max(margin, window.innerHeight - height - margin));
+      return { x, y };
+    }
+
+    return {
+      x: Math.max(margin, window.innerWidth - width - 20),
+      y: Math.max(margin, window.innerHeight - height - 100),
+    };
+  };
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(activeDecors)); } catch {}
@@ -129,11 +154,16 @@ export function Mobile3DSettingsToggle() {
   }, [activeDecors, disableAnimations, toggleAnimations]);
 
   useEffect(() => {
-    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
+    const onResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+      if (isOpen) {
+        setPanelPos(getPanelPosition());
+      }
+    };
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [isOpen]);
 
   const DEFAULT_ACTIVE_DECORS = [
   "skyline-glow",
@@ -180,7 +210,13 @@ export function Mobile3DSettingsToggle() {
       {/* Main orb button */}
       <button
         type="button"
-        onClick={() => setIsOpen((v) => !v)}
+        onClick={() => {
+          setIsOpen((v) => {
+            const next = !v;
+            if (next) setPanelPos(getPanelPosition());
+            return next;
+          });
+        }}
         aria-label="Arrière-plans et décors"
         style={{
           position: "fixed",
@@ -206,20 +242,23 @@ export function Mobile3DSettingsToggle() {
       {isOpen && (
         <div style={{
           position: "fixed",
-          bottom: panelBottom,
-          right: isDesktop ? 96 : 86,
-          left: "auto",
+          left: `${panelPos.x}px`,
+          top: `${panelPos.y}px`,
           zIndex: 10050,
-          background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
-          borderRadius: 20, padding: "12px 12px 10px",
+          background: "linear-gradient(180deg, rgba(15,23,42,0.76), rgba(15,23,42,0.9))",
+          border: "1px solid rgba(255,255,255,0.16)",
+          borderRadius: 28,
+          padding: 0,
           width: isDesktop ? 320 : "min(86vw, 320px)",
           maxHeight: "min(78vh, 620px)",
-          backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
+          backdropFilter: "blur(22px) saturate(1.14)",
+          boxShadow: "0 32px 90px rgba(15,23,42,0.58)",
           display: "flex", flexDirection: "column", gap: 10,
+          overflow: "hidden",
         }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {/* Tabs */}
-            <div style={{ display: "flex", gap: 5 }}>
+            <div style={{ display: "flex", gap: 5, padding: "12px 12px 0" }}>
               {(["controls", "decors"] as const).map((t) => (
                 <button key={t} type="button" onClick={() => setTab(t)} style={{
                   flex: 1, padding: "6px 0", borderRadius: 10, fontSize: 11, fontWeight: 700,
@@ -234,7 +273,7 @@ export function Mobile3DSettingsToggle() {
             </div>
 
             {tab === "controls" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8, padding: "0 12px 12px" }}>
                 <button type="button" onClick={toggleVideos} aria-pressed={!disableVideos} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
                   border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
@@ -266,7 +305,7 @@ export function Mobile3DSettingsToggle() {
 
             {tab === "decors" && (
               <>
-                <div style={{ maxHeight: "min(48vh, 360px)", overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, paddingRight: 2 }}>
+                <div style={{ maxHeight: "min(48vh, 360px)", overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, padding: "0 12px 12px", paddingRight: 10 }}>
                   {DECOR_GROUPS.map((g) => {
                     const status = groupActive(g);
                     const isExpanded = expandedGroup === g.group;
@@ -344,7 +383,7 @@ export function Mobile3DSettingsToggle() {
                 </div>
 
                 {/* Global actions */}
-                <div style={{ display: "flex", gap: 5, paddingTop: 2 }}>
+                <div style={{ display: "flex", gap: 5, padding: "0 12px 12px" }}>
                   <button type="button" onClick={() => setActiveDecors(ALL_KEYS)} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
                     border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.12)",
