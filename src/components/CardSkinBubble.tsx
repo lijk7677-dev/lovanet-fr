@@ -61,14 +61,16 @@ const POSITION_STORAGE = "lovanet:card-skin-pos-v3";
 
 const PANEL_W = 290;
 const VIEWPORT_MARGIN = 16;
+const SIDE_SAFE_OFFSET = 92;
 
 /** Returns a position that keeps the panel on screen and clear of the bottom-left settings panel. */
 const safeDefault = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
+  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : SIDE_SAFE_OFFSET + 10;
   return {
-    x: Math.max(VIEWPORT_MARGIN, w - panelW - 24),
+    x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
     y: w < 600 ? 24 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.08)),
   };
 };
@@ -296,7 +298,7 @@ export const CardSkinBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[9980] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,290px)]"
+          className="fixed z-[10050] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,290px)]"
           style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px` }}
           onPointerDown={onDown}
           onPointerMove={onMove}

@@ -81,13 +81,15 @@ const POSITION_STORAGE = "lovanet:catalog-color-pos-v3";
 
 const PANEL_W = 340;
 const VIEWPORT_MARGIN = 16;
+const SIDE_SAFE_OFFSET = 104;
 
 const safeDefault = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
+  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : SIDE_SAFE_OFFSET + 12;
   return {
-    x: Math.max(VIEWPORT_MARGIN, w - panelW - 24),
+    x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
     y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.08)),
   };
 };
@@ -324,7 +326,7 @@ export const CatalogCardColorBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[9980] touch-none rounded-2xl border border-white/45 bg-[rgba(255,255,255,0.18)] p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"
+          className="fixed z-[10050] touch-none rounded-2xl border border-white/45 bg-[rgba(255,255,255,0.18)] p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,340px)] max-h-[80vh] overflow-y-auto"
           style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px` }}
           onPointerDown={onDown}
           onPointerMove={onMove}

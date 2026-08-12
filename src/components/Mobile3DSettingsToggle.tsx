@@ -207,9 +207,9 @@ export function Mobile3DSettingsToggle() {
         <div style={{
           position: "fixed",
           bottom: panelBottom,
-          right: isDesktop ? 24 : 14,
+          right: isDesktop ? 96 : 86,
           left: "auto",
-          zIndex: 9998,
+          zIndex: 10050,
           background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
           borderRadius: 20, padding: "12px 12px 10px",
           width: isDesktop ? 320 : "min(86vw, 320px)",

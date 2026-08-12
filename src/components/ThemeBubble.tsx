@@ -110,13 +110,15 @@ const DEFAULT_THEME_ID = "mint-vibrant-cyber";
 
 const THEME_PANEL_W = 480;
 const VIEWPORT_MARGIN = 16;
+const SIDE_SAFE_OFFSET = 112;
 
 const safeDefaultThemePos = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const panelW = Math.min(Math.round(w * 0.94), THEME_PANEL_W);
+  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : SIDE_SAFE_OFFSET + 12;
   return {
-    x: Math.max(VIEWPORT_MARGIN, w - panelW - 24),
+    x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
     y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.05)),
   };
 };
@@ -964,7 +966,7 @@ export const ThemeBubble = () => {
       ref={panelRef}
       className={cn(
         "flex flex-col overflow-hidden rounded-[2rem] border border-white/40 bg-white/20 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl",
-        floating ? "fixed z-[9980] h-auto w-[min(94vw,480px)] max-h-[88vh]" : "h-full"
+        floating ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-h-[88vh]" : "h-full"
       )}
       style={floating && panelPosition ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px` } : undefined}
       data-testid="theme-bubble-panel"
